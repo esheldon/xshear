@@ -70,11 +70,9 @@ namespace objshear {
         int scstyle;
 
         // only used when scstyle == SCSTYLE_INTERP
-        vector<double> scinv; // note this is same size as zlens kept in 
-                                   // catalog structure.
-        vector<double> zlens; // For convenience; this should just point 
-                                   // to memory owned by config->zlens; don't 
-                                   // allocate or free!
+        vector<double> scinv;
+        vector<double> zlens;
+
         // only used when sigmacrit style == SCSTYLE_TRUE
         double z;
         double dc; // for speed
