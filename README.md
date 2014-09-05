@@ -39,17 +39,17 @@ compilation
 
 ```bash
 # default build uses gcc
-python build.py
+make
 
 # use intel C compiler.
-python build.py -C icc
+make CC=icc
 ```
 
 installation
 ------------
 
 ```bash
-python build.py --prefix=/some/path install
+make install prefix=/some/path
 ```
 
 dependencies
