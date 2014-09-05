@@ -30,12 +30,16 @@ redshear_sources = ['healpix','cosmo','tree','stack','lens','lensum',
                     'util',
                     'redshear','sdss-survey']
 
+xshear_sources = [os.path.join('src',n) for n in xshear_sources]
+redshear_sources = [os.path.join('src',n) for n in redshear_sources]
 
 
 
 # base names
 programs = [{'name':'xshear',   'sources':xshear_sources},
             {'name':'redshear', 'sources':redshear_sources}]
+for p in programs:
+    p['name'] = os.path.join('src',p['name'])
 
 install_targets = [(prog['name'],'bin') for prog in programs]
 
