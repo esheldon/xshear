@@ -4,6 +4,7 @@
 #include "shear.h"
 #include "log.h"
 #include "defs.h"
+#include "Vector.h"
 
 void usage_and_exit(void) {
     wlog("usage: \n");
@@ -26,7 +27,7 @@ int main(int argc, char** argv) {
     struct shear* shear=shear_init(config_url, lens_url);
 
     struct source* src=source_new(shear->config);
-    src->zlens = shear->config->zl;
+    src->zlens = (const struct f64vector*) shear->config->zl;
 
     while (source_read(stdin, src)) {
         nsource++;

@@ -35,15 +35,23 @@ struct source {
 
     int64 hpixid;
 
-    // only used when scstyle == SCSTYLE_INTERP
-    struct f64vector* scinv; // note this is same size as zlens kept in 
-                             // catalog structure.
-    struct f64vector* zlens; // For convenience; this should just point 
-                             // to memory owned by config->zlens; don't 
-                             // allocate or free!
+    //
+    // these only used when scstyle == SCSTYLE_INTERP
+    //
+
+    // note this is same size as zlens kept in 
+    // catalog structure.
+
+    struct f64vector* scinv; 
+
+    // For convenience; this should just point to memory owned by
+    // config->zlens
+
+    const struct f64vector* zlens; 
+
     // only used when sigmacrit style == SCSTYLE_TRUE
     double z;
-    double dc; // for speed
+    double dc;
 
     // calculate these for speed
     double sinra; 
