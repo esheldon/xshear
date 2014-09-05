@@ -7,8 +7,8 @@
 
 void usage_and_exit(void) {
     wlog("usage: \n");
-    wlog("   xshear config_file lens_cat < source_cat > outfile\n");
     wlog("   cat source_cat | xshear config_file lens_cat > outfile\n");
+    wlog("   cat source_cat1 source_cat2 .. | xshear config_file lens_cat > outfile\n");
     wlog("   cat source_cat | some_filter | xshear config_file lens_cat > outfile\n");
     exit(EXIT_FAILURE);
 }
