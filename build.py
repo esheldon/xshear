@@ -7,22 +7,18 @@ import glob
 
 parser = optparse.OptionParser()
 # make an options list, also send to fabricate
-optlist=[optparse.Option('--prefix','-p',
-                         default=sys.exec_prefix,
-                         help="where to install")]
+optlist=[optparse.Option('--prefix','-p', default=sys.exec_prefix, help="where to install"),
+         optparse.Option('-C', default='gcc', help="compiler to use, default %default.  Can be a full path.")]
 parser.add_options(optlist)
 
 options,args = parser.parse_args()
 prefix=os.path.expanduser( options.prefix )
 
-CC='gcc'
+CC=options.C
 
 LINKFLAGS=['-lm']
 
-CFLAGS=['-std=gnu99','-Wall','-Werror','-O2']
-
-# can't use c99 because strdup would be missing (needed by the config library)
-#CFLAGS=['-std=c99','-Wall','-Werror','-O2']
+CFLAGS=['-std=c99','-Wall','-Werror','-O2']
 
 xshear_sources = ['sconfig', 'config', 'stack', 'Vector','source',
                   'lens','cosmo','healpix',
