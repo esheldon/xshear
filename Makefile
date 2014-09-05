@@ -63,4 +63,4 @@ uninstall:
 	@rm -f $*.dep.tmp
 
 clean:
-	rm -f $(PROGS) $(SRCDIR)/*.o $(SRCDIR)/*.dep
+	rm -f $(LOCAL_PROGS) $(SRCDIR)/*.o $(SRCDIR)/*.dep
