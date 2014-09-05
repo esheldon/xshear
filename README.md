@@ -20,7 +20,8 @@ example
 cat sources1 | xshear config_file lens_file > lensum_file1
 cat sources2 | xshear config_file lens_file > lensum_file1
 
-# combine the lensums from the different source catalogs.  This is a reduction
+# combine the lensums from the different source catalogs.  This is a "reduction",
+# hence the program is named "redshear"
 
 cat lensum_file1 lensum_file2 | redshear config_file > lensum_file_tot
 
