@@ -38,9 +38,12 @@ compilation
 -----------
 
 ```bash
-# you need gcc
+# default builds with gcc
 
 python build.py
+
+# use intel C compiler.
+python build.py -C icc
 ```
 
 installation
