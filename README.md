@@ -38,7 +38,7 @@ compilation
 -----------
 
 ```bash
-# default builds uses gcc
+# default build uses gcc
 python build.py
 
 # use intel C compiler.
@@ -55,4 +55,4 @@ python build.py --prefix=/some/path install
 dependencies
 ------------
 
-none
+A C99 compliant compiler.
