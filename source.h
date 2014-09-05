@@ -1,100 +1,74 @@
 #ifndef _SOURCE_HEADER
 #define _SOURCE_HEADER
 
-#include <vector>
+#include "Vector.h"
 #include "defs.h"
 #include "sconfig.h"
 
-namespace objshear {
-    using std::vector;
+/* 
+  We can work in two modes:
+    - we have an inverse critical density; in this case the 
+      header of the file must contain the associated zlens values
+    - We have a specific z value for this object; we will generate
+      the associated dc (comoving distance) value for speed
 
-    /* 
-      We can work in two modes:
-        - we have an inverse critical density; in this case the 
-          header of the file must contain the associated zlens values
-        - We have a specific z value for this object; we will generate
-          the associated dc (comoving distance) value for speed
+  Note we actually want the sin and cos of ra/dec rather than ra
+  dec for our calculations.
+*/
+struct source {
 
-      Note we actually want the sin and cos of ra/dec rather than ra
-      dec for our calculations.
-    */
+    double ra;
+    double dec;
 
-    struct Source {
+    double g1;
+    double g2;
 
-        Source () {}
+#ifdef LENSFIT
+    // lensfit-style sensitivity
+    double g1sens;
+    double g2sens;
+#endif
 
-        Source (int mask_style_in) {
-            init(MASK_STYLE_NONE);
-        }
+    double weight;
 
+    int64 hpixid;
 
-        Source (int mask_style_in, const vector<double>& zlens) {
-            init(mask_style_in, zlens);
-        }
+    int mask_style;
+    int scstyle;
 
-        void init(int mask_style_in) {
-            mask_style  = mask_style_in;
-            scinv_style=SCSTYLE_TRUE;
-        }
+    // only used when scstyle == SCSTYLE_INTERP
+    struct f64vector* scinv; // note this is same size as zlens kept in 
+                             // catalog structure.
+    struct f64vector* zlens; // For convenience; this should just point 
+                             // to memory owned by config->zlens; don't 
+                             // allocate or free!
+    // only used when sigmacrit style == SCSTYLE_TRUE
+    double z;
+    double dc; // for speed
 
-        void init(int mask_style_in, const vector<double>& zlens_in) {
+    // calculate these for speed
+    double sinra; 
+    double cosra;
+    double sindec;
+    double cosdec;
 
-            mask_style  = mask_style_in;
-            scinv_style = SCSTYLE_INTERP;
-
-            long nzl=(long) zlens.size();
-
-            zlens.resize(nzl);
-            scinv.resize(nzl);
-            for (long i=0; i<nzl; i++) {
-                zlens[i] = zlens_in[i];
-            }
-        }
-
-
-        double ra;
-        double dec;
-
-        double g1;
-        double g2;
-        double gcov11;
-        double gcov12;
-        double gcov22;
-
-        double g_sens1;
-        double g_sens2;
-
-        long hpixid;
-
-        int mask_style;
-        int scstyle;
-
-        // only used when scstyle == SCSTYLE_INTERP
-        vector<double> scinv;
-        vector<double> zlens;
-
-        // only used when sigmacrit style == SCSTYLE_TRUE
-        double z;
-        double dc; // for speed
-
-        // calculate these for speed
-        double sinra; 
-        double cosra;
-        double sindec;
-        double cosdec;
-
-        // only used for mask_style==MASK_STYLE_SDSS
-        double sinlam;
-        double coslam;
-        double sineta;
-        double coseta;
-    };
+    // only used for mask_style==MASK_STYLE_SDSS
+    double sinlam;
+    double coslam;
+    double sineta;
+    double coseta;
+};
 
 
-    int read(FILE* stream);
-    int filter(const SConfig& cfg);
-    void print();
+// n_zlens == 0 indicates we are using "true z" style
+struct source* source_new(struct sconfig* config);
 
-} // namespace objshear
+int source_read(FILE* stream, struct source* src);
+
+int source_filter(struct source *src, struct sconfig *cfg);
+
+void source_print(struct source* src);
+
+struct source* source_delete(struct source* src);
 
 #endif
