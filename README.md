@@ -37,6 +37,8 @@ cat s1 s2 s3 | src_filter | xshear config_file lens_file > lensum_file
 compilation
 -----------
 
+# you need gcc
+
 python build.py
 
 installation
@@ -47,4 +49,4 @@ python build.py --prefix=/some/path install
 dependencies
 ------------
 
-A C compiler supporting gnu 99
+none
