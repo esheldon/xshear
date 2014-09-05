@@ -45,11 +45,12 @@ make
 make CC=icc
 ```
 
-installation
-------------
+install/uninstall
+-----------------
 
 ```bash
 make install prefix=/some/path
+make uninstall prefix=/some/path
 ```
 
 dependencies
