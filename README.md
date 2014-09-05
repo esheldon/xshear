@@ -38,8 +38,7 @@ compilation
 -----------
 
 ```bash
-# default builds with gcc
-
+# default builds uses gcc
 python build.py
 
 # use intel C compiler.
