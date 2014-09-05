@@ -43,3 +43,8 @@ installation
 ------------
 
 python build.py --prefix=/some/path install
+
+dependencies
+------------
+
+A C compiler supporting gnu 99
