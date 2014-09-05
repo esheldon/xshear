@@ -50,6 +50,13 @@ const char* cfg_status_string(enum cfg_status status)
     }
 }
 
+static char *cfg_strdup(const char *s) {
+    char *p = malloc(strlen(s) + 1);
+    if(p) {
+        strcpy(p, s);
+    }
+    return p;
+}
 
 static struct cfg_string *cfg_string_free(struct cfg_string *str)
 {
@@ -106,7 +113,7 @@ static void cfg_strvec_append_copy(struct cfg_strvec* vec, char *str)
         cfg_strvec_realloc(vec, vec->capacity*2);
     }
     vec->size++;
-    vec->data[vec->size-1] = strdup(str);
+    vec->data[vec->size-1] = cfg_strdup(str);
 }
 */
 /* ownership is transferred to the vector */
@@ -153,7 +160,7 @@ static char **cfg_strvec2arr(struct cfg_strvec *vec, size_t *size)
         exit(1);
     }
     for (i=0; i<(*size); i++) {
-        sarr[i] = strdup(vec->data[i]);
+        sarr[i] = cfg_strdup(vec->data[i]);
     }
 
     return sarr;
@@ -1242,7 +1249,7 @@ char *cfg_get_string(const struct cfg *self,
             if (0==CFG_FIELD_ARR_SIZE(field)) {
                 *status = CFG_EMPTY;
             } else {
-                str = strdup( CFG_FIELD_GET_DATA(field, 0) );
+                str = cfg_strdup( CFG_FIELD_GET_DATA(field, 0) );
             }
         }
     }
