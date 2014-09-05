@@ -3,8 +3,10 @@
 #include "lensum.h"
 #include "defs.h"
 #include "log.h"
+#include "sconfig.h"
 
-struct lensums* lensums_new(size_t nlens, size_t nbin) {
+struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
+
     wlog("Creating lensums:\n");
     wlog("    nlens: %lu  nbin: %lu\n", nlens, nbin);
 
@@ -22,19 +24,23 @@ struct lensums* lensums_new(size_t nlens, size_t nbin) {
 
     lensums->size = nlens;
 
-    struct lensum* lensum = &lensums->data[0];
 
     for (size_t i=0; i<nlens; i++) {
+        struct lensum* lensum = &lensums->data[i];
+
+        lensum->shear_style=shear_style;
+
         lensum->index = i;
         lensum->nbin = nbin;
         lensum->npair = calloc(nbin, sizeof(int64));
         lensum->wsum  = calloc(nbin, sizeof(double));
         lensum->dsum  = calloc(nbin, sizeof(double));
         lensum->osum  = calloc(nbin, sizeof(double));
-#ifdef LENSFIT
-        lensum->dsensum  = calloc(nbin, sizeof(double));
-        lensum->osensum  = calloc(nbin, sizeof(double));
-#endif
+
+        if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+            lensum->dsensum  = calloc(nbin, sizeof(double));
+            lensum->osensum  = calloc(nbin, sizeof(double));
+        }
         lensum->rsum  = calloc(nbin, sizeof(double));
 
         if (lensum->npair==NULL
@@ -47,7 +53,6 @@ struct lensums* lensums_new(size_t nlens, size_t nbin) {
             exit(EXIT_FAILURE);
         }
 
-        lensum++;
     }
     return lensums;
 
@@ -67,7 +72,8 @@ void lensums_write(struct lensums* lensums, FILE* stream) {
 
 
 struct lensum* lensums_sum(struct lensums* lensums) {
-    struct lensum* tsum=lensum_new(lensums->data[0].nbin);
+    struct lensum* tsum=lensum_new(lensums->data[0].nbin,
+                                   lensums->data[0].shear_style);
 
     struct lensum* lensum = &lensums->data[0];
 
@@ -81,10 +87,12 @@ struct lensum* lensums_sum(struct lensums* lensums) {
             tsum->wsum[j] += lensum->wsum[j];
             tsum->dsum[j] += lensum->dsum[j];
             tsum->osum[j] += lensum->osum[j];
-#ifdef LENSFIT
-            tsum->dsensum[j] += lensum->dsensum[j];
-            tsum->osensum[j] += lensum->osensum[j];
-#endif
+
+            if (tsum->shear_style==SHEAR_STYLE_LENSFIT) {
+                tsum->dsensum[j] += lensum->dsensum[j];
+                tsum->osensum[j] += lensum->osensum[j];
+            }
+
         }
         lensum++;
     }
@@ -132,12 +140,14 @@ struct lensums* lensums_delete(struct lensums* lensums) {
     return NULL;
 }
 
-struct lensum* lensum_new(size_t nbin) {
+struct lensum* lensum_new(size_t nbin, int shear_style) {
     struct lensum* lensum=calloc(1,sizeof(struct lensum));
     if (lensum == NULL) {
         wlog("failed to allocate lensum\n");
         exit(EXIT_FAILURE);
     }
+
+    lensum->shear_style=shear_style;
 
     lensum->nbin = nbin;
 
@@ -146,10 +156,10 @@ struct lensum* lensum_new(size_t nbin) {
     lensum->dsum  = calloc(nbin, sizeof(double));
     lensum->osum  = calloc(nbin, sizeof(double));
 
-#ifdef LENSFIT
-    lensum->dsensum  = calloc(nbin, sizeof(double));
-    lensum->osensum  = calloc(nbin, sizeof(double));
-#endif
+    if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+        lensum->dsensum  = calloc(nbin, sizeof(double));
+        lensum->osensum  = calloc(nbin, sizeof(double));
+    }
 
     lensum->rsum  = calloc(nbin, sizeof(double));
 
@@ -178,10 +188,10 @@ void lensum_add(struct lensum* dest, struct lensum* src) {
         dest->wsum[i] += src->wsum[i];
         dest->dsum[i] += src->dsum[i];
         dest->osum[i] += src->osum[i];
-#ifdef LENSFIT
-        dest->dsensum[i] += src->dsensum[i];
-        dest->osensum[i] += src->osensum[i];
-#endif
+        if (src->shear_style==SHEAR_STYLE_LENSFIT) {
+            dest->dsensum[i] += src->dsensum[i];
+            dest->osensum[i] += src->osensum[i];
+        }
     }
 
 }
@@ -208,13 +218,14 @@ int lensum_read(FILE* stream, struct lensum* lensum) {
         nread+=fscanf(stream,"%lf", &lensum->dsum[i]);
     for (i=0; i<nbin; i++) 
         nread+=fscanf(stream,"%lf", &lensum->osum[i]);
-#ifdef lensfit
-    for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &lensum->dsensum[i]);
-    for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &lensum->osensum[i]);
-    nexpect += 2*nbin;
-#endif
+
+    if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &lensum->dsensum[i]);
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &lensum->osensum[i]);
+        nexpect += 2*nbin;
+    }
 
     return (nread == nexpect);
 }
@@ -240,12 +251,12 @@ void lensum_write(struct lensum* lensum, FILE* stream) {
     for (i=0; i<nbin; i++) 
         fprintf(stream," %.16g", lensum->osum[i]);
 
-#ifdef LENSFIT
-    for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", lensum->dsensum[i]);
-    for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", lensum->osensum[i]);
-#endif
+    if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", lensum->dsensum[i]);
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", lensum->osensum[i]);
+    }
 
     fprintf(stream,"\n");
 
@@ -258,9 +269,9 @@ void lensum_print(struct lensum* lensum) {
     wlog("  totpairs: %ld\n", lensum->totpairs);
     wlog("  nbin:     %ld\n", lensum->nbin);
     wlog("  bin       npair            meanr           dsum            osum");
-#ifdef LENSFIT
-    wlog("           dsensum        osensum");
-#endif
+    if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+        wlog("           dsensum        osensum");
+    }
     wlog("\n");
 
     for (size_t i=0; i<lensum->nbin; i++) {
@@ -270,9 +281,9 @@ void lensum_print(struct lensum* lensum) {
              lensum->rsum[i]/lensum->npair[i],
              lensum->dsum[i],
              lensum->osum[i] );
-#ifdef LENSFIT
-        wlog(" %15.6lf %15.6lf", lensum->dsensum[i], lensum->osensum[i]);
-#endif
+        if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+            wlog(" %15.6lf %15.6lf", lensum->dsensum[i], lensum->osensum[i]);
+        }
         wlog("\n");
     }
 }
@@ -280,7 +291,7 @@ void lensum_print(struct lensum* lensum) {
 struct lensum* lensum_copy(struct lensum* lensum) {
     int i=0;
 
-    struct lensum* copy=lensum_new(lensum->nbin);
+    struct lensum* copy=lensum_new(lensum->nbin, lensum->shear_style);
     copy->index = lensum->index;
     copy->zindex = lensum->zindex;
     copy->weight = lensum->weight;
@@ -294,10 +305,10 @@ struct lensum* lensum_copy(struct lensum* lensum) {
         copy->wsum[i] = lensum->wsum[i];
         copy->dsum[i] = lensum->dsum[i];
         copy->osum[i] = lensum->osum[i];
-#ifdef LENSFIT
-        copy->dsensum[i] = lensum->dsensum[i];
-        copy->osensum[i] = lensum->osensum[i];
-#endif
+        if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+            copy->dsensum[i] = lensum->dsensum[i];
+            copy->osensum[i] = lensum->osensum[i];
+        }
     }
 
     return copy;
@@ -319,10 +330,10 @@ void lensum_clear(struct lensum* lensum) {
         lensum->osum[i] = 0;
         lensum->rsum[i] = 0;
 
-#ifdef LENSFIT
-        lensum->dsensum[i] = 0;
-        lensum->osensum[i] = 0;
-#endif
+        if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+            lensum->dsensum[i] = 0;
+            lensum->osensum[i] = 0;
+        }
     }
 }
 
@@ -334,10 +345,10 @@ struct lensum* lensum_delete(struct lensum* lensum) {
         free(lensum->dsum);
         free(lensum->osum);
 
-#ifdef LENSFIT
-        free(lensum->dsensum);
-        free(lensum->osensum);
-#endif
+        if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+            free(lensum->dsensum);
+            free(lensum->osensum);
+        }
     }
     free(lensum);
     return NULL;

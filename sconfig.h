@@ -4,10 +4,6 @@
 #include "defs.h"
 #include "Vector.h"
 
-#ifdef HDFS
-#include "hdfs_lines.h"
-#endif
-
 #define CONFIG_KEYSZ 50
 
 struct sconfig {
@@ -17,9 +13,9 @@ struct sconfig {
 
     int64 nside; // hpix
 
-    int64 mask_style;
-
-    int64 scstyle;
+    int shear_style;
+    int mask_style;
+    int scstyle;
 
     // will be zero unless scstyle==SCSTYLE_INTERP
     int64 nzl;
@@ -49,10 +45,6 @@ struct sconfig {
 };
 
 struct sconfig* sconfig_read(const char* url);
-
-#ifdef HDFS
-struct sconfig* hdfs_config_read(const char* url);
-#endif 
 
 struct sconfig* sconfig_delete(struct sconfig* config);
 void sconfig_print(struct sconfig* config);

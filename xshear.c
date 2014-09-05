@@ -6,7 +6,10 @@
 #include "defs.h"
 
 void usage_and_exit(void) {
-    wlog("usage: sobjshear-gsens config_url lens_cat\n");
+    wlog("usage: \n");
+    wlog("   xshear config_file lens_cat < source_cat > outfile\n");
+    wlog("   cat source_cat | xshear config_file lens_cat > outfile\n");
+    wlog("   cat source_cat | some_filter | xshear config_file lens_cat > outfile\n");
     exit(EXIT_FAILURE);
 }
 

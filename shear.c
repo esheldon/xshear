@@ -63,7 +63,10 @@ struct shear* shear_init(const char* config_url, const char* lens_url) {
     lcat_print_firstlast(shear->lcat);
 
     // this holds the sums for each lens
-    shear->lensums = lensums_new(shear->lcat->size, config->nbin);
+    shear->lensums = lensums_new(shear->lcat->size,
+                                 config->nbin,
+                                 config->shear_style);
+
     for (size_t i=0; i<shear->lensums->size; i++) {
         shear->lensums->data[i].zindex = shear->lcat->data[i].zindex;
     }
@@ -277,12 +280,12 @@ void shear_procpair(struct shear* self,
 
     lensum->rsum[rbin] += r;
 
-#ifdef LENSFIT
-    double gsenst = -(src->g1sens*cos2pa + src->g2sens*sin2pa);
-    double gsensx =  (src->g1sens*sin2pa - src->g2sens*cos2pa);
-    lensum->dsensum[rbin] += weight*gsenst*scrit;
-    lensum->osensum[rbin] += weight*gsensx*scrit;
-#endif
+    if (config->shear_style==SHEAR_STYLE_LENSFIT) {
+        double gsenst = -(src->g1sens*cos2pa + src->g2sens*sin2pa);
+        double gsensx =  (src->g1sens*sin2pa - src->g2sens*cos2pa);
+        lensum->dsensum[rbin] += weight*gsenst*scrit;
+        lensum->osensum[rbin] += weight*gsensx*scrit;
+    }
 
 
 _procpair_bail:

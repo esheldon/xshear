@@ -4,6 +4,8 @@
 #include "defs.h"
 
 struct lensum {
+    int shear_style;
+
     int64 index;   // index in the lens list
     int64 zindex;  // overall index, to get back to input catalog
     double weight;
@@ -15,10 +17,10 @@ struct lensum {
     double* wsum;
     double* dsum;
     double* osum;
-#ifdef LENSFIT
+
+    // only used for lensfit style
     double* dsensum;
     double* osensum;
-#endif
 };
 
 struct lensums {
@@ -27,8 +29,7 @@ struct lensums {
 };
 
 
-struct lensum* lensum_new(size_t nbin);
-struct lensums* lensums_new(size_t nlens, size_t nbin);
+struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style);
 
 // this one we write all the data out in binary format
 void lensums_write(struct lensums* lensums, FILE* stream);
@@ -43,7 +44,7 @@ struct lensums* lensums_delete(struct lensums* lensum);
 
 
 
-struct lensum* lensum_new(size_t nbin);
+struct lensum* lensum_new(size_t nbin, int shear_style);
 int lensum_read(FILE* stream, struct lensum* lensum);
 struct lensum* lensum_copy(struct lensum* lensum);
 void lensum_add(struct lensum* dest, struct lensum* src);

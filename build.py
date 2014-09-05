@@ -9,10 +9,7 @@ parser = optparse.OptionParser()
 # make an options list, also send to fabricate
 optlist=[optparse.Option('--prefix','-p',
                          default=sys.exec_prefix,
-                         help="where to install"),
-         optparse.Option('--lensfit',
-                         action='store_true',
-                         help="compile for lensfit style shear")]
+                         help="where to install")]
 parser.add_options(optlist)
 
 options,args = parser.parse_args()
@@ -22,7 +19,7 @@ CC='gcc'
 
 LINKFLAGS=['-lm']
 
-CFLAGS0=['-std=gnu99','-Wall','-Werror']
+CFLAGS=['-std=gnu99','-Wall','-Werror','-O2']
 
 xshear_sources = ['sconfig', 'config', 'stack', 'Vector','source',
                   'lens','cosmo','healpix',
@@ -38,18 +35,8 @@ redshear_sources = ['healpix','cosmo','tree','stack','lens','lensum',
 
 
 # base names
-programs = [{'namebase':'xshear',   'sources':xshear_sources},
-            {'namebase':'redshear', 'sources':redshear_sources}]
-
-if options.lensfit:
-    type='lf'
-    CFLAGS = CFLAGS0 + ['-DLENSFIT']
-else:
-    type='g'
-    CFLAGS = CFLAGS0
-
-for prog in programs:
-    prog['name'] = '%s-%s' % (prog['namebase'], type)
+programs = [{'name':'xshear',   'sources':xshear_sources},
+            {'name':'redshear', 'sources':redshear_sources}]
 
 install_targets = [(prog['name'],'bin') for prog in programs]
 

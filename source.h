@@ -17,24 +17,23 @@
 */
 struct source {
 
+    int shear_style;
+    int mask_style;
+    int scstyle;
+
     double ra;
     double dec;
 
     double g1;
     double g2;
 
-#ifdef LENSFIT
-    // lensfit-style sensitivity
+    // only used for shear_style==LENSFIT
     double g1sens;
     double g2sens;
-#endif
 
     double weight;
 
     int64 hpixid;
-
-    int mask_style;
-    int scstyle;
 
     // only used when scstyle == SCSTYLE_INTERP
     struct f64vector* scinv; // note this is same size as zlens kept in 
@@ -61,7 +60,7 @@ struct source {
 
 
 // n_zlens == 0 indicates we are using "true z" style
-struct source* source_new(struct sconfig* config);
+struct source* source_new(const struct sconfig* config);
 
 int source_read(FILE* stream, struct source* src);
 

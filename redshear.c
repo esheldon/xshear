@@ -51,8 +51,8 @@ int main(int argc, char** argv) {
     // this is the beginning of the table
     struct lensum_hash* hash = NULL;
 
-    struct lensum* lensum = lensum_new(config->nbin);
-    struct lensum* lensum_tot = lensum_new(config->nbin);
+    struct lensum* lensum = lensum_new(config->nbin, config->shear_style);
+    struct lensum* lensum_tot = lensum_new(config->nbin, config->shear_style);
     while (lensum_read(stdin, lensum)) {
         counter++;
         if (counter == 1) {

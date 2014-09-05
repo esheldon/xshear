@@ -9,13 +9,14 @@
 #include "sdss-survey.h"
 #include "sconfig.h"
 
-struct source* source_new(struct sconfig* config) {
+struct source* source_new(const struct sconfig* config) {
     struct source* src = calloc(1,sizeof(struct source));
     if (src == NULL) {
         wlog("Could not allocate struct source\n");
         exit(EXIT_FAILURE);
     }
 
+    src->shear_style = config->shear_style;
     src->mask_style = config->mask_style;
     src->scstyle = config->scstyle;
 
@@ -60,10 +61,10 @@ int source_read(FILE* stream, struct source* src) {
                     &src->g1, &src->g2);
     nexpect += 4;
 
-#ifdef LENSFIT
-    nread += fscanf(stream, "%lf %lf", &src->g1sens, &src->g2sens);
-    nexpect += 2;
-#endif
+    if (src->shear_style==SHEAR_STYLE_LENSFIT) {
+        nread += fscanf(stream, "%lf %lf", &src->g1sens, &src->g2sens);
+        nexpect += 2;
+    }
 
     nread += fscanf(stream, "%lf", &src->weight);
 
@@ -102,10 +103,10 @@ void source_print(struct source* src) {
     wlog("    dec:    %lf\n", src->dec);
     wlog("    g1:     %lf\n", src->g1);
     wlog("    g2:     %lf\n", src->g2);
-#ifdef LENSFIT
-    wlog("    g1sens: %lf\n", src->g1sens);
-    wlog("    g2sens: %lf\n", src->g2sens);
-#endif
+    if (src->shear_style==SHEAR_STYLE_LENSFIT) {
+        wlog("    g1sens: %lf\n", src->g1sens);
+        wlog("    g2sens: %lf\n", src->g2sens);
+    }
     wlog("    weight: %lf\n", src->weight);
     wlog("    hpixid: %ld\n", src->hpixid);
 
