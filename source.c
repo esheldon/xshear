@@ -68,7 +68,7 @@ int source_read(FILE* stream, struct source* src) {
 
     nread += fscanf(stream, "%lf", &src->weight);
 
-    nexpect = 1;
+    nexpect += 1;
 
     if (src->scstyle == SCSTYLE_INTERP) {
         nexpect += src->scinv->size;
