@@ -198,7 +198,7 @@ void lensum_add(struct lensum* dest, struct lensum* src) {
 
 int lensum_read(FILE* stream, struct lensum* lensum) {
     int nbin=lensum->nbin;
-    int nexpect = 7+5*nbin;
+    int nexpect = 4+5*nbin;
     int nread=0;
     int i=0;
 
@@ -236,11 +236,11 @@ void lensum_write(struct lensum* lensum, FILE* stream) {
 
     // id with tab at beginning is demanded by hadoop map reduce
     // should we just use zindex there?
-    fprintf(stream,"%ld %ld %.16g %ld ", 
+    fprintf(stream,"%ld %ld %.16g %ld", 
             lensum->index, lensum->zindex, lensum->weight, lensum->totpairs);
 
     for (i=0; i<nbin; i++) 
-        fprintf(stream,"%ld", lensum->npair[i]);
+        fprintf(stream," %ld", lensum->npair[i]);
 
     for (i=0; i<nbin; i++) 
         fprintf(stream," %.16g", lensum->rsum[i]);

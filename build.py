@@ -21,6 +21,9 @@ LINKFLAGS=['-lm']
 
 CFLAGS=['-std=gnu99','-Wall','-Werror','-O2']
 
+# can't use c99 because strdup would be missing (needed by the config library)
+#CFLAGS=['-std=c99','-Wall','-Werror','-O2']
+
 xshear_sources = ['sconfig', 'config', 'stack', 'Vector','source',
                   'lens','cosmo','healpix',
                   'shear','lensum','histogram','tree','interp','urls',
