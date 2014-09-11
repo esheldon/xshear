@@ -55,7 +55,7 @@ uninstall:
 # magick from http://scottmcpeak.com/autodepend/autodepend.html
 %.o : %.c
 	$(CC) -c $(CFLAGS) $*.c -o $*.o
-	$(CC) -MM $(CFLAGS) $*.c > $*.dep
+	@$(CC) -MM $(CFLAGS) $*.c > $*.dep
 	@mv -f $*.dep $*.dep.tmp
 	@sed -e 's|.*:|$*.o:|' < $*.dep.tmp > $*.dep
 	@sed -e 's/.*://' -e 's/\\$$//' < $*.dep.tmp | fmt -1 | \
