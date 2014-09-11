@@ -1,3 +1,10 @@
+/*
+
+   A very simple config file format, parser
+
+   Erin Sheldon, Brookhaven National Laboratory
+*/
+
 #ifndef _CONFIG_H_GUARD
 #define _CONFIG_H_GUARD
 

@@ -1,3 +1,10 @@
+/*
+
+   A very simple config file format, parser
+
+   Erin Sheldon, Brookhaven National Laboratory
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -20,7 +27,7 @@ static char *cfg_status_names[]= {
 /*
  * public
  *
- * Copy an array of strings
+ * Free an array of strings
  */
 char **cfg_strarr_free(char **arr, size_t size)
 {
@@ -34,6 +41,7 @@ char **cfg_strarr_free(char **arr, size_t size)
     }
     return NULL;
 }
+
 /*
  * public
  *
