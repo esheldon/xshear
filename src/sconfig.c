@@ -97,6 +97,11 @@ struct sconfig* sconfig_read(const char* url) {
         c->min_zlens_interp=mzl;
     }
 
+    double dz = cfg_get_double(cfg, "zdiff_min", &ostatus);
+    if (!ostatus) {
+        c->zdiff_min=dz;
+    }
+
     int r_units = (int) cfg_get_long(cfg, "r_units", &ostatus);
     if (!ostatus) {
         c->r_units=r_units;
@@ -133,6 +138,7 @@ void sconfig_print(struct sconfig* c) {
     wlog("    shear style:  %d\n",  c->shear_style);
     wlog("    mask style:   %d\n",  c->mask_style);
     wlog("    scrit style:  %d\n",  c->scstyle);
+    wlog("    zdiff_min:    %lf\n", c->zdiff_min);
     wlog("    mag_min:      %lf\n", c->mag_min);
     wlog("    mag_max:      %lf\n", c->mag_max);
     wlog("    R_min:        %lf\n", c->R_min);

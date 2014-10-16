@@ -38,6 +38,10 @@ struct sconfig {
     // of the full interpolation range
     double min_zlens_interp;
 
+    // can demand zs > zl + zdiff_min when using source
+    // z as truth
+    double zdiff_min;
+
     double mag_min;
     double mag_max;
     double R_min;

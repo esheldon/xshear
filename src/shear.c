@@ -235,6 +235,9 @@ void shear_procpair(struct shear* self,
     if (src->scstyle == SCSTYLE_INTERP) {
         scinv = f64interplin(src->zlens, src->scinv, lens->z);
     } else {
+        if ( (src->z - lens->z) < config->zdiff_min) {
+            goto _procpair_bail;
+        }
         double dcl = lens->da*(1.+lens->z);
         scinv = scinv_pre(lens->z, dcl, src->dc);
     }
