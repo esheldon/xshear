@@ -9,7 +9,6 @@
 struct sconfig {
     double H0;
     double omega_m;
-    //int64 npts;  // for cosmo integration
 
     int64 nside; // hpix
 
@@ -42,10 +41,6 @@ struct sconfig {
     // z as truth
     double zdiff_min;
 
-    double mag_min;
-    double mag_max;
-    double R_min;
-    double R_max;
 };
 
 struct sconfig* sconfig_read(const char* url);

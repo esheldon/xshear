@@ -24,10 +24,6 @@ struct sconfig* sconfig_read(const char* url) {
     char key[CONFIG_KEYSZ];
 
     // set defaults
-    c->mag_min=0;
-    c->mag_max=9999;
-    c->R_min = 0;
-    c->R_max = 1;
     c->r_units=UNITS_MPC;
 
     c->min_zlens_interp=0;
@@ -39,11 +35,6 @@ struct sconfig* sconfig_read(const char* url) {
 
     c->omega_m = cfg_get_double(cfg,strcpy(key,"omega_m"),&status);
     if (status) goto _sconfig_read_bail;
-
-    /*
-    c->npts = (int64) cfg_get_long(cfg,strcpy(key,"npts"),&status);
-    if (status) goto _sconfig_read_bail;
-    */
 
     c->nside = (int64) cfg_get_long(cfg,strcpy(key,"nside"),&status);
     if (status) goto _sconfig_read_bail;
@@ -77,21 +68,6 @@ struct sconfig* sconfig_read(const char* url) {
 
         c->nzl = (int64) c->zl->size;
 
-    }
-
-    // optional pars
-    size_t sz=0;
-    double *mag_range = cfg_get_dblarr(cfg,"mag_range",&sz,&ostatus);
-    if (!ostatus) {
-        c->mag_min=mag_range[0];
-        c->mag_max=mag_range[1];
-        free(mag_range);
-    }
-    double *R_range = cfg_get_dblarr(cfg,"R_range",&sz,&ostatus);
-    if (!ostatus) {
-        c->R_min = R_range[0];
-        c->R_max = R_range[1];
-        free(R_range);
     }
 
     double mzl = cfg_get_double(cfg, "min_zlens_interp", &ostatus);
@@ -135,16 +111,11 @@ struct sconfig* sconfig_delete(struct sconfig* self) {
 void sconfig_print(struct sconfig* c) {
     wlog("    H0:           %lf\n", c->H0);
     wlog("    omega_m:      %lf\n", c->omega_m);
-    //wlog("    npts:         %ld\n", c->npts);
     wlog("    nside:        %ld\n", c->nside);
     wlog("    shear style:  %d\n",  c->shear_style);
     wlog("    mask style:   %d\n",  c->mask_style);
     wlog("    scrit style:  %d\n",  c->scstyle);
     wlog("    zdiff_min:    %lf\n", c->zdiff_min);
-    wlog("    mag_min:      %lf\n", c->mag_min);
-    wlog("    mag_max:      %lf\n", c->mag_max);
-    wlog("    R_min:        %lf\n", c->R_min);
-    wlog("    R_max:        %lf\n", c->R_max);
     wlog("    nbin:         %ld\n", c->nbin);
     wlog("    rmin:         %lf\n", c->rmin);
     wlog("    rmax:         %lf\n", c->rmax);

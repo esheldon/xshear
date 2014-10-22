@@ -22,7 +22,7 @@ struct healpix* hpix_new(int64 nside) {
     struct healpix* hpix;
 
     if (nside < 1 || nside > NS_MAX) {
-        printf("nside out of range [%d, %d]\n", 1, NS_MAX);
+        fprintf(stderr,"nside %ld out of range [%d, %d]\n", nside, 1, NS_MAX);
         exit(EXIT_FAILURE);
     }
 
