@@ -9,7 +9,7 @@
 struct sconfig {
     double H0;
     double omega_m;
-    int64 npts;  // for cosmo integration
+    //int64 npts;  // for cosmo integration
 
     int64 nside; // hpix
 

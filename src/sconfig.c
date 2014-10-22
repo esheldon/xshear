@@ -40,8 +40,10 @@ struct sconfig* sconfig_read(const char* url) {
     c->omega_m = cfg_get_double(cfg,strcpy(key,"omega_m"),&status);
     if (status) goto _sconfig_read_bail;
 
+    /*
     c->npts = (int64) cfg_get_long(cfg,strcpy(key,"npts"),&status);
     if (status) goto _sconfig_read_bail;
+    */
 
     c->nside = (int64) cfg_get_long(cfg,strcpy(key,"nside"),&status);
     if (status) goto _sconfig_read_bail;
@@ -133,7 +135,7 @@ struct sconfig* sconfig_delete(struct sconfig* self) {
 void sconfig_print(struct sconfig* c) {
     wlog("    H0:           %lf\n", c->H0);
     wlog("    omega_m:      %lf\n", c->omega_m);
-    wlog("    npts:         %ld\n", c->npts);
+    //wlog("    npts:         %ld\n", c->npts);
     wlog("    nside:        %ld\n", c->nside);
     wlog("    shear style:  %d\n",  c->shear_style);
     wlog("    mask style:   %d\n",  c->mask_style);
