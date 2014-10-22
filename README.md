@@ -35,6 +35,38 @@ cat s1 s2 s3 | src_filter | xshear config_file lens_file > lensum_file
 cat s1 s2 s3 | src_filter | xshear config_file lens_file > lensum_file
 ```
 
+format of lens catalogs
+-----------------------
+```
+The format is white-space delimited ascii.  The columns are
+
+    index ra dec z maskflags
+
+index: a user-defined index
+ra: RA in degrees
+dec: DEC in degrees
+z: redshift
+maskflags: flags for quadrant checking
+```
+
+format of source catalogs
+-----------------------
+```
+The format is white-space delimited ascii.  The columns when assuming
+the photozs are truth
+
+simple reduced shear style
+    ra dec g1 g2 weight z
+lensfit style shear
+    ra dec g1 g2 g1sens g2sens weight z
+
+index: a user-defined index
+ra: RA in degrees
+dec: DEC in degrees
+z: redshift
+maskflags: flags for quadrant checking
+`
+
 example config files
 ---------------------
 
@@ -77,6 +109,19 @@ rmax              = 38
 zdiff_min         = 0.2
 ```
 
+### Config file using P(zsource).   
+```
+# sigma crit style
+#  1: using source z as truth. Implies the last column is z
+#  2: using full P(z). Implies source the last N columns are 
+#     \Sigma_{crit}(zlens)_i
+
+sigmacrit_style   = 2
+
+# zlens values for the \Sigam\Crit(zlens) values for each source
+zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 0.215 0.23 0.245 0.26 0.275 0.29 0.305 0.32 0.335 0.35 0.365 0.38 0.395 0.41]
+
+```
 
 compilation
 -----------
