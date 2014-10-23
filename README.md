@@ -157,6 +157,8 @@ For shear_style=1, ordinary reduced shear style
 For shear style=2, lensfit style
     index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
 
+Where _i means radial bin i, so there will be Nbins columns for each.
+
 Meaning of columns. In the following, the weight is the weight of the source
 times 1/\Sigma_{crit}^2
 
