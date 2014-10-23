@@ -143,7 +143,8 @@ g1:     shape component 1
 g2:     shape component 2
 weight: a weight for the object
 z:      a point estimator (when sigmacrit_style=1)
-sc_i:   \Sigma_{crit} in bins of lens redshift
+sc_i:   \Sigma_{crit} in bins of lens redshift.  The redshift bins
+        are defined in "zlvals" config parameter
 ```
 
 
