@@ -174,6 +174,19 @@ dsensum_i: sum of gsens_+ * weights in radial bin i.
 osensum_i: sum of gsens_x * weights in  radial bin i.
 ```
 
+### Averaging the \Delta\Sigma and other quantities
+
+Just divide the columns.  For shear_style=1 (ordinary reduced shear)
+```
+    <r> = rsum_i/wsum_i
+    <\Delta\Sigma>_+^i = dsum_i/wsum_i
+    <\Delta\Sigma>_x^i = osum_i/wsum_i
+```
+For shear_style=2, lensfit style
+```
+    <\Delta\Sigma>_+^i = dsum_i/dsensum_i
+    <\Delta\Sigma>_x^i = osum_i/osensum_i
+```
 
 compilation
 -----------
