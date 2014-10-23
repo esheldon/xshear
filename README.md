@@ -149,6 +149,7 @@ sc_i:   \Sigma_{crit} in bins of lens redshift.  The redshift bins
 ```
 
 Format of Output Catalog
+------------------------
 ```
 For shear_style=1, ordinary reduced shear style
     index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i
