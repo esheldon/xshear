@@ -275,7 +275,7 @@ void lensum_print(struct lensum* lensum) {
         wlog("  %3lu %11ld %15.6lf %15.6lf %15.6lf", 
              i,
              lensum->npair[i],
-             lensum->rsum[i]/lensum->npair[i],
+             lensum->rsum[i]/lensum->wsum[i],
              lensum->dsum[i],
              lensum->osum[i] );
         if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
