@@ -166,10 +166,10 @@ totpairs: total pairs used
 npair_i: number of pairs in radial bin i.  N columns.
 rsum_i: sum of radius in radial bin i
 wsum_i: sum of weights in radial bin i
-dsum_i: sum of \Delta\Sigma_+ * weights in radial bins
-osum_i: sum of \Delta\Sigma_x * weights in  radial bins
-dsensum_i: sum of gsens_+ * weights in radial bins
-osensum_i: sum of gsens_x * weights in  radial bins
+dsum_i: sum of \Delta\Sigma_+ * weights in radial bin i.
+osum_i: sum of \Delta\Sigma_x * weights in  radial bin i.
+dsensum_i: sum of gsens_+ * weights in radial bin i.
+osensum_i: sum of gsens_x * weights in  radial bin i.
 ```
 
 
