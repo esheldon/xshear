@@ -59,8 +59,8 @@ mask_style        = 3
 shear_style       = 2
 
 # sigma crit style
-#  1: using source z as truth. Implies the last column is z
-#  2: using full P(z). Implies source the last N columns are 
+#  1: using source z as truth. Implies the last column in source cat is z
+#  2: using full P(z). Implies last N columns in source cat are 
 #     \Sigma_{crit}(zlens)_i
 
 sigmacrit_style   = 1
