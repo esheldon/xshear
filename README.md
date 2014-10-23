@@ -35,38 +35,6 @@ cat s1 s2 s3 | src_filter | xshear config_file lens_file > lensum_file
 cat s1 s2 s3 | src_filter | xshear config_file lens_file > lensum_file
 ```
 
-format of lens catalogs
------------------------
-```
-The format is white-space delimited ascii.  The columns are
-
-    index ra dec z maskflags
-
-index: a user-defined index
-ra: RA in degrees
-dec: DEC in degrees
-z: redshift
-maskflags: flags for quadrant checking
-```
-
-format of source catalogs
------------------------
-```
-The format is white-space delimited ascii.  The columns when assuming
-the photozs are truth
-
-simple reduced shear style
-    ra dec g1 g2 weight z
-lensfit style shear
-    ra dec g1 g2 g1sens g2sens weight z
-
-index: a user-defined index
-ra: RA in degrees
-dec: DEC in degrees
-z: redshift
-maskflags: flags for quadrant checking
-`
-
 example config files
 ---------------------
 
@@ -109,7 +77,7 @@ rmax              = 38
 zdiff_min         = 0.2
 ```
 
-### Config file using P(zsource).   
+### Config file using \Sigma_{crit} derived from full P(zsource).   
 ```
 # sigma crit style
 #  1: using source z as truth. Implies the last column is z
@@ -118,10 +86,57 @@ zdiff_min         = 0.2
 
 sigmacrit_style   = 2
 
-# zlens values for the \Sigam\Crit(zlens) values for each source
+# zlens values for the \Sigam_{crit}(zlens) values tabulated for each source
 zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 0.215 0.23 0.245 0.26 0.275 0.29 0.305 0.32 0.335 0.35 0.365 0.38 0.395 0.41]
 
 ```
+
+format of lens catalogs
+-----------------------
+
+The format is white-space delimited ascii.  The columns are
+
+```
+    index ra dec z maskflags
+
+index: a user-defined index
+ra: RA in degrees
+dec: DEC in degrees
+z: redshift
+maskflags: flags for quadrant checking
+```
+The maskflags are only used if you set a mask style that is not 1 (no mask flags)
+
+format of source catalogs
+-----------------------
+The format is white-space delimited ascii.  The columns when assuming
+the photozs are truth (sigmacrit_style=1)
+
+    For shear_style=1 (using simple reduced shear style)
+        ra dec g1 g2 weight z
+
+    For shear_style=2 (lensfit style)
+        ra dec g1 g2 g1sens g2sens weight z
+
+The format for sigmacrit_style=2 the format includes the mean \Sigma_{crit} in
+bins of lens redshift.
+
+        ra dec g1 g2 weight sc_1 sc_2 sc_3 sc_4 ...
+        ra dec g1 g2 g1sens g2sens weight sc_1 sc_2 sc_3 sc_4 ...
+
+Meaning of columns:
+
+```
+ra: RA in degrees
+dec: DEC in degrees
+g1: shape component 1
+g2: shape component 2
+weight: a weight for the object
+z: a point estimator (when sigmacrit_style=1)
+sc_i: \Sigma_{crit} in bins of lens redshift
+```
+
+
 
 compilation
 -----------
