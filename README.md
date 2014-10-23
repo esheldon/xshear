@@ -162,14 +162,14 @@ Where _i means radial bin i, so there will be Nbins columns for each.
 Meaning of columns. In the following, the weight is the weight of the source
 times 1/\Sigma_{crit}^2
 
-index: index from lens catalog
-weight: sum of all weights for all source pairs
-totpairs: total pairs used
-npair_i: number of pairs in radial bin i.  N columns.
-rsum_i: sum of radius in radial bin i
-wsum_i: sum of weights in radial bin i
-dsum_i: sum of \Delta\Sigma_+ * weights in radial bin i.
-osum_i: sum of \Delta\Sigma_x * weights in  radial bin i.
+index:     index from lens catalog
+weight:    sum of all weights for all source pairs
+totpairs:  total pairs used
+npair_i:   number of pairs in radial bin i.  N columns.
+rsum_i:    sum of radius in radial bin i
+wsum_i:    sum of weights in radial bin i
+dsum_i:    sum of \Delta\Sigma_+ * weights in radial bin i.
+osum_i:    sum of \Delta\Sigma_x * weights in  radial bin i.
 dsensum_i: sum of gsens_+ * weights in radial bin i.
 osensum_i: sum of gsens_x * weights in  radial bin i.
 ```
