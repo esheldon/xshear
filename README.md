@@ -148,6 +148,29 @@ sc_i:   \Sigma_{crit} in bins of lens redshift.  The redshift bins
         are defined in "zlvals" config parameter
 ```
 
+Format of Output Catalog
+```
+For shear_style=1, ordinary reduced shear style
+    index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i
+
+For shear style=2, lensfit style
+    index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
+
+Meaning of columns
+
+In the following, the weight is the weight of the source/\Sigma_{crit}^2
+
+index: index from lens catalog
+weight: sum of all weights for all source pairs
+totpairs: total pairs used
+npair_i: number of pairs in radial bin i.  N columns.
+rsum_i: sum of radius in radial bin i
+wsum_i: sum of weights in radial bin i
+dsum_i: sum of \Delta\Sigma_+ * weights in radial bins
+osum_i: sum of \Delta\Sigma_x * weights in  radial bins
+dsensum_i: sum of gsens_+ * weights in radial bins
+osensum_i: sum of gsens_x * weights in  radial bins
+```
 
 
 compilation
