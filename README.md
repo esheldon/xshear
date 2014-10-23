@@ -77,7 +77,7 @@ rmax              = 38
 zdiff_min         = 0.2
 ```
 
-### Config file using \Sigma_{crit} derived from full P(zsource).   
+### Config file using \Sigma_{crit}(zlens) derived from full P(zsource).   
 ```
 # sigma crit style
 #  1: using source z as truth. Implies the last column is z
@@ -97,7 +97,17 @@ format of lens catalogs
 The format is white-space delimited ascii.  The columns are
 
 ```
+    nlens
     index ra dec z maskflags
+
+For example
+
+20532
+0 104.646822000000000230 -55.949043000000003190 0.3040181100368500 31
+1 342.183179999999993015 -44.530805000000000859 0.3435480892658234 29
+2 10.208206000000000557 -44.130623999999997409 0.3681277930736542 1
+...
+
 
 index: a user-defined index
 ra: RA in degrees
