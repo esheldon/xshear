@@ -157,9 +157,8 @@ For shear_style=1, ordinary reduced shear style
 For shear style=2, lensfit style
     index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
 
-Meaning of columns
-
-In the following, the weight is the weight of the source/\Sigma_{crit}^2
+Meaning of columns. In the following, the weight is the weight of the source
+times 1/\Sigma_{crit}^2
 
 index: index from lens catalog
 weight: sum of all weights for all source pairs
