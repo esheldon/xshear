@@ -120,20 +120,23 @@ The maskflags are only used if you set a mask style that is not 1 (no mask flags
 format of source catalogs
 -----------------------
 ```
-The format is white-space delimited ascii.  The columns when assuming
-the photozs are truth (sigmacrit_style=1)
+The format is white-space delimited ascii.  When using point photozs
+(sigmacrit_style=1) the format is the following
 
-For shear_style=1 (using simple reduced shear style)
-    ra dec g1 g2 weight z
+    For shear_style=1 (using simple reduced shear style)
+        ra dec g1 g2 weight z
 
-For shear_style=2 (lensfit style)
-    ra dec g1 g2 g1sens g2sens weight z
+    For shear_style=2 (lensfit style)
+        ra dec g1 g2 g1sens g2sens weight z
 
 The format for sigmacrit_style=2 the format includes the mean \Sigma_{crit} in
 bins of lens redshift.
 
-    ra dec g1 g2 weight sc_1 sc_2 sc_3 sc_4 ...
-    ra dec g1 g2 g1sens g2sens weight sc_1 sc_2 sc_3 sc_4 ...
+    For shear_style=1 (using simple reduced shear style)
+        ra dec g1 g2 weight sc_1 sc_2 sc_3 sc_4 ...
+
+    For shear_style=2 (lensfit style)
+        ra dec g1 g2 g1sens g2sens weight sc_1 sc_2 sc_3 sc_4 ...
 
 Meaning of columns:
 
