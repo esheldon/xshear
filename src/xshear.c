@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     shear_print_sum(shear);
 
     wlog("Writing results to stdout\n");
-    shear_write(shear, stdout);
+    lensums_write(shear->lensums, stdout);
 
     src=source_delete(src);
     shear=shear_delete(shear);

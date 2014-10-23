@@ -68,7 +68,7 @@ struct shear* shear_init(const char* config_url, const char* lens_url) {
                                  config->shear_style);
 
     for (size_t i=0; i<shear->lensums->size; i++) {
-        shear->lensums->data[i].zindex = shear->lcat->data[i].zindex;
+        shear->lensums->data[i].index = shear->lcat->data[i].index;
     }
 
     if (config->scstyle == SCSTYLE_INTERP) {

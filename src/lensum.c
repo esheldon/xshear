@@ -30,8 +30,8 @@ struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
 
         lensum->shear_style=shear_style;
 
-        lensum->index = i;
-        lensum->nbin = nbin;
+        lensum->index = -1;
+        lensum->nbin  = nbin;
         lensum->npair = calloc(nbin, sizeof(int64));
         lensum->wsum  = calloc(nbin, sizeof(double));
         lensum->dsum  = calloc(nbin, sizeof(double));
@@ -203,7 +203,6 @@ int lensum_read(FILE* stream, struct lensum* lensum) {
     int i=0;
 
     nread+=fscanf(stream,"%ld", &lensum->index);
-    nread+=fscanf(stream,"%ld", &lensum->zindex);
     nread+=fscanf(stream,"%lf", &lensum->weight);
     nread+=fscanf(stream,"%ld", &lensum->totpairs);
 
@@ -234,10 +233,8 @@ void lensum_write(struct lensum* lensum, FILE* stream) {
     int nbin = lensum->nbin;
     int i=0;
 
-    // id with tab at beginning is demanded by hadoop map reduce
-    // should we just use zindex there?
-    fprintf(stream,"%ld %ld %.16g %ld", 
-            lensum->index, lensum->zindex, lensum->weight, lensum->totpairs);
+    fprintf(stream,"%ld %.16g %ld", 
+            lensum->index, lensum->weight, lensum->totpairs);
 
     for (i=0; i<nbin; i++) 
         fprintf(stream," %ld", lensum->npair[i]);
@@ -264,7 +261,7 @@ void lensum_write(struct lensum* lensum, FILE* stream) {
 
 // these write the stdout
 void lensum_print(struct lensum* lensum) {
-    wlog("  zindex:   %ld\n", lensum->zindex);
+    wlog("  index:    %ld\n", lensum->index);
     wlog("  weight:   %lf\n", lensum->weight);
     wlog("  totpairs: %ld\n", lensum->totpairs);
     wlog("  nbin:     %ld\n", lensum->nbin);
@@ -293,7 +290,6 @@ struct lensum* lensum_copy(struct lensum* lensum) {
 
     struct lensum* copy=lensum_new(lensum->nbin, lensum->shear_style);
     copy->index = lensum->index;
-    copy->zindex = lensum->zindex;
     copy->weight = lensum->weight;
     copy->totpairs = lensum->totpairs;
 
@@ -319,7 +315,7 @@ struct lensum* lensum_copy(struct lensum* lensum) {
 
 void lensum_clear(struct lensum* lensum) {
 
-    lensum->zindex=-1;
+    lensum->index=-1;
     lensum->weight=0;
     lensum->totpairs=0;
 

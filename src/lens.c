@@ -73,7 +73,7 @@ struct lcat* lcat_read(const char* lens_url) {
     double ra_rad,dec_rad;
     for (size_t i=0; i<nlens; i++) {
         nread=fscanf(stream,"%ld %lf %lf %lf %ld",
-                &lens->zindex,&lens->ra,&lens->dec,&lens->z,&lens->maskflags);
+                &lens->index,&lens->ra,&lens->dec,&lens->z,&lens->maskflags);
         if (5 != nread) {
             wlog("Failed to read row %lu from %s\n", i, lens_url);
             exit(EXIT_FAILURE);
@@ -134,7 +134,7 @@ struct lcat* hdfs_lcat_read(const char* lens_url) {
         hdfs_getline(hf, &lbuf, &lbsz);
 
         int nread=sscanf(lbuf,"%ld %lf %lf %lf %ld",
-                &lens->zindex,&lens->ra,&lens->dec,&lens->z,&lens->maskflags);
+                &lens->index,&lens->ra,&lens->dec,&lens->z,&lens->maskflags);
 
         if (5 != nread) {
             wlog("Failed to read row %lu from %s\n", i, lens_url);

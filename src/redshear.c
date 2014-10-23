@@ -56,8 +56,8 @@ int main(int argc, char** argv) {
     while (lensum_read(stdin, lensum)) {
         counter++;
         if (counter == 1) {
-            wlog("first lensum: %ld %ld %.8g %ld\n", 
-                 lensum->index, lensum->zindex, lensum->weight, 
+            wlog("first lensum: %ld %.8g %ld\n", 
+                 lensum->index, lensum->weight, 
                  lensum->totpairs);
         }
         if ((counter % 10000) == 0) {
@@ -69,12 +69,12 @@ int main(int argc, char** argv) {
             wlog("\n");
         }
 
-        struct lensum_hash* this_lens = find_lens(hash, lensum->zindex);
+        struct lensum_hash* this_lens = find_lens(hash, lensum->index);
         if (this_lens == NULL) {
             // copy of lensum made inside
             struct lensum_hash* lh = lensum_hash_fromlensum(lensum);
-            // this gets expanded to lh->lensum->zindex
-            HASH_ADD_INT64(hash, lensum->zindex, lh);
+            // this gets expanded to lh->lensum->index
+            HASH_ADD_INT64(hash, lensum->index, lh);
         } else {
             lensum_add(this_lens->lensum, lensum);
         }
@@ -82,8 +82,8 @@ int main(int argc, char** argv) {
 
     }
 
-    wlog("\nlast lensum: %ld %ld %.8g %ld\n", 
-            lensum->index, lensum->zindex, lensum->weight, lensum->totpairs);
+    wlog("\nlast lensum: %ld %.8g %ld\n", 
+            lensum->index, lensum->weight, lensum->totpairs);
 
     wlog("Read a total of %ld\n", counter);
 

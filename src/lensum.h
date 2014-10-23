@@ -7,7 +7,6 @@ struct lensum {
     int shear_style;
 
     int64 index;   // index in the lens list
-    int64 zindex;  // overall index, to get back to input catalog
     double weight;
     int64 totpairs;
 

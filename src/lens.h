@@ -8,10 +8,10 @@
 
 struct lens {
 
+    int64 index;
     double ra;
     double dec;
     double z;
-    int64 zindex;
 
     double da;
 
