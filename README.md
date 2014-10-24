@@ -26,7 +26,7 @@ cat output_file1 output_file2 | redshear config_file > output_file
 
 # first apply a filter to a set of source files.  This could be an awk
 # command, etc.
-cat s1 s2 s3 | src_filter | xshear config_file lens_file > output_file
+cat source_file | src_filter | xshear config_file lens_file > output_file
 ```
 
 example config files
