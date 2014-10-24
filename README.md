@@ -15,7 +15,7 @@ example
 
 ```bash
 # process the sources and lenses
-xshear config_file lens_file < source_file > output_file
+cat source_file | xshear config_file lens_file > output_file
 
 # you can parallelize by splitting up the sources.
 cat sources1 | xshear config_file lens_file > output_file1
