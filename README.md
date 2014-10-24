@@ -18,19 +18,17 @@ example
 xshear config_file lens_file < source_file > output_file
 
 # you can parallelize by splitting up the sources.
-cat sources1 | xshear config_file lens_file > lensum_file1
-cat sources2 | xshear config_file lens_file > lensum_file1
+cat sources1 | xshear config_file lens_file > output_file1
+cat sources2 | xshear config_file lens_file > output_file1
 
-# combine the lens sums from the different source catalogs.  This is a "reduction",
-# hence the program is named "redshear"
+# combine the lens sums from the different source catalogs.
 
-cat lensum_file1 lensum_file2 | redshear config_file > lensum_file_tot
+cat output_file1 output_file2 | redshear config_file > output_file
 
 # first apply a filter to a set of source files.  This could be an awk
 # command, etc.
 
-cat s1 s2 s3 | src_filter | xshear config_file lens_file > lensum_file
-cat s1 s2 s3 | src_filter | xshear config_file lens_file > lensum_file
+cat s1 s2 s3 | src_filter | xshear config_file lens_file > output_file
 ```
 
 example config files
