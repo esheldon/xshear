@@ -33,7 +33,7 @@ example config files
 ---------------------
 
 ### Config file using photoz as truth
-```
+```python
 # cosmology parameters
 H0                = 100.0
 omega_m           = 0.25
@@ -72,7 +72,7 @@ zdiff_min         = 0.2
 ```
 
 ### Config file using \Sigma_{crit}(zlens) derived from full P(zsource).   
-```
+```python
 # sigma crit style
 #  1: using source z as truth. Implies the last column is z
 #  2: using full P(z). Implies source the last N columns are 
