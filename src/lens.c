@@ -48,21 +48,16 @@ struct lcat* lcat_new(size_t n_lens) {
 
 struct lcat* lcat_read(const char* lens_url) {
 
-#ifdef HDFS
-    // if compiled with hdfs, and begins with hdfs:// then read as an hdfs file
-    if (is_in_hdfs(lens_url)) {
-        return hdfs_lcat_read(lens_url);
-    }
-#endif
-
     int nread=0;
 
     wlog("Reading lenses from %s\n", lens_url);
     FILE* stream=open_url(lens_url, "r");
-    size_t nlens;
 
-    nread=fscanf(stream,"%lu", &nlens);
-    wlog("Reading %lu lenses\n", nlens);
+    wlog("counting lines....");
+    size_t nlens = count_lines_and_rewind(stream);
+
+    wlog("%lu\n", nlens);
+
     wlog("    creating lcat...");
 
     struct lcat* lcat=lcat_new(nlens);
