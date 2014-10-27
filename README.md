@@ -113,29 +113,37 @@ The maskflags are only used if you set a mask style that is not 1 (no mask flags
 
 format of source catalogs
 -----------------------
-```
 The format is white-space delimited ascii. The columns contained 
 depend on the configuration.
 
 When using point photozs (sigmacrit_style=1) the format is the following
 
     For shear_style=1 (using simple reduced shear style)
+```
         ra dec g1 g2 weight z
+```
 
     For shear_style=2 (lensfit style)
+```
         ra dec g1 g2 g1sens g2sens weight z
+```
 
 The format for sigmacrit_style=2 includes the mean \Sigma_{crit} in
 bins of lens redshift.
 
     For shear_style=1 (using simple reduced shear style)
+```
         ra dec g1 g2 weight sc_1 sc_2 sc_3 sc_4 ...
+```
 
     For shear_style=2 (lensfit style)
+```
         ra dec g1 g2 g1sens g2sens weight sc_1 sc_2 sc_3 sc_4 ...
+```
 
 Meaning of columns:
 
+```
 ra:     RA in degrees
 dec:    DEC in degrees
 g1:     shape component 1
@@ -148,18 +156,22 @@ sc_i:   \Sigma_{crit} in bins of lens redshift.  The redshift bins
 
 Format of Output Catalog
 ------------------------
-```
 For shear_style=1, ordinary reduced shear style
+```
     index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i
+```
 
 For shear style=2, lensfit style
+```
     index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
+```
 
 Where _i means radial bin i, so there will be Nbins columns for each.
 
 Meaning of columns. In the following, the weight is the weight of the source
 times 1/\Sigma_{crit}^2
 
+```
 index:     index from lens catalog
 weight:    sum of all weights for all source pairs
 totpairs:  total pairs used
