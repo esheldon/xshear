@@ -81,7 +81,7 @@ zdiff_min         = 0.2
 sigmacrit_style   = 2
 
 # zlens values for the \Sigam_{crit}(zlens) values tabulated for each source
-# note the elements are separated by spaces
+# note the elements of arrays can be separated by either spaces or commas
 zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 0.215 0.23 0.245 0.26 0.275 0.29 0.305 0.32 0.335 0.35 0.365 0.38 0.395 0.41]
 
 ```
