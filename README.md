@@ -91,10 +91,10 @@ format of lens catalogs
 The format is white-space delimited ascii.  The columns are
 
 ```
-nlens
 index ra dec z maskflags
 
-82615
+For example:
+
 0 239.5554049954774 27.24812220183897 0.09577668458223343 31
 1 250.0985461117883 46.70283749181137 0.2325130850076675 31
 2 197.8753117014942 -1.345204982754328 0.1821855753660202 7
@@ -111,8 +111,10 @@ The maskflags are only used if you set a mask style that is not 1 (no mask flags
 format of source catalogs
 -----------------------
 ```
-The format is white-space delimited ascii.  When using point photozs
-(sigmacrit_style=1) the format is the following
+The format is white-space delimited ascii. The columns contained 
+depend on the configuration.
+
+When using point photozs (sigmacrit_style=1) the format is the following
 
     For shear_style=1 (using simple reduced shear style)
         ra dec g1 g2 weight z
@@ -120,7 +122,7 @@ The format is white-space delimited ascii.  When using point photozs
     For shear_style=2 (lensfit style)
         ra dec g1 g2 g1sens g2sens weight z
 
-The format for sigmacrit_style=2 the format includes the mean \Sigma_{crit} in
+The format for sigmacrit_style=2 includes the mean \Sigma_{crit} in
 bins of lens redshift.
 
     For shear_style=1 (using simple reduced shear style)
