@@ -118,26 +118,22 @@ depend on the configuration.
 
 When using point photozs (sigmacrit_style=1) the format is the following
 
+```
 For shear_style=1 (using simple reduced shear style)
-```
         ra dec g1 g2 weight z
-```
 
 For shear_style=2 (lensfit style)
-```
         ra dec g1 g2 g1sens g2sens weight z
 ```
 
 The format for sigmacrit_style=2 includes the mean \Sigma_{crit} in
 bins of lens redshift.
 
+```
 For shear_style=1 (using simple reduced shear style)
-```
         ra dec g1 g2 weight sc_1 sc_2 sc_3 sc_4 ...
-```
 
 For shear_style=2 (lensfit style)
-```
         ra dec g1 g2 g1sens g2sens weight sc_1 sc_2 sc_3 sc_4 ...
 ```
 
