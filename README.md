@@ -92,14 +92,17 @@ The format is white-space delimited ascii.  The columns are
 
 ```
 index ra dec z maskflags
-
+```
 For example:
-
+```
 0 239.5554049954774 27.24812220183897 0.09577668458223343 31
 1 250.0985461117883 46.70283749181137 0.2325130850076675 31
 2 197.8753117014942 -1.345204982754328 0.1821855753660202 7
 ...
+```
 
+The meaning of each column is
+```
 index:     a user-defined index
 ra:        RA in degrees
 dec:       DEC in degrees
