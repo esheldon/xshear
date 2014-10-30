@@ -54,8 +54,8 @@ shear_style     = "reduced"
 
 # sigma crit style
 #  "point": point z for sources. Implies the last column in source cat is z
-#  "interp": using full P(z). Implies last N columns in source cat are 
-#     \Sigma_{crit}(zlens)_i
+#  "interp": Interpolate 1/sigma_crit calculated from full P(z).
+#      Implies last N columns in source cat are 1/sigma_crit(zlens)_i
 
 sigmacrit_style = "point"
 
@@ -64,10 +64,10 @@ nbin            = 21
 
 # min and max radius in Mpc
 rmin            = 0.02
-rmax            = 38
+rmax            = 35.15
 
 # demand zs > zl + zdiff_min
-# optional
+# optional, only used for point z
 zdiff_min       = 0.2
 ```
 
@@ -75,7 +75,7 @@ zdiff_min       = 0.2
 ```python
 sigmacrit_style = "interp"
 
-# zlens values for the \Sigam_{crit}(zlens) values tabulated for each source
+# zlens values for the 1/sigma_crit(zlens) values tabulated for each source
 # note the elements of arrays can be separated by either spaces or commas
 zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 0.215 0.23 0.245 0.26 0.275 0.29 0.305 0.32 0.335 0.35 0.365 0.38 0.395 0.41]
 
