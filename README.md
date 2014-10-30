@@ -35,14 +35,14 @@ example config files
 ### Config file using photoz as truth
 ```python
 # cosmology parameters
-H0                = 100.0
-omega_m           = 0.25
+H0              = 100.0
+omega_m         = 0.25
 
 # optional, nside for healpix, default 64
 healpix_nside             = 64
 
 # masking style, for quadrant cuts. "none", "sdss", "equatorial"
-mask_style        = "equatorial"
+mask_style      = "equatorial"
 
 # shear style
 #  "reduced": normal reduced shear shapes, source catalog rows are like
@@ -50,30 +50,30 @@ mask_style        = "equatorial"
 #  "lensfit": for lensfit with sensitivities
 #      ra dec g1 g2 g1sens g2sens weight ...
 
-shear_style       = "reduced"
+shear_style     = "reduced"
 
 # sigma crit style
 #  "point": point z for sources. Implies the last column in source cat is z
 #  "interp": using full P(z). Implies last N columns in source cat are 
 #     \Sigma_{crit}(zlens)_i
 
-sigmacrit_style   = "point"
+sigmacrit_style = "point"
 
 # number of logarithmically spaced radial bins to use
-nbin              = 21
+nbin            = 21
 
 # min and max radius in Mpc
-rmin              = 0.02
-rmax              = 38
+rmin            = 0.02
+rmax            = 38
 
 # demand zs > zl + zdiff_min
 # optional
-zdiff_min         = 0.2
+zdiff_min       = 0.2
 ```
 
 ### Config file using \Sigma_{crit}(zlens) derived from full P(zsource).   
 ```python
-sigmacrit_style   = "interp"
+sigmacrit_style = "interp"
 
 # zlens values for the \Sigam_{crit}(zlens) values tabulated for each source
 # note the elements of arrays can be separated by either spaces or commas
