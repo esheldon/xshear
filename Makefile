@@ -23,7 +23,7 @@ OBJS    = $(SOURCES:.c=.o)
 
 XSHEAR_OBJ = 	$(addprefix $(SRCDIR)/,sconfig.o config.o stack.o Vector.o source.o \
 						lens.o cosmo.o healpix.o \
-						shear.o lensum.o histogram.o tree.o interp.o urls.o \
+						shear.o lensum.o tree.o interp.o urls.o \
 						xshear.o sdss-survey.o quad.o)
 
 REDSHEAR_OBJ = 	$(addprefix $(SRCDIR)/,healpix.o cosmo.o tree.o stack.o lens.o lensum.o  \
