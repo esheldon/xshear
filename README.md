@@ -54,7 +54,7 @@ shear_style     = "reduced"
 
 # sigma crit style
 #  "point": point z for sources. Implies the last column in source cat is z
-#  "interp": Interpolate 1/sigma_crit calculated from full P(z).
+#  "interp": Interpolate 1/sigma_crit calculated from full P(z)).
 #      Implies last N columns in source cat are 1/sigma_crit(zlens)_i
 
 sigmacrit_style = "point"

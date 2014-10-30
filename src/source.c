@@ -74,7 +74,6 @@ int source_read(FILE* stream, struct source* src) {
         nexpect += src->scinv->size;
         for (i=0; i<src->scinv->size; i++) {
             nread += fscanf(stream,"%lf", &src->scinv->data[i]);
-            nexpect += 1;
         }
     } else {
         nread += fscanf(stream,"%lf", &src->z);
