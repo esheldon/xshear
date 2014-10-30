@@ -36,7 +36,7 @@ struct source {
     int64 hpixid;
 
     //
-    // these only used when scstyle == SCSTYLE_INTERP
+    // these only used when scstyle == SIGMACRIT_STYLE_INTERP
     //
 
     // note this is same size as zlens kept in 
@@ -49,7 +49,7 @@ struct source {
 
     const struct f64vector* zlens; 
 
-    // only used when sigmacrit style == SCSTYLE_TRUE
+    // only used when sigmacrit style == SIGMACRIT_STYLE_POINT
     double z;
     double dc;
 

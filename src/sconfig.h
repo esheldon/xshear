@@ -3,6 +3,7 @@
 
 #include "defs.h"
 #include "Vector.h"
+#include "config.h"
 
 #define CONFIG_KEYSZ 50
 
@@ -16,9 +17,9 @@ struct sconfig {
     int mask_style;
     int scstyle;
 
-    // will be zero unless scstyle==SCSTYLE_INTERP
+    // will be zero unless scstyle==SIGMACRIT_STYLE_INTERP
     int64 nzl;
-    // only fill in for scstyle==SCSTYLE_INTERP
+    // only fill in for scstyle==SIGMACRIT_STYLE_INTERP
     struct f64vector* zl;  
 
     int64 nbin;
@@ -47,5 +48,9 @@ struct sconfig* sconfig_read(const char* url);
 
 struct sconfig* sconfig_delete(struct sconfig* config);
 void sconfig_print(struct sconfig* config);
+
+int get_mask_style(struct cfg *cfg);
+int get_shear_style(struct cfg *cfg);
+int get_scstyle(struct cfg *cfg);
 
 #endif

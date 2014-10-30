@@ -20,7 +20,7 @@ struct source* source_new(const struct sconfig* config) {
     src->mask_style = config->mask_style;
     src->scstyle = config->scstyle;
 
-    if (src->scstyle == SCSTYLE_INTERP) {
+    if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
         src->scinv = f64vector_new(config->nzl);
 
         if (src->scinv == NULL) {
@@ -38,7 +38,7 @@ struct source* source_delete(struct source* src) {
 
     if (src != NULL) {
 
-        if (src->scstyle == SCSTYLE_INTERP) {
+        if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
             if (src->scinv != NULL) {
                 src->scinv = f64vector_delete(src->scinv);
             }
@@ -70,7 +70,7 @@ int source_read(FILE* stream, struct source* src) {
 
     nexpect += 1;
 
-    if (src->scstyle == SCSTYLE_INTERP) {
+    if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
         nexpect += src->scinv->size;
         for (i=0; i<src->scinv->size; i++) {
             nread += fscanf(stream,"%lf", &src->scinv->data[i]);
@@ -117,7 +117,7 @@ void source_print(struct source* src) {
         wlog("    coseta: %lf\n", src->coseta);
     }
 
-    if (src->scstyle == SCSTYLE_TRUE) {
+    if (src->scstyle == SIGMACRIT_STYLE_POINT) {
         wlog("    z:      %lf\n", src->z);
         wlog("    dc:     %lf\n", src->dc);
     } else {

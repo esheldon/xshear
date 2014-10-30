@@ -4,6 +4,9 @@
 #include <math.h>
 #include <stdint.h>
 
+#define min( a, b ) ( ( (a) < (b) ) ? (a) : (b) )
+#define max( a, b ) ( ( (a) > (b) ) ? (a) : (b) )
+
 // these are no longer in math.h for the c99 standard, so 
 // define these if not already defined
 
@@ -33,9 +36,13 @@
 typedef int64_t int64;
 
 enum SHEAR_STYLE {
-   SHEAR_STYLE_G=1,
+   SHEAR_STYLE_REDUCED=1,
    SHEAR_STYLE_LENSFIT=2
 };
+
+#define SHEAR_STYLE_REDUCED_STR "reduced"
+#define SHEAR_STYLE_LENSFIT_STR "lensfit"
+
 
 enum MASK_STYLE {
    MASK_STYLE_NONE=1,
@@ -43,10 +50,18 @@ enum MASK_STYLE {
    MASK_STYLE_EQ=3
 };
 
-enum SCSTYLE {
-    SCSTYLE_TRUE=1,
-    SCSTYLE_INTERP=2
+#define MASK_STYLE_NONE_STR "none"
+#define MASK_STYLE_SDSS_STR "sdss"
+#define MASK_STYLE_EQ_STR "equatorial"
+
+enum SIGMACRIT_STYLE {
+    SIGMACRIT_STYLE_POINT=1,
+    SIGMACRIT_STYLE_INTERP=2
 };
+
+#define SIGMACRIT_STYLE_POINT_STR "point"
+#define SIGMACRIT_STYLE_INTERP_STR "interp"
+
 
 #define LENSPERDOT 1000
 #define LENSPERCHUNK 100000

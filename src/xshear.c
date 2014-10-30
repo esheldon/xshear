@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     while (source_read(stdin, src)) {
         nsource++;
 
-        if (src->scstyle == SCSTYLE_TRUE) {
+        if (src->scstyle == SIGMACRIT_STYLE_POINT) {
             src->dc = Dc(shear->cosmo, 0.0, src->z);
         }
 

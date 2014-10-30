@@ -71,7 +71,7 @@ struct shear* shear_init(const char* config_url, const char* lens_url) {
         shear->lensums->data[i].index = shear->lcat->data[i].index;
     }
 
-    if (config->scstyle == SCSTYLE_INTERP) {
+    if (config->scstyle == SIGMACRIT_STYLE_INTERP) {
         // interpolation region
         double* zl=config->zl->data;
         int64 nzl=config->nzl;
@@ -232,7 +232,7 @@ void shear_procpair(struct shear* self,
 
     // note we already checked if lens z was in our interpolation range
     double scinv;
-    if (src->scstyle == SCSTYLE_INTERP) {
+    if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
         scinv = f64interplin(src->zlens, src->scinv, lens->z);
     } else {
         if ( (src->z - lens->z) < config->zdiff_min) {
