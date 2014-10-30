@@ -14,9 +14,6 @@
 #include "hdfs_lines.h"
 #endif
 
-//#include "histogram.h"
-
-
 struct lcat* lcat_new(size_t n_lens) {
 
     if (n_lens == 0) {
@@ -202,7 +199,6 @@ void lcat_disc_intersect(struct lcat* lcat, struct healpix* hpix, double rmax) {
         // since we can ask if within min/max pixel values
         i64stack_sort(lens->hpix);
 
-        //lens->rev = i64getrev(lens->hpix);
         lens++;
     }
 }
