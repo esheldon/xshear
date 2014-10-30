@@ -22,8 +22,9 @@ struct sconfig* sconfig_read(const char* url) {
     struct sconfig* c=calloc(1, sizeof(struct sconfig));
     char key[CONFIG_KEYSZ];
 
-    // set defaults
+    // set defaults for optional
     c->r_units=UNITS_MPC;
+    c->healpix_nside=HEALPIX_NSIDE_DEFAULT;
 
     c->min_zlens_interp=0;
 
@@ -34,10 +35,6 @@ struct sconfig* sconfig_read(const char* url) {
 
     c->omega_m = cfg_get_double(cfg,strcpy(key,"omega_m"),&status);
     if (status) goto _sconfig_read_bail;
-
-    c->healpix_nside = (int64) cfg_get_long(cfg,strcpy(key,"healpix_nside"),&status);
-    if (status) goto _sconfig_read_bail;
-
 
     c->nbin = (int64) cfg_get_long(cfg,strcpy(key,"nbin"),&status);
     if (status) goto _sconfig_read_bail;
@@ -78,6 +75,11 @@ struct sconfig* sconfig_read(const char* url) {
     double dz = cfg_get_double(cfg, "zdiff_min", &ostatus);
     if (!ostatus) {
         c->zdiff_min=dz;
+    }
+
+    int nside = (int64) cfg_get_long(cfg,strcpy(key,"healpix_nside"),&status);
+    if (!ostatus) {
+        c->healpix_nside = nside;
     }
 
     int r_units = (int) cfg_get_long(cfg, "r_units", &ostatus);

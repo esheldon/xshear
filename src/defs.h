@@ -4,6 +4,8 @@
 #include <math.h>
 #include <stdint.h>
 
+typedef int64_t int64;
+
 #define min( a, b ) ( ( (a) < (b) ) ? (a) : (b) )
 #define max( a, b ) ( ( (a) > (b) ) ? (a) : (b) )
 
@@ -33,7 +35,7 @@
 #define D2R  0.017453292519943295
 #define R2D  57.295779513082323
 
-typedef int64_t int64;
+#define HEALPIX_NSIDE_DEFAULT 64
 
 enum SHEAR_STYLE {
    SHEAR_STYLE_REDUCED=1,
