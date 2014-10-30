@@ -45,8 +45,8 @@ struct shear* shear_init(const char* config_url, const char* lens_url) {
     wlog("cosmo structure:\n");
     cosmo_print(shear->cosmo);
 
-    wlog("Initalizing healpix at nside: %ld\n", config->nside);
-    shear->hpix = hpix_new(config->nside);
+    wlog("Initalizing healpix at nside: %ld\n", config->healpix_nside);
+    shear->hpix = hpix_new(config->healpix_nside);
 
     shear->lcat = lcat_read(lens_url);
 

@@ -11,7 +11,7 @@ struct sconfig {
     double H0;
     double omega_m;
 
-    int64 nside; // hpix
+    int64 healpix_nside;
 
     int shear_style;
     int mask_style;

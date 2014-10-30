@@ -35,7 +35,7 @@ struct sconfig* sconfig_read(const char* url) {
     c->omega_m = cfg_get_double(cfg,strcpy(key,"omega_m"),&status);
     if (status) goto _sconfig_read_bail;
 
-    c->nside = (int64) cfg_get_long(cfg,strcpy(key,"nside"),&status);
+    c->healpix_nside = (int64) cfg_get_long(cfg,strcpy(key,"healpix_nside"),&status);
     if (status) goto _sconfig_read_bail;
 
 
@@ -109,19 +109,19 @@ struct sconfig* sconfig_delete(struct sconfig* self) {
 }
 
 void sconfig_print(struct sconfig* c) {
-    wlog("    H0:           %lf\n", c->H0);
-    wlog("    omega_m:      %lf\n", c->omega_m);
-    wlog("    nside:        %ld\n", c->nside);
-    wlog("    shear style:  %d\n",  c->shear_style);
-    wlog("    mask style:   %d\n",  c->mask_style);
-    wlog("    scrit style:  %d\n",  c->scstyle);
-    wlog("    zdiff_min:    %lf\n", c->zdiff_min);
-    wlog("    nbin:         %ld\n", c->nbin);
-    wlog("    rmin:         %lf\n", c->rmin);
-    wlog("    rmax:         %lf\n", c->rmax);
-    wlog("    log(rmin):    %lf\n", c->log_rmin);
-    wlog("    log(rmax):    %lf\n", c->log_rmax);
-    wlog("    log(binsize): %lf\n", c->log_binsize);
+    wlog("    H0:            %lf\n", c->H0);
+    wlog("    omega_m:       %lf\n", c->omega_m);
+    wlog("    healpix_nside: %ld\n", c->healpix_nside);
+    wlog("    shear style:   %d\n",  c->shear_style);
+    wlog("    mask style:    %d\n",  c->mask_style);
+    wlog("    scrit style:   %d\n",  c->scstyle);
+    wlog("    zdiff_min:     %lf\n", c->zdiff_min);
+    wlog("    nbin:          %ld\n", c->nbin);
+    wlog("    rmin:          %lf\n", c->rmin);
+    wlog("    rmax:          %lf\n", c->rmax);
+    wlog("    log(rmin):     %lf\n", c->log_rmin);
+    wlog("    log(rmax):     %lf\n", c->log_rmax);
+    wlog("    log(binsize):  %lf\n", c->log_binsize);
     if (c->zl != NULL) {
         size_t i;
         wlog("    zlvals[%lu]:", c->zl->size);
