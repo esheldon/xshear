@@ -38,26 +38,26 @@ example config files
 H0                = 100.0
 omega_m           = 0.25
 
-# nside for healpix
-nside             = 64
+# optional, nside for healpix, default 64
+healpix_nside             = 64
 
-# masking style, for quadrant cuts. 1 none, 2 SDSS, 3 equatorial
-mask_style        = 3
+# masking style, for quadrant cuts. "none", "sdss", "equatorial"
+mask_style        = "equatorial"
 
 # shear style
-#  1: ordinary reduced shear, source catalog rows are like
+#  "reduced": normal reduced shear shapes, source catalog rows are like
 #      ra dec g1 g2 weight ...
-#  2: for lensfit with sensitivities
+#  "lensfit": for lensfit with sensitivities
 #      ra dec g1 g2 g1sens g2sens weight ...
 
-shear_style       = 2
+shear_style       = "reduced"
 
 # sigma crit style
-#  1: using source z as truth. Implies the last column in source cat is z
-#  2: using full P(z). Implies last N columns in source cat are 
+#  "point": point z for sources. Implies the last column in source cat is z
+#  "interp": using full P(z). Implies last N columns in source cat are 
 #     \Sigma_{crit}(zlens)_i
 
-sigmacrit_style   = 1
+sigmacrit_style   = "point"
 
 # number of logarithmically spaced radial bins to use
 nbin              = 21
@@ -73,12 +73,7 @@ zdiff_min         = 0.2
 
 ### Config file using \Sigma_{crit}(zlens) derived from full P(zsource).   
 ```python
-# sigma crit style
-#  1: using source z as truth. Implies the last column is z
-#  2: using full P(z). Implies source the last N columns are 
-#     \Sigma_{crit}(zlens)_i
-
-sigmacrit_style   = 2
+sigmacrit_style   = "interp"
 
 # zlens values for the \Sigam_{crit}(zlens) values tabulated for each source
 # note the elements of arrays can be separated by either spaces or commas
