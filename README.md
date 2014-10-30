@@ -122,7 +122,7 @@ For shear_style=2 (lensfit style)
         ra dec g1 g2 g1sens g2sens weight z
 ```
 
-The format for sigmacrit_style=2 includes the mean \Sigma_{crit} in
+The format for sigmacrit_style=2 includes the mean 1/sigma_crit in
 bins of lens redshift.
 
 ```
@@ -142,7 +142,7 @@ g1:     shape component 1
 g2:     shape component 2
 weight: a weight for the object
 z:      a point estimator (when sigmacrit_style=1)
-sc_i:   \Sigma_{crit} in bins of lens redshift.  The redshift bins
+sc_i:   1/sigma_crit in bins of lens redshift.  The redshift bins
         are defined in "zlvals" config parameter
 ```
 
@@ -172,22 +172,22 @@ rsum_i:    sum of radius in radial bin i
 wsum_i:    sum of weights in radial bin i
 dsum_i:    sum of \Delta\Sigma_+ * weights in radial bin i.
 osum_i:    sum of \Delta\Sigma_x * weights in  radial bin i.
-dsensum_i: sum of gsens_+ * weights in radial bin i.
-osensum_i: sum of gsens_x * weights in  radial bin i.
+dsensum_i: sum of weights times sensitivities
+osensum_i: sum of weights times sensitivities
 ```
 
 ### Averaging the \Delta\Sigma and other quantities
 
 Just divide the columns.  For shear_style=1 (ordinary reduced shear)
 ```
-    <r> = rsum_i/wsum_i
-    <\Delta\Sigma>_+^i = dsum_i/wsum_i
-    <\Delta\Sigma>_x^i = osum_i/wsum_i
+    r = rsum_i/wsum_i
+    \Delta\Sigma_+^i = dsum_i/wsum_i
+    \Delta\Sigma_x^i = osum_i/wsum_i
 ```
 For shear_style=2, lensfit style
 ```
-    <\Delta\Sigma>_+^i = dsum_i/dsensum_i
-    <\Delta\Sigma>_x^i = osum_i/osensum_i
+    \Delta\Sigma_+^i = dsum_i/dsensum_i
+    \Delta\Sigma_x^i = osum_i/osensum_i
 ```
 
 compilation

@@ -284,10 +284,16 @@ void shear_procpair(struct shear* self,
     lensum->rsum[rbin] += weight*r;
 
     if (config->shear_style==SHEAR_STYLE_LENSFIT) {
-        double gsenst = -(src->g1sens*cos2pa + src->g2sens*sin2pa);
-        double gsensx =  (src->g1sens*sin2pa - src->g2sens*cos2pa);
-        lensum->dsensum[rbin] += weight*gsenst*scrit;
-        lensum->osensum[rbin] += weight*gsensx*scrit;
+        // just average them
+        double gsens = 0.5*(src->g1sens + src->g2sens);
+        lensum->dsensum[rbin] += weight*gsens*scrit;
+        lensum->osensum[rbin] += weight*gsens*scrit;
+
+        // this probably doesn't make any sense
+        //double gsenst = -(src->g1sens*cos2pa + src->g2sens*sin2pa);
+        //double gsensx =  (src->g1sens*sin2pa - src->g2sens*cos2pa);
+        //lensum->dsensum[rbin] += weight*gsenst*scrit;
+        //lensum->osensum[rbin] += weight*gsensx*scrit;
     }
 
 
