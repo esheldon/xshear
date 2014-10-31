@@ -198,7 +198,7 @@ void lensum_add(struct lensum* dest, struct lensum* src) {
 
 int lensum_read(FILE* stream, struct lensum* lensum) {
     int nbin=lensum->nbin;
-    int nexpect = 4+5*nbin;
+    int nexpect = 3+5*nbin;
     int nread=0;
     int i=0;
 
@@ -265,21 +265,24 @@ void lensum_print(struct lensum* lensum) {
     wlog("  weight:   %lf\n", lensum->weight);
     wlog("  totpairs: %ld\n", lensum->totpairs);
     wlog("  nbin:     %ld\n", lensum->nbin);
-    wlog("  bin       npair            meanr           dsum            osum");
+    wlog("  bin       npair            wsum           meanr            dsum            osum");
     if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
-        wlog("           dsensum        osensum");
+        wlog("         dsensum         osensum");
     }
     wlog("\n");
 
     for (size_t i=0; i<lensum->nbin; i++) {
-        wlog("  %3lu %11ld %15.6lf %15.6lf %15.6lf", 
+        //wlog("  %3lu %11ld %15.6lf %15.6lf %15.6lf %15.6lf", 
+        wlog("  %3lu %11ld %15.6g %15.6g %15.6g %15.6g", 
              i,
              lensum->npair[i],
+             lensum->wsum[i],
              lensum->rsum[i]/lensum->wsum[i],
              lensum->dsum[i],
              lensum->osum[i] );
         if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
-            wlog(" %15.6lf %15.6lf", lensum->dsensum[i], lensum->osensum[i]);
+            //wlog(" %15.6lf %15.6lf", lensum->dsensum[i], lensum->osensum[i]);
+            wlog(" %15.6g %15.6g", lensum->dsensum[i], lensum->osensum[i]);
         }
         wlog("\n");
     }
