@@ -92,16 +92,16 @@ zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 
 
 ### Alternative Units in Config Files
 
-By default the code works in units of \Delta\Sigma (Msolar/pc^2) vs radius in Mpc.
-You can set the units of radius with "r_units" and the units for
-shear with "shear_units"
+By default the code works in units of \Delta\Sigma (Msolar/pc^2) vs radius in
+Mpc.  You can set the units of radius with "r_units" and the units for shear
+with "shear_units"
 
-Measuring tangential shear in arcminute unit radial bins
+To measure tangential shear vs radius in arcminutes
 ```
 r_units     = "arcmin"
 shear_units = "shear"
 ```
-You can even measuring \Delta\Sigma in arcminute unit radial bins
+You can even measure \Delta\Sigma vs radius in arcminutes
 ```
 r_units     = "arcmin"
 shear_units = "deltasig"
