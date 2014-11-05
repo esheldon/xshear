@@ -4,8 +4,7 @@ xshear
 Measure the tangential shear around a set of lenses.  This technique is also
 known as cross-correlation shear, hence the name xshear
 
-Runs of the code is can easily be parallelized across sources as well as
-lenses.  
+Runs of the code can easily be parallelized across sources as well as lenses.  
 
 Parallelizing across sources makes sense for cross-correlation shear, because
 the source catalog is generally much larger than the lense catalog. The source
@@ -40,14 +39,14 @@ Example Config Files
 ### Config File Using photoz as Truth
 ```python
 # cosmology parameters
-H0              = 100.0
-omega_m         = 0.25
+H0      = 100.0
+omega_m = 0.25
 
 # optional, nside for healpix, default 64
-healpix_nside             = 64
+healpix_nside = 64
 
 # masking style, for quadrant cuts. "none", "sdss", "equatorial"
-mask_style      = "equatorial"
+mask_style = "equatorial"
 
 # shear style
 #  "reduced": normal reduced shear shapes, source catalog rows are like
@@ -55,7 +54,7 @@ mask_style      = "equatorial"
 #  "lensfit": for lensfit with sensitivities
 #      ra dec g1 g2 g1sens g2sens weight ...
 
-shear_style     = "reduced"
+shear_style = "reduced"
 
 # sigma crit style
 #  "point": point z for sources. Implies the last column in source cat is z
@@ -65,11 +64,11 @@ shear_style     = "reduced"
 sigmacrit_style = "point"
 
 # number of logarithmically spaced radial bins to use
-nbin            = 21
+nbin = 21
 
 # min and max radius (units default to Mpc, see below)
-rmin            = 0.02
-rmax            = 35.15
+rmin = 0.02
+rmax = 35.15
 
 # units of radius (Mpc or arcmin). If not set defaults to Mpc
 r_units = "Mpc"
