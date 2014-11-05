@@ -25,7 +25,8 @@ cat source_file | xshear config_file lens_file > output_file
 cat sources1 | xshear config_file lens_file > output_file1
 cat sources2 | xshear config_file lens_file > output_file1
 
-# combine the lens sums from the different source catalogs.
+# combine the lens sums from the different source catalogs using
+# the redshear program (red for reduce: this is a map-reduce!).
 cat output_file1 output_file2 | redshear config_file > output_file
 
 # first apply a filter to a set of source files.  This could be an awk
