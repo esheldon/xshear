@@ -13,8 +13,8 @@ processed on a different cpu across many machines.
 
 Lenses can also be split up and the result simply concatenated.
 
-example
--------
+Example Usage
+-------------
 
 ```bash
 # process the sources and lenses
@@ -32,10 +32,10 @@ cat output_file1 output_file2 | redshear config_file > output_file
 cat source_file | src_filter | xshear config_file lens_file > output_file
 ```
 
-example config files
+Example Config Files
 ---------------------
 
-### Config file using photoz as truth
+### Config File Using photoz as Truth
 ```python
 # cosmology parameters
 H0              = 100.0
@@ -80,7 +80,7 @@ shear_units = "deltasig"
 zdiff_min       = 0.2
 ```
 
-### Config file using \Sigma_{crit}(zlens) derived from full P(zsource).   
+### Config File Using \Sigma_{crit}(zlens) Derived from Full P(zsource).   
 ```python
 sigmacrit_style = "interp"
 
@@ -90,7 +90,7 @@ zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 
 
 ```
 
-### alternative units
+### Alternative Units in Config Files
 
 By default the code works in units of \Delta\Sigma (Msolar/pc^2) vs radius in Mpc.
 You can set the units of radius with "r_units" and the units for
@@ -107,7 +107,7 @@ r_units     = "arcmin"
 shear_units = "shear"
 ```
 
-format of lens catalogs
+Format of Lens Catalogs
 -----------------------
 
 The format is white-space delimited ascii.  The columns are
@@ -133,7 +133,7 @@ maskflags: flags for quadrant checking
 ```
 The maskflags are only used if you set a mask style that is not 1 (no mask flags)
 
-format of source catalogs
+Format of Source Catalogs
 -----------------------
 The format is white-space delimited ascii. The columns contained 
 depend on the configuration.
@@ -202,7 +202,7 @@ dsensum_i: sum of weights times sensitivities
 osensum_i: sum of weights times sensitivities
 ```
 
-### Averaging the \Delta\Sigma and other quantities
+### Averaging the \Delta\Sigma and Other Quantities
 
 Just divide the columns.  For shear_style=1 (ordinary reduced shear)
 ```
@@ -214,6 +214,12 @@ For shear_style=2, lensfit style
 ```
     \Delta\Sigma_+^i = dsum_i/dsensum_i
     \Delta\Sigma_x^i = osum_i/osensum_i
+```
+
+To average some other quantity associated with the lenses, use
+the weights.  For example the mean redshift would be
+```
+sum( weight*z )/sum( weight )
 ```
 
 compilation
