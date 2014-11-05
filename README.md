@@ -70,7 +70,10 @@ rmin            = 0.02
 rmax            = 35.15
 
 # units of radius (Mpc or arcmin). If not set defaults to Mpc
-r_units: "Mpc"
+r_units = "Mpc"
+
+# units of shear, "shear" or "deltasig".  Defaults to deltasig.
+shear_units = "deltasig"
 
 # demand zs > zl + zdiff_min
 # optional, only used for point z
@@ -85,6 +88,23 @@ sigmacrit_style = "interp"
 # note the elements of arrays can be separated by either spaces or commas
 zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 0.215 0.23 0.245 0.26 0.275 0.29 0.305 0.32 0.335 0.35 0.365 0.38 0.395 0.41]
 
+```
+
+### alternative units
+
+By default the code works in units of \Delta\Sigma (Msolar/pc^2) vs radius in Mpc.
+You can set the units of radius with "r_units" and the units for
+shear with "shear_units"
+
+Measuring \Delta\Sigma but in arcminute unit radial bins
+```
+r_units     = "arcmin"
+shear_units = "deltasig"
+```
+Measuring tangential shear in arcminute unit radial bins
+```
+r_units     = "arcmin"
+shear_units = "shear"
 ```
 
 format of lens catalogs
