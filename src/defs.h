@@ -78,7 +78,12 @@ enum SIGMACRIT_STYLE {
 // min lens redshift to consider
 //#define MIN_ZLENS 0.05
 
-#define UNITS_MPC 1
-#define UNITS_ARCMIN 2
+enum R_UNITS {
+    UNITS_MPC=1,
+    UNITS_ARCMIN=2
+};
+
+#define UNITS_MPC_STR "Mpc"
+#define UNITS_ARCMIN_STR "arcmin"
 
 #endif

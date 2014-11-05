@@ -65,9 +65,12 @@ sigmacrit_style = "point"
 # number of logarithmically spaced radial bins to use
 nbin            = 21
 
-# min and max radius in Mpc
+# min and max radius (units default to Mpc, see below)
 rmin            = 0.02
 rmax            = 35.15
+
+# units of radius (Mpc or arcmin). If not set defaults to Mpc
+r_units: "Mpc"
 
 # demand zs > zl + zdiff_min
 # optional, only used for point z

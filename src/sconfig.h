@@ -52,5 +52,6 @@ void sconfig_print(struct sconfig* config);
 int get_mask_style(struct cfg *cfg);
 int get_shear_style(struct cfg *cfg);
 int get_scstyle(struct cfg *cfg);
+int get_r_units(struct cfg *cfg);
 
 #endif

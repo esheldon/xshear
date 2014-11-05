@@ -23,7 +23,6 @@ struct sconfig* sconfig_read(const char* url) {
     char key[CONFIG_KEYSZ];
 
     // set defaults for optional
-    c->r_units=UNITS_MPC;
     c->healpix_nside=HEALPIX_NSIDE_DEFAULT;
 
     c->min_zlens_interp=0;
@@ -46,15 +45,13 @@ struct sconfig* sconfig_read(const char* url) {
     if (status) goto _sconfig_read_bail;
 
     // strings.  Error checking interior to functions
-    strcpy(key,"mask_style");
     c->mask_style = get_mask_style(cfg);
 
-    strcpy(key,"shear_style");
     c->shear_style = get_shear_style(cfg);
 
-    strcpy(key,"sigmacrit_style");
     c->scstyle = get_scstyle(cfg);
 
+    c->r_units = get_r_units(cfg);
 
     if (c->scstyle == SIGMACRIT_STYLE_INTERP) {
         c->zl = f64vector_new(0);
@@ -82,10 +79,6 @@ struct sconfig* sconfig_read(const char* url) {
         c->healpix_nside = nside;
     }
 
-    int r_units = (int) cfg_get_long(cfg, "r_units", &ostatus);
-    if (!ostatus) {
-        c->r_units=r_units;
-    }
 
     c->log_rmin = log10(c->rmin);
     c->log_rmax = log10(c->rmax);
@@ -121,6 +114,7 @@ void sconfig_print(struct sconfig* c) {
     wlog("    nbin:          %ld\n", c->nbin);
     wlog("    rmin:          %lf\n", c->rmin);
     wlog("    rmax:          %lf\n", c->rmax);
+    wlog("    r_units:       %d\n",  c->r_units);
     wlog("    log(rmin):     %lf\n", c->log_rmin);
     wlog("    log(rmax):     %lf\n", c->log_rmax);
     wlog("    log(binsize):  %lf\n", c->log_binsize);
@@ -224,5 +218,31 @@ int get_scstyle(struct cfg *cfg) {
     free(mstr);
 
     return scstyle;
+}
+
+// defaults to Mpc
+int get_r_units(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int r_units=0;
+
+    char *mstr = cfg_get_string(cfg,"r_units", &status);
+    if (status) {
+        wlog("    units not sent, defaulting to Mpc\n");
+        // not sent, default to Mpc
+        return UNITS_MPC;
+    }
+
+    if (0 == do_strncmp(mstr,UNITS_MPC_STR)) {
+        r_units=UNITS_MPC;
+    } else if (0 == do_strncmp(mstr,UNITS_ARCMIN_STR)) {
+        r_units=UNITS_ARCMIN;
+    } else {
+        fprintf(stderr, "Config Error: bad r_units: '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return r_units;
 }
 
