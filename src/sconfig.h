@@ -23,7 +23,10 @@ struct sconfig {
     struct f64vector* zl;  
 
     int64 nbin;
+
     int r_units; // units for radius
+    int shear_units; // units for shear, deltasig or shear
+
     double rmin; // mpc/h
     double rmax;
 
@@ -53,5 +56,6 @@ int get_mask_style(struct cfg *cfg);
 int get_shear_style(struct cfg *cfg);
 int get_scstyle(struct cfg *cfg);
 int get_r_units(struct cfg *cfg);
+int get_shear_units(struct cfg *cfg);
 
 #endif

@@ -281,8 +281,14 @@ void shear_procpair(struct shear* self,
     lensum->npair[rbin] += 1;
 
     lensum->wsum[rbin] += weight;
-    lensum->dsum[rbin] += weight*gt*scrit;
-    lensum->osum[rbin] += weight*gx*scrit;
+
+    if (config->shear_units == UNITS_DELTASIG) {
+        lensum->dsum[rbin] += weight*gt*scrit;
+        lensum->osum[rbin] += weight*gx*scrit;
+    } else {
+        lensum->dsum[rbin] += weight*gt;
+        lensum->osum[rbin] += weight*gx;
+    }
 
     lensum->rsum[rbin] += weight*r;
 

@@ -53,6 +53,8 @@ struct sconfig* sconfig_read(const char* url) {
 
     c->r_units = get_r_units(cfg);
 
+    c->shear_units = get_shear_units(cfg);
+
     if (c->scstyle == SIGMACRIT_STYLE_INTERP) {
         c->zl = f64vector_new(0);
 
@@ -115,6 +117,7 @@ void sconfig_print(struct sconfig* c) {
     wlog("    rmin:          %lf\n", c->rmin);
     wlog("    rmax:          %lf\n", c->rmax);
     wlog("    r_units:       %d\n",  c->r_units);
+    wlog("    shear_units:   %d\n",  c->shear_units);
     wlog("    log(rmin):     %lf\n", c->log_rmin);
     wlog("    log(rmax):     %lf\n", c->log_rmax);
     wlog("    log(binsize):  %lf\n", c->log_binsize);
@@ -244,5 +247,31 @@ int get_r_units(struct cfg *cfg) {
     free(mstr);
 
     return r_units;
+}
+
+// defaults to delta sigma
+int get_shear_units(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int shear_units=0;
+
+    char *mstr = cfg_get_string(cfg,"shear_units", &status);
+    if (status) {
+        wlog("    units not sent, defaulting to Mpc\n");
+        // not sent, default to Mpc
+        return UNITS_MPC;
+    }
+
+    if (0 == do_strncmp(mstr,UNITS_DELTASIG_STR)) {
+        shear_units=UNITS_DELTASIG;
+    } else if (0 == do_strncmp(mstr,UNITS_SHEAR_STR)) {
+        shear_units=UNITS_SHEAR;
+    } else {
+        fprintf(stderr, "Config Error: bad shear_units: '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return shear_units;
 }
 
