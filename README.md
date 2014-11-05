@@ -96,15 +96,15 @@ By default the code works in units of \Delta\Sigma (Msolar/pc^2) vs radius in Mp
 You can set the units of radius with "r_units" and the units for
 shear with "shear_units"
 
-Measuring \Delta\Sigma but in arcminute unit radial bins
-```
-r_units     = "arcmin"
-shear_units = "deltasig"
-```
 Measuring tangential shear in arcminute unit radial bins
 ```
 r_units     = "arcmin"
 shear_units = "shear"
+```
+You can even measuring \Delta\Sigma in arcminute unit radial bins
+```
+r_units     = "arcmin"
+shear_units = "deltasig"
 ```
 
 Format of Lens Catalogs
