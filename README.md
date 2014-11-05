@@ -4,7 +4,8 @@ xshear
 Measure the tangential shear around a set of lenses.  This technique is also
 known as cross-correlation shear, hence the name xshear
 
-The code is set up to parallelize across sources as well as lenses.  
+Runs of the code is can easily be parallelized across sources as well as
+lenses.  
 
 Parallelizing across sources makes sense for cross-correlation shear, because
 the source catalog is generally much larger than the lense catalog. The source
