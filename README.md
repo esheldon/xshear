@@ -132,31 +132,33 @@ dec:       DEC in degrees
 z:         redshift
 maskflags: flags for quadrant checking
 ```
-The maskflags are only used if you set a mask style that is not 1 (no mask flags)
+
+The maskflags are only used if you set a mask style that is not "none" (no mask
+flags)
 
 Format of Source Catalogs
 -----------------------
 The format is white-space delimited ascii. The columns contained 
 depend on the configuration.
 
-When using point photozs (sigmacrit_style=1) the format is the following
+When using point photozs (sigmacrit_style="point") the format is the following
 
 ```
-For shear_style=1 (using simple reduced shear style)
+For shear_style="reduced" (using simple reduced shear style)
         ra dec g1 g2 weight z
 
-For shear_style=2 (lensfit style)
+For shear_style="lensfit" (lensfit style)
         ra dec g1 g2 g1sens g2sens weight z
 ```
 
-The format for sigmacrit_style=2 includes the mean 1/sigma_crit in
-bins of lens redshift.
+The format for sigmacrit_style="interp" includes the mean 1/sigma_crit in bins
+of lens redshift.
 
 ```
-For shear_style=1 (using simple reduced shear style)
+For shear_style="reduced" (using simple reduced shear style)
         ra dec g1 g2 weight sc_1 sc_2 sc_3 sc_4 ...
 
-For shear_style=2 (lensfit style)
+For shear_style="lensfit" (lensfit style)
         ra dec g1 g2 g1sens g2sens weight sc_1 sc_2 sc_3 sc_4 ...
 ```
 
@@ -168,19 +170,19 @@ dec:    DEC in degrees
 g1:     shape component 1
 g2:     shape component 2
 weight: a weight for the object
-z:      a point estimator (when sigmacrit_style=1)
+z:      a point estimator (when sigmacrit_style="point")
 sc_i:   1/sigma_crit in bins of lens redshift.  The redshift bins
         are defined in "zlvals" config parameter
 ```
 
 Format of Output Catalog
 ------------------------
-For shear_style=1, ordinary reduced shear style
+For shear_style="reduced", ordinary reduced shear style
 ```
     index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i
 ```
 
-For shear style=2, lensfit style
+For shear style="lensfit", lensfit style
 ```
     index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
 ```
@@ -205,13 +207,13 @@ osensum_i: sum of weights times sensitivities
 
 ### Averaging the \Delta\Sigma and Other Quantities
 
-Just divide the columns.  For shear_style=1 (ordinary reduced shear)
+Just divide the columns.  For shear_style="reduced" (ordinary reduced shear)
 ```
     r = rsum_i/wsum_i
     \Delta\Sigma_+^i = dsum_i/wsum_i
     \Delta\Sigma_x^i = osum_i/wsum_i
 ```
-For shear_style=2, lensfit style
+For shear_style="lensfit", lensfit style
 ```
     \Delta\Sigma_+^i = dsum_i/dsensum_i
     \Delta\Sigma_x^i = osum_i/osensum_i
