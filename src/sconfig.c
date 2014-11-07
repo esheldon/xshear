@@ -230,7 +230,7 @@ int get_r_units(struct cfg *cfg) {
 
     char *mstr = cfg_get_string(cfg,"r_units", &status);
     if (status) {
-        wlog("    units not sent, defaulting to Mpc\n");
+        wlog("    radius units not sent, defaulting to Mpc\n");
         // not sent, default to Mpc
         return UNITS_MPC;
     }
@@ -256,9 +256,9 @@ int get_shear_units(struct cfg *cfg) {
 
     char *mstr = cfg_get_string(cfg,"shear_units", &status);
     if (status) {
-        wlog("    units not sent, defaulting to Mpc\n");
+        wlog("    shear units not sent, defaulting to deltasig\n");
         // not sent, default to Mpc
-        return UNITS_MPC;
+        return UNITS_DELTASIG;
     }
 
     if (0 == do_strncmp(mstr,UNITS_DELTASIG_STR)) {
