@@ -256,8 +256,11 @@ void shear_procpair(struct shear* self,
     }
 
     double logr = log10(r);
-    int rbin = (int)( (logr-config->log_rmin)/config->log_binsize );
+    if (logr < config->log_rmin || logr > config->log_rmax) {
+        goto _procpair_bail;
+    }
 
+    int rbin = (int)( (logr-config->log_rmin)/config->log_binsize );
     if (rbin < 0 || rbin >= config->nbin) {
         goto _procpair_bail;
     }
