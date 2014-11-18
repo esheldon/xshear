@@ -33,6 +33,7 @@ struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
         lensum->index = -1;
         lensum->nbin  = nbin;
         lensum->npair = calloc(nbin, sizeof(int64));
+        lensum->rsum  = calloc(nbin, sizeof(double));
         lensum->wsum  = calloc(nbin, sizeof(double));
         lensum->dsum  = calloc(nbin, sizeof(double));
         lensum->osum  = calloc(nbin, sizeof(double));
@@ -41,7 +42,6 @@ struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
             lensum->dsensum  = calloc(nbin, sizeof(double));
             lensum->osensum  = calloc(nbin, sizeof(double));
         }
-        lensum->rsum  = calloc(nbin, sizeof(double));
 
         if (lensum->npair==NULL
                 || lensum->wsum==NULL
@@ -121,24 +121,26 @@ void lensums_print_firstlast(struct lensums* lensums) {
 
 struct lensums* lensums_delete(struct lensums* lensums) {
     if (lensums != NULL) {
-        struct lensum* lensum = &lensums->data[0];
+        if (lensums->data != NULL) {
 
-        for (size_t i=0; i<lensums->size; i++) {
-            free(lensum->npair);
-            free(lensum->wsum);
-            free(lensum->dsum);
-            free(lensum->osum);
+            for (size_t i=0; i<lensums->size; i++) {
+                struct lensum* lensum = &lensums->data[i];
+                free(lensum->npair);
+                free(lensum->rsum);
+                free(lensum->wsum);
+                free(lensum->dsum);
+                free(lensum->osum);
 
-            if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
-                free(lensum->dsensum);
-                free(lensum->osensum);
+                if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+                    free(lensum->dsensum);
+                    free(lensum->osensum);
+                }
+
             }
-
-            free(lensum->rsum);
-            lensum++;
+            free(lensums->data);
         }
+        free(lensums);
     }
-    free(lensums);
     return NULL;
 }
 
