@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include "stack.h"
+#include "vector.h"
 
 struct tree_node {
     int64_t val;
-    struct szstack* indices;
+    szvector* indices;
     struct tree_node* right, * left;
 };
 

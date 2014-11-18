@@ -9,8 +9,8 @@ void tree_insert(struct tree_node ** self, int64_t val, size_t index) {
         *self = malloc(sizeof(struct tree_node));
         (*self)->left = (*self)->right = NULL;
         (*self)->val=val;
-        (*self)->indices = szstack_new(1);
-        szstack_push((*self)->indices, index);
+        (*self)->indices = szvector_new();
+        vector_push((*self)->indices, index);
         return;
     }
     if(val < (*self)->val) {
@@ -18,13 +18,13 @@ void tree_insert(struct tree_node ** self, int64_t val, size_t index) {
     } else if(val > (*self)->val) {
         tree_insert(&(*self)->right, val, index);
     } else {
-        szstack_push((*self)->indices, index);
+        vector_push((*self)->indices, index);
     }
 }
 
 struct tree_node* tree_delete(struct tree_node* self) {
     if (self != NULL) {
-        self->indices = szstack_delete(self->indices);
+        vector_free(self->indices);
         self->left    = tree_delete(self->left);
         self->right   = tree_delete(self->right);
         free(self);
