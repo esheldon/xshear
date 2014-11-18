@@ -1,10 +1,15 @@
 // This header was auto-generated using vectorgen
 #ifndef _VECTORGEN_H
 #define _VECTORGEN_H
+
 #include <stdint.h>
 #include <string.h>
 
+// initial capacity of vectors created with new()
+// and capacity of cleared vectors
 #define VECTOR_INITCAP 1
+
+// make sure this is an integer for now
 #define VECTOR_PUSH_REALLOC_MULTVAL 2
 
 // properties, generic macros
@@ -111,7 +116,7 @@
 
 // set size to zero and realloc to have default initial capacity
 #define vector_clear(self) do {                                             \
-    vector_realloc((self), (self)->initcap);                               \
+    vector_realloc((self), VECTOR_INITCAP);                                 \
     (self)->size=0;                                                         \
 } while (0)
 
@@ -124,10 +129,9 @@
                                                                            \
         size_t _newsize=0;                                                 \
         if ((self)->capacity == 0) {                                       \
-            _newsize=(self)->initcap;                                     \
+            _newsize=VECTOR_INITCAP ;                                      \
         } else {                                                           \
-            _newsize = (size_t)((self)->capacity*(self)->realloc_multval); \
-            _newsize++;                                                    \
+            _newsize = (self)->capacity*VECTOR_PUSH_REALLOC_MULTVAL;       \
         }                                                                  \
                                                                            \
         vector_realloc((self), _newsize);                                  \
@@ -225,15 +229,10 @@
 typedef struct {
     size_t size;            // number of elements that are visible to the user
     size_t capacity;        // number of allocated elements in data vector
-    size_t initcap;        // default size on creation, default VECTOR_INITCAP 
-    double realloc_multval; // when capacity is exceeded while pushing, 
-                            // reallocate to capacity*realloc_multval,
-                            // default VECTOR_PUSH_REALLOC_MULTVAL
-                            // if capacity was zero, we allocate to initcap
     size_t* data;
 } szvector;
 
-// create a new vector with initcap capacity and zero visible size
+// create a new vector with VECTOR_INITCAP capacity and zero visible size
 szvector* szvector_new();
 
 // make a new copy of the vector
@@ -261,15 +260,10 @@ size_t* szvector_find(szvector* self, size_t el);
 typedef struct {
     size_t size;            // number of elements that are visible to the user
     size_t capacity;        // number of allocated elements in data vector
-    size_t initcap;        // default size on creation, default VECTOR_INITCAP 
-    double realloc_multval; // when capacity is exceeded while pushing, 
-                            // reallocate to capacity*realloc_multval,
-                            // default VECTOR_PUSH_REALLOC_MULTVAL
-                            // if capacity was zero, we allocate to initcap
     double* data;
 } dvector;
 
-// create a new vector with initcap capacity and zero visible size
+// create a new vector with VECTOR_INITCAP capacity and zero visible size
 dvector* dvector_new();
 
 // make a new copy of the vector
@@ -297,15 +291,10 @@ double* dvector_find(dvector* self, double el);
 typedef struct {
     size_t size;            // number of elements that are visible to the user
     size_t capacity;        // number of allocated elements in data vector
-    size_t initcap;        // default size on creation, default VECTOR_INITCAP 
-    double realloc_multval; // when capacity is exceeded while pushing, 
-                            // reallocate to capacity*realloc_multval,
-                            // default VECTOR_PUSH_REALLOC_MULTVAL
-                            // if capacity was zero, we allocate to initcap
     int64_t* data;
 } lvector;
 
-// create a new vector with initcap capacity and zero visible size
+// create a new vector with VECTOR_INITCAP capacity and zero visible size
 lvector* lvector_new();
 
 // make a new copy of the vector
