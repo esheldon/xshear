@@ -2,7 +2,7 @@ CC := gcc
 prefix := /usr/local
 
 #CFLAGS =-std=c99 -Wall -Werror -O2
-CFLAGS =-std=c99 -Wall -O2
+CFLAGS =-std=gnu99 -Wall -O2
 LDFLAGS=-lm
 
 SRCDIR  =./src
