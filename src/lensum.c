@@ -128,10 +128,12 @@ struct lensums* lensums_delete(struct lensums* lensums) {
             free(lensum->wsum);
             free(lensum->dsum);
             free(lensum->osum);
-#ifdef LENSFIT
-            free(lensum->dsensum);
-            free(lensum->osensum);
-#endif
+
+            if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+                free(lensum->dsensum);
+                free(lensum->osensum);
+            }
+
             free(lensum->rsum);
             lensum++;
         }
