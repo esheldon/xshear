@@ -156,6 +156,7 @@ struct lensum* lensum_new(size_t nbin, int shear_style) {
     lensum->nbin = nbin;
 
     lensum->npair = calloc(nbin, sizeof(int64));
+    lensum->rsum  = calloc(nbin, sizeof(double));
     lensum->wsum  = calloc(nbin, sizeof(double));
     lensum->dsum  = calloc(nbin, sizeof(double));
     lensum->osum  = calloc(nbin, sizeof(double));
@@ -164,8 +165,6 @@ struct lensum* lensum_new(size_t nbin, int shear_style) {
         lensum->dsensum  = calloc(nbin, sizeof(double));
         lensum->osensum  = calloc(nbin, sizeof(double));
     }
-
-    lensum->rsum  = calloc(nbin, sizeof(double));
 
     if (lensum->npair==NULL
             || lensum->wsum==NULL
