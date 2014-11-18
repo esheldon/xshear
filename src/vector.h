@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#define VECTOR_INITSIZE 1
+#define VECTOR_INITCAP 1
 #define VECTOR_PUSH_REALLOC_MULTVAL 2
 
 // properties, generic macros
@@ -111,7 +111,7 @@
 
 // set size to zero and realloc to have default initial capacity
 #define vector_clear(self) do {                                             \
-    vector_realloc((self), (self)->initsize);                               \
+    vector_realloc((self), (self)->initcap);                               \
     (self)->size=0;                                                         \
 } while (0)
 
@@ -124,7 +124,7 @@
                                                                            \
         size_t _newsize=0;                                                 \
         if ((self)->capacity == 0) {                                       \
-            _newsize=(self)->initsize;                                     \
+            _newsize=(self)->initcap;                                     \
         } else {                                                           \
             _newsize = (size_t)((self)->capacity*(self)->realloc_multval); \
             _newsize++;                                                    \
@@ -225,14 +225,15 @@
 typedef struct {
     size_t size;            // number of elements that are visible to the user
     size_t capacity;        // number of allocated elements in data vector
-    size_t initsize;        // default size on creation, default VECTOR_INITSIZE 
+    size_t initcap;        // default size on creation, default VECTOR_INITCAP 
     double realloc_multval; // when capacity is exceeded while pushing, 
                             // reallocate to capacity*realloc_multval,
                             // default VECTOR_PUSH_REALLOC_MULTVAL
-                            // if capacity was zero, we allocate to initsize
+                            // if capacity was zero, we allocate to initcap
     size_t* data;
 } szvector;
 
+// create a new vector with initcap capacity and zero visible size
 szvector* szvector_new();
 
 // make a new copy of the vector
@@ -245,7 +246,7 @@ szvector* szvector_fromarray(size_t* data, size_t size);
 szvector* szvector_zeros(size_t num);
 
 //
-// these are only written builtins
+// these are only written for the builtins
 //
 
 // make a vector with the specified initial size, set to 1
@@ -260,14 +261,15 @@ size_t* szvector_find(szvector* self, size_t el);
 typedef struct {
     size_t size;            // number of elements that are visible to the user
     size_t capacity;        // number of allocated elements in data vector
-    size_t initsize;        // default size on creation, default VECTOR_INITSIZE 
+    size_t initcap;        // default size on creation, default VECTOR_INITCAP 
     double realloc_multval; // when capacity is exceeded while pushing, 
                             // reallocate to capacity*realloc_multval,
                             // default VECTOR_PUSH_REALLOC_MULTVAL
-                            // if capacity was zero, we allocate to initsize
+                            // if capacity was zero, we allocate to initcap
     double* data;
 } dvector;
 
+// create a new vector with initcap capacity and zero visible size
 dvector* dvector_new();
 
 // make a new copy of the vector
@@ -280,7 +282,7 @@ dvector* dvector_fromarray(double* data, size_t size);
 dvector* dvector_zeros(size_t num);
 
 //
-// these are only written builtins
+// these are only written for the builtins
 //
 
 // make a vector with the specified initial size, set to 1
@@ -295,14 +297,15 @@ double* dvector_find(dvector* self, double el);
 typedef struct {
     size_t size;            // number of elements that are visible to the user
     size_t capacity;        // number of allocated elements in data vector
-    size_t initsize;        // default size on creation, default VECTOR_INITSIZE 
+    size_t initcap;        // default size on creation, default VECTOR_INITCAP 
     double realloc_multval; // when capacity is exceeded while pushing, 
                             // reallocate to capacity*realloc_multval,
                             // default VECTOR_PUSH_REALLOC_MULTVAL
-                            // if capacity was zero, we allocate to initsize
+                            // if capacity was zero, we allocate to initcap
     int64_t* data;
 } lvector;
 
+// create a new vector with initcap capacity and zero visible size
 lvector* lvector_new();
 
 // make a new copy of the vector
@@ -315,7 +318,7 @@ lvector* lvector_fromarray(int64_t* data, size_t size);
 lvector* lvector_zeros(size_t num);
 
 //
-// these are only written builtins
+// these are only written for the builtins
 //
 
 // make a vector with the specified initial size, set to 1

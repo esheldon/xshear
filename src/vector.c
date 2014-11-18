@@ -15,11 +15,11 @@ szvector* szvector_new() {
         return NULL;
     }
 
-    self->capacity        = VECTOR_INITSIZE;
-    self->initsize        = VECTOR_INITSIZE;
+    self->capacity        = VECTOR_INITCAP;
+    self->initcap        = VECTOR_INITCAP;
     self->realloc_multval = VECTOR_PUSH_REALLOC_MULTVAL;
 
-    self->data = calloc(self->initsize, sizeof(size_t));
+    self->data = calloc(self->initcap, sizeof(size_t));
     if (self->data == NULL) {
         fprintf(stderr,"Could not allocate data for vector\n");
         exit(1);
@@ -106,11 +106,11 @@ dvector* dvector_new() {
         return NULL;
     }
 
-    self->capacity        = VECTOR_INITSIZE;
-    self->initsize        = VECTOR_INITSIZE;
+    self->capacity        = VECTOR_INITCAP;
+    self->initcap        = VECTOR_INITCAP;
     self->realloc_multval = VECTOR_PUSH_REALLOC_MULTVAL;
 
-    self->data = calloc(self->initsize, sizeof(double));
+    self->data = calloc(self->initcap, sizeof(double));
     if (self->data == NULL) {
         fprintf(stderr,"Could not allocate data for vector\n");
         exit(1);
@@ -197,11 +197,11 @@ lvector* lvector_new() {
         return NULL;
     }
 
-    self->capacity        = VECTOR_INITSIZE;
-    self->initsize        = VECTOR_INITSIZE;
+    self->capacity        = VECTOR_INITCAP;
+    self->initcap        = VECTOR_INITCAP;
     self->realloc_multval = VECTOR_PUSH_REALLOC_MULTVAL;
 
-    self->data = calloc(self->initsize, sizeof(int64_t));
+    self->data = calloc(self->initcap, sizeof(int64_t));
     if (self->data == NULL) {
         fprintf(stderr,"Could not allocate data for vector\n");
         exit(1);
