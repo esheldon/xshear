@@ -72,8 +72,6 @@ struct source* source_new(const struct sconfig* config);
 
 int source_read(FILE* stream, struct source* src);
 
-int source_filter(struct source *src, struct sconfig *cfg);
-
 void source_print(struct source* src);
 
 struct source* source_delete(struct source* src);
