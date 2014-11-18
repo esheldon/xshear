@@ -6,7 +6,7 @@
 #include "cosmo.h"
 #include "log.h"
 #include "healpix.h"
-#include "stack.h"
+#include "vector.h"
 #include "urls.h"
 #include "sdss-survey.h"
 
@@ -186,7 +186,7 @@ void lcat_disc_intersect(struct lcat* lcat, struct healpix* hpix, double rmax) {
     struct lens* lens = &lcat->data[0];
 
     for (size_t i=0; i<lcat->size; i++) {
-        lens->hpix = i64stack_new(0);
+        lens->hpix = lvector_new();
 
         double search_angle = rmax/lens->da;
         hpix_disc_intersect(
@@ -197,7 +197,7 @@ void lcat_disc_intersect(struct lcat* lcat, struct healpix* hpix, double rmax) {
 
         // this should speed up initial checks of sources
         // since we can ask if within min/max pixel values
-        i64stack_sort(lens->hpix);
+        lvector_sort(lens->hpix);
 
         lens++;
     }
@@ -253,7 +253,7 @@ struct lcat* lcat_delete(struct lcat* lcat) {
     if (lcat != NULL) {
         struct lens* lens=&lcat->data[0];
         for (size_t i=0; i<lcat->size; i++) {
-            lens->hpix = i64stack_delete(lens->hpix);
+            vector_free(lens->hpix);
             //lens->rev = szvector_delete(lens->rev);
             lens++;
         }

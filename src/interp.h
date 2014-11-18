@@ -1,8 +1,8 @@
 #ifndef _INTERP_HEADER
 #define _INTERP_HEADER
 
-#include "Vector.h"
+#include "vector.h"
 
-double f64interplin(const struct f64vector* x, const struct f64vector* y, double u);
+double interplin(const dvector* x, const dvector* y, double u);
 
 #endif

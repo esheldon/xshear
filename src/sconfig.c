@@ -3,7 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include "sconfig.h"
-#include "Vector.h"
+#include "vector.h"
 #include "log.h"
 #include "defs.h"
 #include "config.h"
@@ -56,7 +56,7 @@ struct sconfig* sconfig_read(const char* url) {
     c->shear_units = get_shear_units(cfg);
 
     if (c->scstyle == SIGMACRIT_STYLE_INTERP) {
-        c->zl = f64vector_new(0);
+        c->zl = dvector_new();
 
         c->zl->data=cfg_get_dblarr(cfg, strcpy(key,"zlvals"), &c->zl->size, &status);
         if (status) goto _sconfig_read_bail;

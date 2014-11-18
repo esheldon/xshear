@@ -1,9 +1,9 @@
-#include "Vector.h"
+#include "vector.h"
 #include "interp.h"
 
 // the vectors must be sorted according to x
 // Note points outside of the range still get interpolated, so be careful!
-double f64interplin(const struct f64vector* vx, const struct f64vector* vy, double u) {
+double interplin(const dvector* vx, const dvector* vy, double u) {
 
     // default to last point
     size_t ilo = vx->size-2;

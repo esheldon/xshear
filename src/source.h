@@ -1,7 +1,7 @@
 #ifndef _SOURCE_HEADER
 #define _SOURCE_HEADER
 
-#include "Vector.h"
+#include "vector.h"
 #include "defs.h"
 #include "sconfig.h"
 
@@ -42,12 +42,12 @@ struct source {
     // note this is same size as zlens kept in 
     // catalog structure.
 
-    struct f64vector* scinv; 
+    dvector* scinv; 
 
     // For convenience; this should just point to memory owned by
     // config->zlens
 
-    const struct f64vector* zlens; 
+    const dvector* zlens; 
 
     // only used when sigmacrit style == SIGMACRIT_STYLE_POINT
     double z;

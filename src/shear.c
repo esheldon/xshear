@@ -233,7 +233,7 @@ void shear_procpair(struct shear* self,
     // note we already checked if lens z was in our interpolation range
     double scinv;
     if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
-        scinv = f64interplin(src->zlens, src->scinv, lens->z);
+        scinv = interplin(src->zlens, src->scinv, lens->z);
     } else {
         if ( (src->z - lens->z) < config->zdiff_min) {
             goto _procpair_bail;

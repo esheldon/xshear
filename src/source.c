@@ -4,7 +4,7 @@
 #include <string.h>
 #include "math.h"
 #include "source.h"
-#include "Vector.h"
+#include "vector.h"
 #include "log.h"
 #include "sdss-survey.h"
 #include "sconfig.h"
@@ -21,7 +21,7 @@ struct source* source_new(const struct sconfig* config) {
     src->scstyle = config->scstyle;
 
     if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
-        src->scinv = f64vector_new(config->nzl);
+        src->scinv = dvector_zeros(config->nzl);
 
         if (src->scinv == NULL) {
             wlog("Could not allocate %ld scinv for source\n", config->nzl);
@@ -40,7 +40,7 @@ struct source* source_delete(struct source* src) {
 
         if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
             if (src->scinv != NULL) {
-                src->scinv = f64vector_delete(src->scinv);
+                vector_free(src->scinv);
             }
         }
 

@@ -24,7 +24,7 @@ struct lens {
 
     // We will fill these with the healpix pixels within
     // the search radius for each lens
-    struct i64stack* hpix;
+    lvector* hpix;
     //struct szvector* rev;
 
     double cos_search_angle;

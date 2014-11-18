@@ -1,7 +1,8 @@
 CC := gcc
 prefix := /usr/local
 
-CFLAGS =-std=c99 -Wall -Werror -O2
+#CFLAGS =-std=c99 -Wall -Werror -O2
+CFLAGS =-std=c99 -Wall -O2
 LDFLAGS=-lm
 
 SRCDIR  =./src
@@ -21,14 +22,14 @@ LOCAL_PROGS=$(XSHEAR) $(REDSHEAR)
 SOURCES = $(wildcard src/*.c)
 OBJS    = $(SOURCES:.c=.o)
 
-XSHEAR_OBJ = 	$(addprefix $(SRCDIR)/,sconfig.o config.o stack.o Vector.o source.o \
+XSHEAR_OBJ = 	$(addprefix $(SRCDIR)/,sconfig.o config.o stack.o vector.o source.o \
 						lens.o cosmo.o healpix.o \
 						shear.o lensum.o tree.o interp.o urls.o \
 						xshear.o sdss-survey.o quad.o)
 
 REDSHEAR_OBJ = 	$(addprefix $(SRCDIR)/,healpix.o cosmo.o tree.o stack.o lens.o lensum.o  \
 						sconfig.o config.o  \
-						urls.o Vector.o  \
+						urls.o vector.o  \
 						util.o  \
 						redshear.o sdss-survey.o)
 

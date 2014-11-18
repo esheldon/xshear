@@ -2,7 +2,7 @@
 #define _SCONFIG_HEADER
 
 #include "defs.h"
-#include "Vector.h"
+#include "vector.h"
 #include "config.h"
 
 #define CONFIG_KEYSZ 50
@@ -20,7 +20,7 @@ struct sconfig {
     // will be zero unless scstyle==SIGMACRIT_STYLE_INTERP
     int64 nzl;
     // only fill in for scstyle==SIGMACRIT_STYLE_INTERP
-    struct f64vector* zl;  
+    dvector* zl;  
 
     int64 nbin;
 
