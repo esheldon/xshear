@@ -101,12 +101,11 @@ void shear_process_source(struct shear* self, struct source* src) {
 
     struct lens* lens=NULL;
     struct lensum* lensum=NULL;
-    size_t ind=0;
-    for (size_t i=0; i<node->indices->size-1; i++) {
-        ind = node->indices->data[i];
 
-        lens = &self->lcat->data[ind];
-        lensum = &self->lensums->data[ind];
+    vector_foreach(ind, node->indices) {
+
+        lens = &self->lcat->data[*ind];
+        lensum = &self->lensums->data[*ind];
 
         if (lens->z >= self->min_zlens && lens->z <= self->max_zlens) {
             shear_procpair(self, src, lens, lensum);
