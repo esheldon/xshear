@@ -8,7 +8,7 @@
 #include "defs.h"
 #include "config.h"
 
-struct sconfig* sconfig_read(const char* url) {
+ShearConfig* sconfig_read(const char* url) {
 
     wlog("Reading config from %s\n", url);
 
@@ -19,7 +19,7 @@ struct sconfig* sconfig_read(const char* url) {
         exit(1);
     }
 
-    struct sconfig* c=calloc(1, sizeof(struct sconfig));
+    ShearConfig* c=calloc(1, sizeof(ShearConfig));
     char key[CONFIG_KEYSZ];
 
     // set defaults for optional
@@ -97,7 +97,7 @@ _sconfig_read_bail:
 }
 
 // usage:  config=config_delete(config);
-struct sconfig* sconfig_delete(struct sconfig* self) {
+ShearConfig* sconfig_delete(ShearConfig* self) {
     if (self != NULL) {
         free(self->zl);
     }
@@ -105,7 +105,7 @@ struct sconfig* sconfig_delete(struct sconfig* self) {
     return NULL;
 }
 
-void sconfig_print(struct sconfig* c) {
+void sconfig_print(ShearConfig* c) {
     wlog("    H0:            %lf\n", c->H0);
     wlog("    omega_m:       %lf\n", c->omega_m);
     wlog("    healpix_nside: %ld\n", c->healpix_nside);

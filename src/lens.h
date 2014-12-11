@@ -6,7 +6,7 @@
 #include "defs.h"
 #include "healpix.h"
 
-struct lens {
+typedef struct {
 
     int64 index;
     double ra;
@@ -34,38 +34,38 @@ struct lens {
     double sineta;
     double coseta;
 
-};
+} Lens;
 
 
-struct lcat {
+typedef struct {
     size_t size;
-    struct lens* data;
+    Lens* data;
 
     // a tree to tell us which lenses were intersected
     // with what pixels.  Can search by pixel value to
     // get the indices of the associated lenses
-    struct tree_node* hpix_tree;
-};
+    TreeNode* hpix_tree;
+} LensCatalog;
 
-struct lcat* lcat_new(size_t n_lens);
-struct lcat* lcat_read(const char* lens_url); 
+LensCatalog* lcat_new(size_t n_lens);
+LensCatalog* lcat_read(const char* lens_url); 
 
 #ifdef HDFS
 #include "hdfs_lines.h"
-struct lcat* hdfs_lcat_read(const char* lens_url); 
+LensCatalog* hdfs_lcat_read(const char* lens_url); 
 #endif
 
 
-void lcat_add_da(struct lcat* lcat, struct cosmo* cosmo);
-void lcat_add_search_angle(struct lcat* lcat, double rmax);
+void lcat_add_da(LensCatalog* lcat, Cosmo* cosmo);
+void lcat_add_search_angle(LensCatalog* lcat, double rmax);
 
-void lcat_print_one(struct lcat* lcat, size_t el);
-void lcat_print_firstlast(struct lcat* lcat);
+void lcat_print_one(LensCatalog* lcat, size_t el);
+void lcat_print_firstlast(LensCatalog* lcat);
 
-struct lcat* lcat_delete(struct lcat* lcat);
+LensCatalog* lcat_delete(LensCatalog* lcat);
 
 
-void lcat_disc_intersect(struct lcat* lcat, struct healpix* hpix, double rmax);
-void lcat_build_hpix_tree(struct healpix* hpix, struct lcat* lcat);
+void lcat_disc_intersect(LensCatalog* lcat, HealPix* hpix, double rmax);
+void lcat_build_hpix_tree(HealPix* hpix, LensCatalog* lcat);
 
 #endif

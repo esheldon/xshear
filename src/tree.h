@@ -6,21 +6,23 @@
 #include <stdint.h>
 #include "vector.h"
 
+// recursive, so need to wait on typedef
 struct tree_node {
     int64_t val;
     szvector* indices;
     struct tree_node* right, * left;
 };
 
+typedef struct tree_node TreeNode;
 
-void tree_insert(struct tree_node ** self, int64_t val, size_t index);
-struct tree_node* tree_find(struct tree_node* self, int64_t val);
+void tree_insert(TreeNode ** self, int64_t val, size_t index);
+TreeNode* tree_find(TreeNode* self, int64_t val);
 
 
-void tree_print( struct tree_node *self, int level );
+void tree_print( TreeNode *self, int level );
 void tree_print_padding( char ch, int n );
 
-struct tree_node* tree_delete(struct tree_node* self);
+TreeNode* tree_delete(TreeNode* self);
 
-size_t tree_most_members( struct tree_node *self );
+size_t tree_most_members( TreeNode *self );
 #endif

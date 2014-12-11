@@ -7,7 +7,7 @@
 
 #define CONFIG_KEYSZ 50
 
-struct sconfig {
+typedef struct {
     double H0;
     double omega_m;
 
@@ -45,12 +45,12 @@ struct sconfig {
     // z as truth
     double zdiff_min;
 
-};
+} ShearConfig;
 
-struct sconfig* sconfig_read(const char* url);
+ShearConfig* sconfig_read(const char* url);
 
-struct sconfig* sconfig_delete(struct sconfig* config);
-void sconfig_print(struct sconfig* config);
+ShearConfig* sconfig_delete(ShearConfig* config);
+void sconfig_print(ShearConfig* config);
 
 int get_mask_style(struct cfg *cfg);
 int get_shear_style(struct cfg *cfg);

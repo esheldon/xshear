@@ -15,7 +15,7 @@
   Note we actually want the sin and cos of ra/dec rather than ra
   dec for our calculations.
 */
-struct source {
+typedef struct {
 
     int shear_style;
     int mask_style;
@@ -64,16 +64,16 @@ struct source {
     double coslam;
     double sineta;
     double coseta;
-};
+} Source;
 
 
 // n_zlens == 0 indicates we are using "true z" style
-struct source* source_new(const struct sconfig* config);
+Source* source_new(const ShearConfig* config);
 
-int source_read(FILE* stream, struct source* src);
+int source_read(FILE* stream, Source* src);
 
-void source_print(struct source* src);
+void source_print(Source* src);
 
-struct source* source_delete(struct source* src);
+Source* source_delete(Source* src);
 
 #endif

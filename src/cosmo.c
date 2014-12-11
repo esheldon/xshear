@@ -6,15 +6,15 @@
 #include "log.h"
 
 
-struct cosmo* cosmo_new(
+Cosmo* cosmo_new(
         double H0, 
         int flat,
         double omega_m,
         double omega_l,
         double omega_k) {
 
-    struct cosmo* c;
-    c=(struct cosmo* ) calloc(1,sizeof(struct cosmo));
+    Cosmo* c;
+    c=(Cosmo* ) calloc(1,sizeof(Cosmo));
 
     if (c == NULL) {
         return NULL;
@@ -42,7 +42,7 @@ struct cosmo* cosmo_new(
     return c;
 }
 
-void cosmo_print(struct cosmo* c) {
+void cosmo_print(Cosmo* c) {
     wlog("    H0: %lf\n", c->H0);
     wlog("    DH: %lf\n", c->DH);
     wlog("    flat: %d\n", c->flat);
@@ -52,7 +52,7 @@ void cosmo_print(struct cosmo* c) {
 }
 
 // usage:  cosmo=cosmo_delete(cosmo);
-struct cosmo* cosmo_delete(struct cosmo* c) {
+Cosmo* cosmo_delete(Cosmo* c) {
     free(c);
     return NULL;
 }
@@ -61,13 +61,13 @@ struct cosmo* cosmo_delete(struct cosmo* c) {
 
 
 /* comoving distance in Mpc */
-double Dc(struct cosmo* c, double zmin, double zmax) {
+double Dc(Cosmo* c, double zmin, double zmax) {
     return c->DH*ez_inverse_integral(c, zmin, zmax);
 }
 
 
 // transverse comoving distance
-double Dm(struct cosmo* c, double zmin, double zmax) {
+double Dm(Cosmo* c, double zmin, double zmax) {
 
     double d;
 
@@ -86,7 +86,7 @@ double Dm(struct cosmo* c, double zmin, double zmax) {
 
 
 // angular diameter distances
-double Da(struct cosmo* c, double zmin, double zmax) {
+double Da(Cosmo* c, double zmin, double zmax) {
     double d;
     d = Dm(c, zmin, zmax);
     d /= (1.+zmax);
@@ -97,7 +97,7 @@ double Da(struct cosmo* c, double zmin, double zmax) {
 
 
 // luminosity distances
-double Dl(struct cosmo* c, double zmin, double zmax) {
+double Dl(Cosmo* c, double zmin, double zmax) {
     double d;
     d = Dm(c, zmin, zmax);
     d *= (1.+zmax);
@@ -105,7 +105,7 @@ double Dl(struct cosmo* c, double zmin, double zmax) {
 }
 
 // comoving volume element
-double dV(struct cosmo* c, double z) {
+double dV(Cosmo* c, double z) {
     double da, ezinv, oneplusz;
     double dv;
 
@@ -119,7 +119,7 @@ double dV(struct cosmo* c, double z) {
 }
 
 // comoving volume between zmin and zmax
-double V(struct cosmo* c, double zmin, double zmax) {
+double V(Cosmo* c, double zmin, double zmax) {
     int i;
     double f1,f2,z;
     double dv;
@@ -140,7 +140,7 @@ double V(struct cosmo* c, double zmin, double zmax) {
 
 
 // inverse critical density for lensing
-double scinv(struct cosmo* c, double zl, double zs) {
+double scinv(Cosmo* c, double zl, double zs) {
     double dl, ds, dls;
 
     if (zs <= zl) {
@@ -168,7 +168,7 @@ double scinv_pre(double zl, double dcl, double dcs) {
 
 
 
-double ez_inverse(struct cosmo* c, double z) {
+double ez_inverse(Cosmo* c, double z) {
     double oneplusz, oneplusz2;
     double ezi;
 
@@ -184,7 +184,7 @@ double ez_inverse(struct cosmo* c, double z) {
 }
 
 
-double ez_inverse_integral(struct cosmo* c, double zmin, double zmax) {
+double ez_inverse_integral(Cosmo* c, double zmin, double zmax) {
     int i;
     double f1, f2, z, ezinv_int=0, ezinv;
 

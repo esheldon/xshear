@@ -19,9 +19,9 @@
 #include "log.h"
 
 
-struct shear* shear_init(const char* config_url, const char* lens_url) {
+Shear* shear_init(const char* config_url, const char* lens_url) {
 
-    struct shear* shear = calloc(1, sizeof(struct shear));
+    Shear* shear = calloc(1, sizeof(Shear));
     if (shear == NULL) {
         wlog("Failed to alloc shear struct\n");
         exit(EXIT_FAILURE);
@@ -29,7 +29,7 @@ struct shear* shear_init(const char* config_url, const char* lens_url) {
 
     shear->config=sconfig_read(config_url);
 
-    struct sconfig* config=shear->config;
+    ShearConfig* config=shear->config;
     wlog("config structure:\n");
     sconfig_print(config);
 
@@ -89,18 +89,18 @@ struct shear* shear_init(const char* config_url, const char* lens_url) {
 
 }
 
-void shear_process_source(struct shear* self, struct source* src) {
+void shear_process_source(Shear* self, Source* src) {
     src->hpixid = hpix_eq2pix(self->hpix, src->ra, src->dec);
 
     int64 hpix_mod = src->hpixid - self->hpix->half_npix;
-    struct tree_node* node = tree_find(self->lcat->hpix_tree, hpix_mod);
+    TreeNode* node = tree_find(self->lcat->hpix_tree, hpix_mod);
 
     if (node == NULL) {
         return;
     }
 
-    struct lens* lens=NULL;
-    struct lensum* lensum=NULL;
+    Lens* lens=NULL;
+    Lensum* lensum=NULL;
 
     vector_foreach(ind, node->indices) {
 
@@ -134,8 +134,8 @@ static void reset_longitude_bounds(double *angle,
    lens->cos_search_angle. In that case fewer calculations are performed
 
 */
-static int get_quad_info(const struct lens* lens,
-                         const struct source* src,
+static int get_quad_info(const Lens* lens,
+                         const Source* src,
                          int *quadrant,
                          double *r_radians,
                          double *posangle_radians)
@@ -182,7 +182,7 @@ static int get_quad_info(const struct lens* lens,
   lens
 
  */
-static int shear_test_quad_sdss(struct lens* l, struct source* s) {
+static int shear_test_quad_sdss(Lens* l, Source* s) {
     return test_quad_sincos_sdss(l->maskflags,
                                  l->sinlam, l->coslam,
                                  l->sineta, l->coseta,
@@ -193,12 +193,12 @@ static int shear_test_quad_sdss(struct lens* l, struct source* s) {
 
 
 
-void shear_procpair(struct shear* self, 
-                    struct source* src, 
-                    struct lens* lens, 
-                    struct lensum* lensum) {
+void shear_procpair(Shear* self, 
+                    Source* src, 
+                    Lens* lens, 
+                    Lensum* lensum) {
 
-    struct sconfig* config=self->config;
+    ShearConfig* config=self->config;
 
     // make sure object is in a pair of unmasked adjacent
     // quadrants.  Using short-circuiting in if statement
@@ -311,7 +311,7 @@ _procpair_bail:
 
 
 
-void shear_print_sum(struct shear* self) {
+void shear_print_sum(Shear* self) {
     wlog("Total sums:\n\n");
 
     lensums_print_sum(self->lensums);
@@ -319,11 +319,11 @@ void shear_print_sum(struct shear* self) {
 }
 
 // this is for when we haven't written the file line by line[:w
-void shear_write(struct shear* self, FILE* stream) {
+void shear_write(Shear* self, FILE* stream) {
     lensums_write(self->lensums, stream);
 }
 
-struct shear* shear_delete(struct shear* self) {
+Shear* shear_delete(Shear* self) {
 
     if (self != NULL) {
 

@@ -4,9 +4,9 @@
 #include "tree.h"
 
 
-void tree_insert(struct tree_node ** self, int64_t val, size_t index) {
+void tree_insert(TreeNode ** self, int64_t val, size_t index) {
     if(!(*self)) {
-        *self = malloc(sizeof(struct tree_node));
+        *self = malloc(sizeof(TreeNode));
         (*self)->left = (*self)->right = NULL;
         (*self)->val=val;
         (*self)->indices = szvector_new();
@@ -22,7 +22,7 @@ void tree_insert(struct tree_node ** self, int64_t val, size_t index) {
     }
 }
 
-struct tree_node* tree_delete(struct tree_node* self) {
+TreeNode* tree_delete(TreeNode* self) {
     if (self != NULL) {
         vector_free(self->indices);
         self->left    = tree_delete(self->left);
@@ -32,7 +32,7 @@ struct tree_node* tree_delete(struct tree_node* self) {
     return NULL;
 }
 
-struct tree_node* tree_find(struct tree_node* self, int64_t val) {
+TreeNode* tree_find(TreeNode* self, int64_t val) {
     if (!self) {
         return NULL;
     }
@@ -55,7 +55,7 @@ void tree_print_padding( char ch, int n )
 }
 
 // send level=0 at first
-void tree_print( struct tree_node *self, int level )
+void tree_print( TreeNode *self, int level )
 {
     if ( self == NULL ) {
         tree_print_padding ( '\t', level );
@@ -69,7 +69,7 @@ void tree_print( struct tree_node *self, int level )
 }
 
 
-size_t tree_most_members( struct tree_node *self )
+size_t tree_most_members( TreeNode *self )
 {
     size_t max_ind=0, max_ind_left=0, max_ind_right=0;
     if (self != NULL) {

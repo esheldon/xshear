@@ -14,24 +14,24 @@
 #include "hdfs_lines.h"
 #endif
 
-struct lcat* lcat_new(size_t n_lens) {
+LensCatalog* lcat_new(size_t n_lens) {
 
     if (n_lens == 0) {
         wlog("lcat_new: size must be > 0\n");
         exit(EXIT_FAILURE);
     }
 
-    //struct lcat* lcat = malloc(sizeof(struct lcat));
-    struct lcat* lcat = calloc(1,sizeof(struct lcat));
+    //LensCatalog* lcat = malloc(sizeof(LensCatalog));
+    LensCatalog* lcat = calloc(1,sizeof(LensCatalog));
     if (lcat == NULL) {
-        wlog("Could not allocate struct lcat\n");
+        wlog("Could not allocate LensCatalog\n");
         exit(EXIT_FAILURE);
     }
 
     lcat->size = n_lens;
 
-    //lcat->data = malloc(n_lens*sizeof(struct lens));
-    lcat->data = calloc(n_lens,sizeof(struct lens));
+    //lcat->data = malloc(n_lens*sizeof(Lens));
+    lcat->data = calloc(n_lens,sizeof(Lens));
     if (lcat->data == NULL) {
         wlog("Could not allocate %ld lenses in lcat\n", n_lens);
         exit(EXIT_FAILURE);
@@ -43,7 +43,7 @@ struct lcat* lcat_new(size_t n_lens) {
 }
 
 
-struct lcat* lcat_read(const char* lens_url) {
+LensCatalog* lcat_read(const char* lens_url) {
 
     int nread=0;
 
@@ -57,11 +57,11 @@ struct lcat* lcat_read(const char* lens_url) {
 
     wlog("    creating lcat...");
 
-    struct lcat* lcat=lcat_new(nlens);
+    LensCatalog* lcat=lcat_new(nlens);
     wlog("OK\n");
 
     wlog("    reading data...");
-    struct lens* lens = &lcat->data[0];
+    Lens* lens = &lcat->data[0];
     double ra_rad,dec_rad;
     for (size_t i=0; i<nlens; i++) {
         nread=fscanf(stream,"%ld %lf %lf %lf %ld",
@@ -96,7 +96,7 @@ struct lcat* lcat_read(const char* lens_url) {
 #ifdef HDFS
 
 
-struct lcat* hdfs_lcat_read(const char* lens_url) {
+LensCatalog* hdfs_lcat_read(const char* lens_url) {
 
     wlog("Reading lenses from hdfs %s\n", lens_url);
 
@@ -115,11 +115,11 @@ struct lcat* hdfs_lcat_read(const char* lens_url) {
     wlog("Reading %lu lenses\n", nlens);
     wlog("    creating lcat...");
 
-    struct lcat* lcat=lcat_new(nlens);
+    LensCatalog* lcat=lcat_new(nlens);
     wlog("OK\n");
 
     wlog("    reading data...");
-    struct lens* lens = &lcat->data[0];
+    Lens* lens = &lcat->data[0];
     double ra_rad,dec_rad;
     for (size_t i=0; i<nlens; i++) {
 
@@ -161,16 +161,16 @@ struct lcat* hdfs_lcat_read(const char* lens_url) {
 
 #endif
 
-void lcat_add_da(struct lcat* lcat, struct cosmo* cosmo) {
-    struct lens* lens = &lcat->data[0];
+void lcat_add_da(LensCatalog* lcat, Cosmo* cosmo) {
+    Lens* lens = &lcat->data[0];
     for (size_t i=0; i<lcat->size; i++) {
         lens->da = Da(cosmo, 0.0, lens->z);
         lens++;
     }
 }
 
-void lcat_add_search_angle(struct lcat* lcat, double rmax) {
-    struct lens* lens = &lcat->data[0];
+void lcat_add_search_angle(LensCatalog* lcat, double rmax) {
+    Lens* lens = &lcat->data[0];
     for (size_t i=0; i<lcat->size; i++) {
 
         double search_angle = rmax/lens->da;
@@ -181,9 +181,9 @@ void lcat_add_search_angle(struct lcat* lcat, double rmax) {
 
 
 
-void lcat_disc_intersect(struct lcat* lcat, struct healpix* hpix, double rmax) {
+void lcat_disc_intersect(LensCatalog* lcat, HealPix* hpix, double rmax) {
 
-    struct lens* lens = &lcat->data[0];
+    Lens* lens = &lcat->data[0];
 
     for (size_t i=0; i<lcat->size; i++) {
         lens->hpix = lvector_new();
@@ -203,10 +203,10 @@ void lcat_disc_intersect(struct lcat* lcat, struct healpix* hpix, double rmax) {
     }
 }
 
-void lcat_build_hpix_tree(struct healpix* hpix, struct lcat* lcat) {
+void lcat_build_hpix_tree(HealPix* hpix, LensCatalog* lcat) {
     int64* ptr=NULL;
 
-    struct lens* lens = &lcat->data[0];
+    Lens* lens = &lcat->data[0];
     for (size_t i=0; i<lcat->size; i++) {
         // add to the tree
         ptr = &lens->hpix->data[0];
@@ -220,8 +220,8 @@ void lcat_build_hpix_tree(struct healpix* hpix, struct lcat* lcat) {
 
 }
 
-void lcat_print_one(struct lcat* lcat, size_t el) {
-    struct lens* lens = &lcat->data[el];
+void lcat_print_one(LensCatalog* lcat, size_t el) {
+    Lens* lens = &lcat->data[el];
     wlog("element %ld of lcat:\n", el);
     wlog("    ra:        %lf\n", lens->ra);
     wlog("    dec:       %lf\n", lens->dec);
@@ -238,7 +238,7 @@ void lcat_print_one(struct lcat* lcat, size_t el) {
             lens->hpix->size-1,
             lens->hpix->data[lens->hpix->size-1]);
 }
-void lcat_print_firstlast(struct lcat* lcat) {
+void lcat_print_firstlast(LensCatalog* lcat) {
     lcat_print_one(lcat, 0);
     lcat_print_one(lcat, lcat->size-1);
 }
@@ -248,10 +248,10 @@ void lcat_print_firstlast(struct lcat* lcat) {
 // use like this:
 //   lcat = lcat_delete(lcat);
 // This ensures that the lcat pointer is set to NULL
-struct lcat* lcat_delete(struct lcat* lcat) {
+LensCatalog* lcat_delete(LensCatalog* lcat) {
 
     if (lcat != NULL) {
-        struct lens* lens=&lcat->data[0];
+        Lens* lens=&lcat->data[0];
         for (size_t i=0; i<lcat->size; i++) {
             vector_free(lens->hpix);
             //lens->rev = szvector_delete(lens->rev);

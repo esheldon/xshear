@@ -10,34 +10,34 @@
 #include "lensum.h"
 #include "source.h"
 
-struct shear {
-    struct sconfig*  config;
-    struct cosmo*   cosmo;
-    struct healpix* hpix;
-    struct lcat*    lcat;
+typedef struct {
+    ShearConfig*  config;
+    Cosmo*   cosmo;
+    HealPix* hpix;
+    LensCatalog*    lcat;
 
     // this holds the info for a given lens
-    struct lensums* lensums;
+    Lensums* lensums;
 
     // min/max z for lenses
     double min_zlens, max_zlens;
 
     // output file pointer. We open at the beginning to make sure we can!
     //FILE* fptr;
-};
+} Shear;
 
-struct shear* shear_init(const char* config_url, const char* lens_url);
-void shear_process_source(struct shear* self, struct source* src);
-struct shear* shear_delete(struct shear* self);
+Shear* shear_init(const char* config_url, const char* lens_url);
+void shear_process_source(Shear* self, Source* src);
+Shear* shear_delete(Shear* self);
 
 
-void shear_print_sum(struct shear* self);
-void shear_write(struct shear* self, FILE* stream);
+void shear_print_sum(Shear* self);
+void shear_write(Shear* self, FILE* stream);
 
-void shear_procpair(struct shear* self, 
-                    struct source* src, 
-                    struct lens* lens, 
-                    struct lensum* lensum);
+void shear_procpair(Shear* self, 
+                    Source* src, 
+                    Lens* lens, 
+                    Lensum* lensum);
 
 #endif
 

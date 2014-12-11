@@ -15,19 +15,19 @@
     HASH_ADD(hh,head,int64field,sizeof(int64),add)
 
 
-struct lensum_hash {
-    struct lensum* lensum;
+typedef struct {
+    Lensum* lensum;
     UT_hash_handle hh; /* makes this structure hashable */
-};
+} LensumHash;
 
-struct lensum_hash* lensum_hash_fromlensum(struct lensum* lensum) {
-    struct lensum_hash* lh = calloc(1, sizeof(struct lensum_hash));
+LensumHash* lensum_hash_fromlensum(Lensum* lensum) {
+    LensumHash* lh = calloc(1, sizeof(LensumHash));
     lh->lensum = lensum_copy(lensum);
     return lh;
 }
-struct lensum_hash* find_lens(struct lensum_hash* lensums, int64 id) {
+LensumHash* find_lens(LensumHash* lensums, int64 id) {
     // a single file reference, don't allocate
-    struct lensum_hash* alensum=NULL;
+    LensumHash* alensum=NULL;
     HASH_FIND_INT64(lensums, &id, alensum);
     return alensum;
 }
@@ -46,13 +46,13 @@ int main(int argc, char** argv) {
     }
 
     const char* config_url = argv[1];
-    struct sconfig* config=sconfig_read(config_url);
+    ShearConfig* config=sconfig_read(config_url);
 
     // this is the beginning of the table
-    struct lensum_hash* hash = NULL;
+    LensumHash* hash = NULL;
 
-    struct lensum* lensum = lensum_new(config->nbin, config->shear_style);
-    struct lensum* lensum_tot = lensum_new(config->nbin, config->shear_style);
+    Lensum* lensum = lensum_new(config->nbin, config->shear_style);
+    Lensum* lensum_tot = lensum_new(config->nbin, config->shear_style);
     while (lensum_read(stdin, lensum)) {
         counter++;
         if (counter == 1) {
@@ -69,10 +69,10 @@ int main(int argc, char** argv) {
             wlog("\n");
         }
 
-        struct lensum_hash* this_lens = find_lens(hash, lensum->index);
+        LensumHash* this_lens = find_lens(hash, lensum->index);
         if (this_lens == NULL) {
             // copy of lensum made inside
-            struct lensum_hash* lh = lensum_hash_fromlensum(lensum);
+            LensumHash* lh = lensum_hash_fromlensum(lensum);
             // this gets expanded to lh->lensum->index
             HASH_ADD_INT64(hash, lensum->index, lh);
         } else {
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     lensum_print(lensum_tot);
 
     wlog("Writing results to stdout\n");
-    struct lensum_hash *tlensum=NULL;
+    LensumHash *tlensum=NULL;
     for(tlensum=hash; tlensum != NULL; tlensum=tlensum->hh.next) {
         lensum_write(tlensum->lensum, stdout);
     }

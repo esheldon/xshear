@@ -7,13 +7,13 @@
 
 #define NS_MAX 268435456 // 2^28 : largest nside available
 
-struct healpix {
+typedef struct {
     int64 nside;
     int64 npix;
     int64 half_npix;
     int64 ncap;
     double area;
-};
+} HealPix;
 
 /* number of pixels in the map for the given nside */
 int64 hpix_npix(int64 nside);
@@ -22,8 +22,8 @@ int64 hpix_npix(int64 nside);
 double hpix_area(int64 nside);
 
 /* allocate a new healpix structure */
-struct healpix* hpix_new(int64 nside);
-struct healpix* hpix_delete(struct healpix* hpix);
+HealPix* hpix_new(int64 nside);
+HealPix* hpix_delete(HealPix* hpix);
 
 
 /*
@@ -31,7 +31,7 @@ struct healpix* hpix_delete(struct healpix* hpix);
    a point on a sphere at coordinates theta and phi, given the map
    resolution parameter nside
  */
-int64 hpix_eq2pix(const struct healpix* hpix, double ra, double dec);
+int64 hpix_eq2pix(const HealPix* hpix, double ra, double dec);
 
 /* fill listpix with list of all pixels with centers in the disc 
 
@@ -42,7 +42,7 @@ int64 hpix_eq2pix(const struct healpix* hpix, double ra, double dec);
    radius - radians
  */
 void hpix_disc_intersect(
-        const struct healpix* hpix,
+        const HealPix* hpix,
         double ra, double dec, double radius, 
         lvector* listpix);
 /*
@@ -58,7 +58,7 @@ int64 i64min(int64 v1, int64 v2);
 
 double dot_product3(double v1[3], double v2[3]);
 void hpix_disc_contains(
-        const struct healpix* hpix,
+        const HealPix* hpix,
         double ra, double dec, double radius, 
         lvector* listpix);
 
@@ -69,7 +69,7 @@ void hpix_disc_contains(
 
 */
 void hpix_in_ring(
-        const struct healpix* hpix, 
+        const HealPix* hpix, 
         int64 iz, 
         double phi0, 
         double dphi, 
@@ -79,7 +79,7 @@ void hpix_in_ring(
    returns the ring number in {1, 4*nside-1} from the z coordinate
    returns the ring closest to the z provided
 */
-int64 hpix_ring_num(const struct healpix* hpix, double z);
+int64 hpix_ring_num(const HealPix* hpix, double z);
 
 /*
    renders the x,y,z corresponding to input ra,dec

@@ -5,18 +5,18 @@
 #include "log.h"
 #include "sconfig.h"
 
-struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
+Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
 
     wlog("Creating lensums:\n");
     wlog("    nlens: %lu  nbin: %lu\n", nlens, nbin);
 
-    struct lensums* lensums=calloc(1,sizeof(struct lensums));
+    Lensums* lensums=calloc(1,sizeof(Lensums));
     if (lensums == NULL) {
         wlog("failed to allocate lensums struct\n");
         exit(EXIT_FAILURE);
     }
 
-    lensums->data = calloc(nlens, sizeof(struct lensum));
+    lensums->data = calloc(nlens, sizeof(Lensum));
     if (lensums->data == NULL) {
         wlog("failed to allocate lensum array\n");
         exit(EXIT_FAILURE);
@@ -26,7 +26,7 @@ struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
 
 
     for (size_t i=0; i<nlens; i++) {
-        struct lensum* lensum = &lensums->data[i];
+        Lensum* lensum = &lensums->data[i];
 
         lensum->shear_style=shear_style;
 
@@ -60,9 +60,9 @@ struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
 
 // this is for writing them all at once.  We actually usually
 // write them one at a time
-void lensums_write(struct lensums* lensums, FILE* stream) {
+void lensums_write(Lensums* lensums, FILE* stream) {
 
-    struct lensum* lensum = &lensums->data[0];
+    Lensum* lensum = &lensums->data[0];
     for (size_t i=0; i<lensums->size; i++) {
         lensum_write(lensum, stream);
         
@@ -71,11 +71,11 @@ void lensums_write(struct lensums* lensums, FILE* stream) {
 }
 
 
-struct lensum* lensums_sum(struct lensums* lensums) {
-    struct lensum* tsum=lensum_new(lensums->data[0].nbin,
+Lensum* lensums_sum(Lensums* lensums) {
+    Lensum* tsum=lensum_new(lensums->data[0].nbin,
                                    lensums->data[0].shear_style);
 
-    struct lensum* lensum = &lensums->data[0];
+    Lensum* lensum = &lensums->data[0];
 
     for (size_t i=0; i<lensums->size; i++) {
         tsum->weight   += lensum->weight;
@@ -101,30 +101,30 @@ struct lensum* lensums_sum(struct lensums* lensums) {
 
 
 
-void lensums_print_sum(struct lensums* lensums) {
-    struct lensum* lensum = lensums_sum(lensums);
+void lensums_print_sum(Lensums* lensums) {
+    Lensum* lensum = lensums_sum(lensums);
     lensum_print(lensum);
     lensum=lensum_delete(lensum);
 }
 
 // these write the stdout
-void lensums_print_one(struct lensums* lensums, size_t index) {
+void lensums_print_one(Lensums* lensums, size_t index) {
     wlog("element %ld of lensums:\n",index);
-    struct lensum* lensum = &lensums->data[index];
+    Lensum* lensum = &lensums->data[index];
     lensum_print(lensum);
 }
 
-void lensums_print_firstlast(struct lensums* lensums) {
+void lensums_print_firstlast(Lensums* lensums) {
     lensums_print_one(lensums, 0);
     lensums_print_one(lensums, lensums->size-1);
 }
 
-struct lensums* lensums_delete(struct lensums* lensums) {
+Lensums* lensums_delete(Lensums* lensums) {
     if (lensums != NULL) {
         if (lensums->data != NULL) {
 
             for (size_t i=0; i<lensums->size; i++) {
-                struct lensum* lensum = &lensums->data[i];
+                Lensum* lensum = &lensums->data[i];
                 free(lensum->npair);
                 free(lensum->rsum);
                 free(lensum->wsum);
@@ -144,8 +144,8 @@ struct lensums* lensums_delete(struct lensums* lensums) {
     return NULL;
 }
 
-struct lensum* lensum_new(size_t nbin, int shear_style) {
-    struct lensum* lensum=calloc(1,sizeof(struct lensum));
+Lensum* lensum_new(size_t nbin, int shear_style) {
+    Lensum* lensum=calloc(1,sizeof(Lensum));
     if (lensum == NULL) {
         wlog("failed to allocate lensum\n");
         exit(EXIT_FAILURE);
@@ -180,7 +180,7 @@ struct lensum* lensum_new(size_t nbin, int shear_style) {
 }
 
 // add the second lensum into the first
-void lensum_add(struct lensum* dest, struct lensum* src) {
+void lensum_add(Lensum* dest, Lensum* src) {
 
     dest->weight   += src->weight;
     dest->totpairs += src->totpairs;
@@ -199,7 +199,7 @@ void lensum_add(struct lensum* dest, struct lensum* src) {
 
 }
 
-int lensum_read(FILE* stream, struct lensum* lensum) {
+int lensum_read(FILE* stream, Lensum* lensum) {
     int nbin=lensum->nbin;
     int nexpect = 3+5*nbin;
     int nread=0;
@@ -232,7 +232,7 @@ int lensum_read(FILE* stream, struct lensum* lensum) {
     return (nread == nexpect);
 }
 
-void lensum_write(struct lensum* lensum, FILE* stream) {
+void lensum_write(Lensum* lensum, FILE* stream) {
     int nbin = lensum->nbin;
     int i=0;
 
@@ -263,7 +263,7 @@ void lensum_write(struct lensum* lensum, FILE* stream) {
 }
 
 // these write the stdout
-void lensum_print(struct lensum* lensum) {
+void lensum_print(Lensum* lensum) {
     wlog("  index:    %ld\n", lensum->index);
     wlog("  weight:   %lf\n", lensum->weight);
     wlog("  totpairs: %ld\n", lensum->totpairs);
@@ -291,10 +291,10 @@ void lensum_print(struct lensum* lensum) {
     }
 }
 
-struct lensum* lensum_copy(struct lensum* lensum) {
+Lensum* lensum_copy(Lensum* lensum) {
     int i=0;
 
-    struct lensum* copy=lensum_new(lensum->nbin, lensum->shear_style);
+    Lensum* copy=lensum_new(lensum->nbin, lensum->shear_style);
     copy->index = lensum->index;
     copy->weight = lensum->weight;
     copy->totpairs = lensum->totpairs;
@@ -319,7 +319,7 @@ struct lensum* lensum_copy(struct lensum* lensum) {
 
 
 
-void lensum_clear(struct lensum* lensum) {
+void lensum_clear(Lensum* lensum) {
 
     lensum->index=-1;
     lensum->weight=0;
@@ -339,7 +339,7 @@ void lensum_clear(struct lensum* lensum) {
     }
 }
 
-struct lensum* lensum_delete(struct lensum* lensum) {
+Lensum* lensum_delete(Lensum* lensum) {
     if (lensum != NULL) {
         free(lensum->npair);
         free(lensum->rsum);

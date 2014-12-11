@@ -18,17 +18,17 @@ double hpix_area(int64 nside) {
 }
 
 
-struct healpix* hpix_new(int64 nside) {
-    struct healpix* hpix;
+HealPix* hpix_new(int64 nside) {
+    HealPix* hpix;
 
     if (nside < 1 || nside > NS_MAX) {
         fprintf(stderr,"nside %ld out of range [%d, %d]\n", nside, 1, NS_MAX);
         exit(EXIT_FAILURE);
     }
 
-    hpix = malloc(sizeof(struct healpix));
+    hpix = malloc(sizeof(HealPix));
     if (hpix == NULL) {
-        printf("Could not allocate struct healpix\n");
+        printf("Could not allocate HealPix\n");
         exit(EXIT_FAILURE);
     }
 
@@ -42,7 +42,7 @@ struct healpix* hpix_new(int64 nside) {
 }
 
 // usage:  hpix=hpix_delete(hpix);
-struct healpix* hpix_delete(struct healpix* hpix) {
+HealPix* hpix_delete(HealPix* hpix) {
     free(hpix);
     return NULL;
 }
@@ -50,7 +50,7 @@ struct healpix* hpix_delete(struct healpix* hpix) {
 // ra,dec in degrees
 // radius in radians
 void hpix_disc_intersect(
-        const struct healpix* hpix,
+        const HealPix* hpix,
         double ra, double dec, double radius, 
         lvector* listpix) {
 
@@ -69,7 +69,7 @@ double dot_product3(double v1[3], double v2[3]) {
     return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
 }
 void hpix_disc_contains(
-        const struct healpix* hpix,
+        const HealPix* hpix,
         double ra, double dec, double radius, 
         lvector* listpix) {
 
@@ -171,7 +171,7 @@ int64 i64min(int64 v1, int64 v2) {
 }
 
 void hpix_in_ring(
-        const struct healpix* hpix, 
+        const HealPix* hpix, 
         int64 iz, 
         double phi0, 
         double dphi, 
@@ -226,7 +226,7 @@ void hpix_in_ring(
 }
 
 
-int64 hpix_ring_num(const struct healpix* hpix, double z) {
+int64 hpix_ring_num(const HealPix* hpix, double z) {
     int64 nside=hpix->nside;
 
     // rounds double to nearest long long int
@@ -250,7 +250,7 @@ int64 hpix_ring_num(const struct healpix* hpix, double z) {
     return iring;
 }
 
-int64 hpix_eq2pix(const struct healpix* hpix, double ra, double dec) {
+int64 hpix_eq2pix(const HealPix* hpix, double ra, double dec) {
     int64 nside=hpix->nside;
     int64 ipix=0;
     double theta=0, phi=0;

@@ -6,7 +6,7 @@
 #define FOUR_PI_G_OVER_C_SQUARED 6.0150504541630152e-07
 #define CLIGHT 2.99792458e5
 
-struct cosmo {
+typedef struct {
     int flat; // is this a flat cosmology?
 
     double H0;
@@ -23,41 +23,41 @@ struct cosmo {
 
     double vx[VNPTS];
     double vw[VNPTS];
-};
+} Cosmo;
 
-struct cosmo* cosmo_new(
+Cosmo* cosmo_new(
         double DH, 
         int flat,
         double omega_m,
         double omega_l,
         double omega_k);
 
-void cosmo_print(struct cosmo* c);
-struct cosmo* cosmo_delete(struct cosmo* c);
+void cosmo_print(Cosmo* c);
+Cosmo* cosmo_delete(Cosmo* c);
 
-double ez_inverse(struct cosmo* c, double z);
-double ez_inverse_integral(struct cosmo* c, double zmin, double zmax);
+double ez_inverse(Cosmo* c, double z);
+double ez_inverse_integral(Cosmo* c, double zmin, double zmax);
 
 /* comoving distance in Mpc */
-double Dc(struct cosmo* c, double zmin, double zmax);
+double Dc(Cosmo* c, double zmin, double zmax);
 
 // transverse comoving distance
-double Dm(struct cosmo* c, double zmin, double zmax);
+double Dm(Cosmo* c, double zmin, double zmax);
 
 // angular diameter distances
-double Da(struct cosmo* c, double zmin, double zmax);
+double Da(Cosmo* c, double zmin, double zmax);
 
 // luminosity distances
-double Dl(struct cosmo* c, double zmin, double zmax);
+double Dl(Cosmo* c, double zmin, double zmax);
 
 // comoving volume element
-double dV(struct cosmo* c, double z);
+double dV(Cosmo* c, double z);
 
 // comoving volume between zmin and zmax
-double V(struct cosmo* c, double zmin, double zmax);
+double V(Cosmo* c, double zmin, double zmax);
 
 // inverse critical density for lensing
-double scinv(struct cosmo* c, double zl, double zs);
+double scinv(Cosmo* c, double zl, double zs);
 double scinv_pre(double zl, double dcl, double dcs);
 
 // generate gauss-legendre abcissa and weights

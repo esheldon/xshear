@@ -9,10 +9,10 @@
 #include "sdss-survey.h"
 #include "sconfig.h"
 
-struct source* source_new(const struct sconfig* config) {
-    struct source* src = calloc(1,sizeof(struct source));
+Source* source_new(const ShearConfig* config) {
+    Source* src = calloc(1,sizeof(Source));
     if (src == NULL) {
-        wlog("Could not allocate struct source\n");
+        wlog("Could not allocate Source\n");
         exit(EXIT_FAILURE);
     }
 
@@ -34,7 +34,7 @@ struct source* source_new(const struct sconfig* config) {
 
 // use like this:
 //   source = source_delete(source);
-struct source* source_delete(struct source* src) {
+Source* source_delete(Source* src) {
 
     if (src != NULL) {
 
@@ -50,7 +50,7 @@ struct source* source_delete(struct source* src) {
 }
 
 // source must already be allocated
-int source_read(FILE* stream, struct source* src) {
+int source_read(FILE* stream, Source* src) {
     size_t i=0;
     double ra_rad,dec_rad;
     int nread=0;
@@ -97,7 +97,7 @@ int source_read(FILE* stream, struct source* src) {
     return (nread == nexpect);
 }
 
-void source_print(struct source* src) {
+void source_print(Source* src) {
     wlog("    ra:     %lf\n", src->ra);
     wlog("    dec:    %lf\n", src->dec);
     wlog("    g1:     %lf\n", src->g1);

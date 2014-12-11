@@ -24,9 +24,9 @@ int main(int argc, char** argv) {
 
     const char* config_url=argv[1];
     const char* lens_url=argv[2];
-    struct shear* shear=shear_init(config_url, lens_url);
+    Shear* shear=shear_init(config_url, lens_url);
 
-    struct source* src=source_new(shear->config);
+    Source* src=source_new(shear->config);
     src->zlens = (const dvector*) shear->config->zl;
 
     while (source_read(stdin, src)) {

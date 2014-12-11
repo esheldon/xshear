@@ -3,7 +3,7 @@
 
 #include "defs.h"
 
-struct lensum {
+typedef struct {
     int shear_style;
 
     int64 index;   // index in the lens list
@@ -20,38 +20,38 @@ struct lensum {
     // only used for lensfit style
     double* dsensum;
     double* osensum;
-};
+} Lensum;
 
-struct lensums {
+typedef struct {
     size_t size;
-    struct lensum* data;
-};
+    Lensum* data;
+} Lensums;
 
 
-struct lensums* lensums_new(size_t nlens, size_t nbin, int shear_style);
+Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style);
 
 // this one we write all the data out in binary format
-void lensums_write(struct lensums* lensums, FILE* stream);
+void lensums_write(Lensums* lensums, FILE* stream);
 
 // these write the stdout
-struct lensum* lensums_sum(struct lensums* lensums);
-void lensums_print_sum(struct lensums* lensums);
-void lensums_print_one(struct lensums* lensums, size_t index);
-void lensums_print_firstlast(struct lensums* lensums);
+Lensum* lensums_sum(Lensums* lensums);
+void lensums_print_sum(Lensums* lensums);
+void lensums_print_one(Lensums* lensums, size_t index);
+void lensums_print_firstlast(Lensums* lensums);
 
-struct lensums* lensums_delete(struct lensums* lensum);
+Lensums* lensums_delete(Lensums* lensum);
 
 
 
-struct lensum* lensum_new(size_t nbin, int shear_style);
-int lensum_read(FILE* stream, struct lensum* lensum);
-struct lensum* lensum_copy(struct lensum* lensum);
-void lensum_add(struct lensum* dest, struct lensum* src);
+Lensum* lensum_new(size_t nbin, int shear_style);
+int lensum_read(FILE* stream, Lensum* lensum);
+Lensum* lensum_copy(Lensum* lensum);
+void lensum_add(Lensum* dest, Lensum* src);
 
-void lensum_write(struct lensum* lensum, FILE* stream);
-void lensum_print(struct lensum* lensum);
-void lensum_clear(struct lensum* lensum);
-struct lensum* lensum_delete(struct lensum* lensum);
+void lensum_write(Lensum* lensum, FILE* stream);
+void lensum_print(Lensum* lensum);
+void lensum_clear(Lensum* lensum);
+Lensum* lensum_delete(Lensum* lensum);
 
 
 
