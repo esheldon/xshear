@@ -58,8 +58,8 @@ int main(int argc, char** argv) {
     wlog("Writing results to stdout\n");
     lensums_write(shear->lensums, stdout);
 
-    src=source_delete(src);
-    shear=shear_delete(shear);
+    src=source_free(src);
+    shear=shear_free(shear);
     wlog("Done\n");
 
     return 0;

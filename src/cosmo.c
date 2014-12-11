@@ -51,8 +51,8 @@ void cosmo_print(Cosmo* c) {
     wlog("    omega_k: %lf\n", c->omega_k);
 }
 
-// usage:  cosmo=cosmo_delete(cosmo);
-Cosmo* cosmo_delete(Cosmo* c) {
+// usage:  cosmo=cosmo_free(cosmo);
+Cosmo* cosmo_free(Cosmo* c) {
     free(c);
     return NULL;
 }

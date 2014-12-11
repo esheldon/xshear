@@ -49,7 +49,7 @@ typedef struct {
 
 ShearConfig* sconfig_read(const char* url);
 
-ShearConfig* sconfig_delete(ShearConfig* config);
+ShearConfig* sconfig_free(ShearConfig* config);
 void sconfig_print(ShearConfig* config);
 
 int get_mask_style(struct cfg *cfg);

@@ -28,7 +28,7 @@ typedef struct {
 
 Shear* shear_init(const char* config_url, const char* lens_url);
 void shear_process_source(Shear* self, Source* src);
-Shear* shear_delete(Shear* self);
+Shear* shear_free(Shear* self);
 
 
 void shear_print_sum(Shear* self);

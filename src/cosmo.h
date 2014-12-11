@@ -33,7 +33,7 @@ Cosmo* cosmo_new(
         double omega_k);
 
 void cosmo_print(Cosmo* c);
-Cosmo* cosmo_delete(Cosmo* c);
+Cosmo* cosmo_free(Cosmo* c);
 
 double ez_inverse(Cosmo* c, double z);
 double ez_inverse_integral(Cosmo* c, double zmin, double zmax);

@@ -62,7 +62,7 @@ void lcat_add_search_angle(LensCatalog* lcat, double rmax);
 void lcat_print_one(LensCatalog* lcat, size_t el);
 void lcat_print_firstlast(LensCatalog* lcat);
 
-LensCatalog* lcat_delete(LensCatalog* lcat);
+LensCatalog* lcat_free(LensCatalog* lcat);
 
 
 void lcat_disc_intersect(LensCatalog* lcat, HealPix* hpix, double rmax);

@@ -74,6 +74,6 @@ int source_read(FILE* stream, Source* src);
 
 void source_print(Source* src);
 
-Source* source_delete(Source* src);
+Source* source_free(Source* src);
 
 #endif

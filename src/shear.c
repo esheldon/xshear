@@ -323,15 +323,15 @@ void shear_write(Shear* self, FILE* stream) {
     lensums_write(self->lensums, stream);
 }
 
-Shear* shear_delete(Shear* self) {
+Shear* shear_free(Shear* self) {
 
     if (self != NULL) {
 
-        self->config   = sconfig_delete(self->config);
-        self->lcat     = lcat_delete(self->lcat);
-        self->hpix     = hpix_delete(self->hpix);
-        self->cosmo    = cosmo_delete(self->cosmo);
-        self->lensums  = lensums_delete(self->lensums);
+        self->config   = sconfig_free(self->config);
+        self->lcat     = lcat_free(self->lcat);
+        self->hpix     = hpix_free(self->hpix);
+        self->cosmo    = cosmo_free(self->cosmo);
+        self->lensums  = lensums_free(self->lensums);
 
     }
     free(self);

@@ -104,7 +104,7 @@ Lensum* lensums_sum(Lensums* lensums) {
 void lensums_print_sum(Lensums* lensums) {
     Lensum* lensum = lensums_sum(lensums);
     lensum_print(lensum);
-    lensum=lensum_delete(lensum);
+    lensum=lensum_free(lensum);
 }
 
 // these write the stdout
@@ -119,7 +119,7 @@ void lensums_print_firstlast(Lensums* lensums) {
     lensums_print_one(lensums, lensums->size-1);
 }
 
-Lensums* lensums_delete(Lensums* lensums) {
+Lensums* lensums_free(Lensums* lensums) {
     if (lensums != NULL) {
         if (lensums->data != NULL) {
 
@@ -339,7 +339,7 @@ void lensum_clear(Lensum* lensum) {
     }
 }
 
-Lensum* lensum_delete(Lensum* lensum) {
+Lensum* lensum_free(Lensum* lensum) {
     if (lensum != NULL) {
         free(lensum->npair);
         free(lensum->rsum);

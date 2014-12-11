@@ -39,7 +39,7 @@ void lensums_print_sum(Lensums* lensums);
 void lensums_print_one(Lensums* lensums, size_t index);
 void lensums_print_firstlast(Lensums* lensums);
 
-Lensums* lensums_delete(Lensums* lensum);
+Lensums* lensums_free(Lensums* lensum);
 
 
 
@@ -51,7 +51,7 @@ void lensum_add(Lensum* dest, Lensum* src);
 void lensum_write(Lensum* lensum, FILE* stream);
 void lensum_print(Lensum* lensum);
 void lensum_clear(Lensum* lensum);
-Lensum* lensum_delete(Lensum* lensum);
+Lensum* lensum_free(Lensum* lensum);
 
 
 

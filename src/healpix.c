@@ -41,8 +41,8 @@ HealPix* hpix_new(int64 nside) {
     return hpix;
 }
 
-// usage:  hpix=hpix_delete(hpix);
-HealPix* hpix_delete(HealPix* hpix) {
+// usage:  hpix=hpix_free(hpix);
+HealPix* hpix_free(HealPix* hpix) {
     free(hpix);
     return NULL;
 }

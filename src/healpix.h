@@ -23,7 +23,7 @@ double hpix_area(int64 nside);
 
 /* allocate a new healpix structure */
 HealPix* hpix_new(int64 nside);
-HealPix* hpix_delete(HealPix* hpix);
+HealPix* hpix_free(HealPix* hpix);
 
 
 /*

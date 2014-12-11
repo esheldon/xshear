@@ -22,11 +22,11 @@ void tree_insert(TreeNode ** self, int64_t val, size_t index) {
     }
 }
 
-TreeNode* tree_delete(TreeNode* self) {
+TreeNode* tree_free(TreeNode* self) {
     if (self != NULL) {
         vector_free(self->indices);
-        self->left    = tree_delete(self->left);
-        self->right   = tree_delete(self->right);
+        self->left    = tree_free(self->left);
+        self->right   = tree_free(self->right);
         free(self);
     }
     return NULL;

@@ -96,8 +96,8 @@ _sconfig_read_bail:
     return c;
 }
 
-// usage:  config=config_delete(config);
-ShearConfig* sconfig_delete(ShearConfig* self) {
+// usage:  config=config_free(config);
+ShearConfig* sconfig_free(ShearConfig* self) {
     if (self != NULL) {
         free(self->zl);
     }

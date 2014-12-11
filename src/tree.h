@@ -22,7 +22,7 @@ TreeNode* tree_find(TreeNode* self, int64_t val);
 void tree_print( TreeNode *self, int level );
 void tree_print_padding( char ch, int n );
 
-TreeNode* tree_delete(TreeNode* self);
+TreeNode* tree_free(TreeNode* self);
 
 size_t tree_most_members( TreeNode *self );
 #endif

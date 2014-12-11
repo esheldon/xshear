@@ -246,19 +246,18 @@ void lcat_print_firstlast(LensCatalog* lcat) {
 
 
 // use like this:
-//   lcat = lcat_delete(lcat);
+//   lcat = lcat_free(lcat);
 // This ensures that the lcat pointer is set to NULL
-LensCatalog* lcat_delete(LensCatalog* lcat) {
+LensCatalog* lcat_free(LensCatalog* lcat) {
 
     if (lcat != NULL) {
         Lens* lens=&lcat->data[0];
         for (size_t i=0; i<lcat->size; i++) {
             vector_free(lens->hpix);
-            //lens->rev = szvector_delete(lens->rev);
             lens++;
         }
         free(lcat->data);
-        lcat->hpix_tree = tree_delete(lcat->hpix_tree);
+        lcat->hpix_tree = tree_free(lcat->hpix_tree);
         free(lcat);
     }
     return NULL;

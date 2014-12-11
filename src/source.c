@@ -33,8 +33,8 @@ Source* source_new(const ShearConfig* config) {
 }
 
 // use like this:
-//   source = source_delete(source);
-Source* source_delete(Source* src) {
+//   source = source_free(source);
+Source* source_free(Source* src) {
 
     if (src != NULL) {
 
