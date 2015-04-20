@@ -145,10 +145,10 @@ When using point photozs (sigmacrit_style="point") the format is the following
 
 ```
 For shear_style="reduced" (using simple reduced shear style)
-        ra dec g1 g2 weight z
+        ra dec g1 g2 source_weight z
 
 For shear_style="lensfit" (lensfit style)
-        ra dec g1 g2 g1sens g2sens weight z
+        ra dec g1 g2 g1sens g2sens source_weight z
 ```
 
 The format for sigmacrit_style="interp" includes the mean 1/sigma_crit in bins
@@ -156,53 +156,69 @@ of lens redshift.
 
 ```
 For shear_style="reduced" (using simple reduced shear style)
-        ra dec g1 g2 weight sc_1 sc_2 sc_3 sc_4 ...
+        ra dec g1 g2 source_weight sc_1 sc_2 sc_3 sc_4 ...
 
 For shear_style="lensfit" (lensfit style)
-        ra dec g1 g2 g1sens g2sens weight sc_1 sc_2 sc_3 sc_4 ...
+        ra dec g1 g2 g1sens g2sens source_weight sc_1 sc_2 sc_3 sc_4 ...
 ```
 
 Meaning of columns:
 
 ```
-ra:     RA in degrees
-dec:    DEC in degrees
-g1:     shape component 1
-g2:     shape component 2
-weight: a weight for the object
-z:      a point estimator (when sigmacrit_style="point")
-sc_i:   1/sigma_crit in bins of lens redshift.  The redshift bins
-        are defined in "zlvals" config parameter
+ra:            RA in degrees
+dec:           DEC in degrees
+g1:            shape component 1
+g2:            shape component 2
+source_weight: a weight for the source
+z:             a point estimator (when sigmacrit_style="point")
+sc_i:          1/sigma_crit in bins of lens redshift.  The redshift bins
+               are defined in "zlvals" config parameter
 ```
 
 Format of Output Catalog
 ------------------------
-For shear_style="reduced", ordinary reduced shear style
+The output catalog has a row for each lens.  For shear_style="reduced",
+ordinary reduced shear style, each row looks like
 ```
-    index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i
+    index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i
 ```
 
 For shear style="lensfit", lensfit style
 ```
-    index weight totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
+    index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
 ```
 
 Where _i means radial bin i, so there will be Nbins columns for each.
 
-Meaning of columns. In the following, the weight is the weight of the source
-times 1/\Sigma_{crit}^2
+Explanation for each of the output columns
+```
+index:      index from lens catalog
+weight_tot: sum of all weights for all source pairs in all radial bins
+totpairs:   total pairs used
+npair_i:    number of pairs in radial bin i.  N columns.
+rsum_i:     sum of radius in radial bin i
+wsum_i:     sum of weights in radial bin i
+dsum_i:     sum of \Delta\Sigma_+ * weights in radial bin i.
+osum_i:     sum of \Delta\Sigma_x * weights in  radial bin i.
+dsensum_i:  sum of weights times sensitivities
+osensum_i:  sum of weights times sensitivities
+```
+
+
+In the above, the weights of each source are used as follows.  weight_source is
+the weight of the source (see above) and the weight for a lens-source pairs w
+is the source weight times 1/\Sigma_{crit}^2 for that pair.  Thus dsum_i is the
+sum over sources j in radial bin i
 
 ```
-index:     index from lens catalog
-weight:    sum of all weights for all source pairs
-totpairs:  total pairs used
-npair_i:   number of pairs in radial bin i.  N columns.
-rsum_i:    sum of radius in radial bin i
-wsum_i:    sum of weights in radial bin i
-dsum_i:    sum of \Delta\Sigma_+ * weights in radial bin i.
-osum_i:    sum of \Delta\Sigma_x * weights in  radial bin i.
-dsensum_i: sum of weights times sensitivities
-osensum_i: sum of weights times sensitivities
+w_j    = weight_source_j/\Sigma_{crit}^2
+wsum_i = sum( w_j )
+dsum_i = sum( w_j * \Delta\Sigma_+ )
+\Delta\Sigma_+ = g+ * \Sigma_{crit}
+```
+For lensfit style, the sensitivities are also weighted
+```
+dsensum_i = sum( w_j * gsens )
 ```
 
 ### Averaging the \Delta\Sigma and Other Quantities
