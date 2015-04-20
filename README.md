@@ -205,10 +205,10 @@ osensum_i:  sum of weights times sensitivities
 ```
 
 
-In the above, the weights of each source are used as follows.  weight_source is
-the weight of the source (see above) and the weight for a lens-source pairs w
-is the source weight times 1/\Sigma_{crit}^2 for that pair.  Thus dsum_i is the
-sum over sources j in radial bin i
+In the above, the weights of each source are used as follows.  Let the weight
+of a source be *weight_source* and the weight for a lens-source pair *w* be the
+source weight times 1/\Sigma_{crit}^2 for that pair.  Then dsum_i is the sum
+over sources j in radial bin i
 
 ```
 w_j    = weight_source_j/\Sigma_{crit}^2
