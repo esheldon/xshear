@@ -10,23 +10,23 @@ Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
     wlog("Creating lensums:\n");
     wlog("    nlens: %lu  nbin: %lu\n", nlens, nbin);
 
-    Lensums* lensums=calloc(1,sizeof(Lensums));
-    if (lensums == NULL) {
+    Lensums* self=calloc(1,sizeof(Lensums));
+    if (self == NULL) {
         wlog("failed to allocate lensums struct\n");
         exit(EXIT_FAILURE);
     }
 
-    lensums->data = calloc(nlens, sizeof(Lensum));
-    if (lensums->data == NULL) {
+    self->data = calloc(nlens, sizeof(Lensum));
+    if (self->data == NULL) {
         wlog("failed to allocate lensum array\n");
         exit(EXIT_FAILURE);
     }
 
-    lensums->size = nlens;
+    self->size = nlens;
 
 
     for (size_t i=0; i<nlens; i++) {
-        Lensum* lensum = &lensums->data[i];
+        Lensum* lensum = &self->data[i];
 
         lensum->shear_style=shear_style;
 
@@ -54,16 +54,16 @@ Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
         }
 
     }
-    return lensums;
+    return self;
 
 }
 
 // this is for writing them all at once.  We actually usually
 // write them one at a time
-void lensums_write(Lensums* lensums, FILE* stream) {
+void lensums_write(Lensums* self, FILE* stream) {
 
-    Lensum* lensum = &lensums->data[0];
-    for (size_t i=0; i<lensums->size; i++) {
+    Lensum* lensum = &self->data[0];
+    for (size_t i=0; i<self->size; i++) {
         lensum_write(lensum, stream);
         
         lensum++;
@@ -71,15 +71,23 @@ void lensums_write(Lensums* lensums, FILE* stream) {
 }
 
 
-Lensum* lensums_sum(Lensums* lensums) {
-    Lensum* tsum=lensum_new(lensums->data[0].nbin,
-                                   lensums->data[0].shear_style);
+Lensum* lensums_sum(Lensums* self) {
+    Lensum* tsum=lensum_new(self->data[0].nbin,
+                            self->data[0].shear_style);
 
-    Lensum* lensum = &lensums->data[0];
 
-    for (size_t i=0; i<lensums->size; i++) {
+    for (size_t i=0; i<self->size; i++) {
+
+        Lensum* lensum = &self->data[i];
+
+        lensum_add(tsum, lensum);
+        /*
         tsum->weight   += lensum->weight;
         tsum->totpairs += lensum->totpairs;
+
+        tsum->xxsum += lensum->xxsum;
+        tsum->xysum += lensum->xysum;
+        tsum->yysum += lensum->yysum;
 
         for (size_t j=0; j<lensum->nbin; j++) {
             tsum->npair[j] += lensum->npair[j];
@@ -94,37 +102,37 @@ Lensum* lensums_sum(Lensums* lensums) {
             }
 
         }
-        lensum++;
+        */
     }
     return tsum;
 }
 
 
 
-void lensums_print_sum(Lensums* lensums) {
-    Lensum* lensum = lensums_sum(lensums);
+void lensums_print_sum(Lensums* self) {
+    Lensum* lensum = lensums_sum(self);
     lensum_print(lensum);
     lensum=lensum_free(lensum);
 }
 
 // these write the stdout
-void lensums_print_one(Lensums* lensums, size_t index) {
+void lensums_print_one(Lensums* self, size_t index) {
     wlog("element %ld of lensums:\n",index);
-    Lensum* lensum = &lensums->data[index];
+    Lensum* lensum = &self->data[index];
     lensum_print(lensum);
 }
 
-void lensums_print_firstlast(Lensums* lensums) {
-    lensums_print_one(lensums, 0);
-    lensums_print_one(lensums, lensums->size-1);
+void lensums_print_firstlast(Lensums* self) {
+    lensums_print_one(self, 0);
+    lensums_print_one(self, self->size-1);
 }
 
-Lensums* lensums_free(Lensums* lensums) {
-    if (lensums != NULL) {
-        if (lensums->data != NULL) {
+Lensums* lensums_free(Lensums* self) {
+    if (self != NULL) {
+        if (self->data != NULL) {
 
-            for (size_t i=0; i<lensums->size; i++) {
-                Lensum* lensum = &lensums->data[i];
+            for (size_t i=0; i<self->size; i++) {
+                Lensum* lensum = &self->data[i];
                 free(lensum->npair);
                 free(lensum->rsum);
                 free(lensum->wsum);
@@ -137,9 +145,9 @@ Lensums* lensums_free(Lensums* lensums) {
                 }
 
             }
-            free(lensums->data);
+            free(self->data);
         }
-        free(lensums);
+        free(self);
     }
     return NULL;
 }
@@ -180,82 +188,91 @@ Lensum* lensum_new(size_t nbin, int shear_style) {
 }
 
 // add the second lensum into the first
-void lensum_add(Lensum* dest, Lensum* src) {
+void lensum_add(Lensum* self, Lensum* src) {
 
-    dest->weight   += src->weight;
-    dest->totpairs += src->totpairs;
+    self->weight   += src->weight;
+    self->totpairs += src->totpairs;
+
+    self->xxsum += src->xxsum;
+    self->xysum += src->xysum;
+    self->yysum += src->yysum;
 
     for (size_t i=0; i<src->nbin; i++) {
-        dest->npair[i] += src->npair[i];
-        dest->rsum[i] += src->rsum[i];
-        dest->wsum[i] += src->wsum[i];
-        dest->dsum[i] += src->dsum[i];
-        dest->osum[i] += src->osum[i];
+        self->npair[i] += src->npair[i];
+        self->rsum[i] += src->rsum[i];
+        self->wsum[i] += src->wsum[i];
+        self->dsum[i] += src->dsum[i];
+        self->osum[i] += src->osum[i];
         if (src->shear_style==SHEAR_STYLE_LENSFIT) {
-            dest->dsensum[i] += src->dsensum[i];
-            dest->osensum[i] += src->osensum[i];
+            self->dsensum[i] += src->dsensum[i];
+            self->osensum[i] += src->osensum[i];
         }
     }
 
 }
 
-int lensum_read(FILE* stream, Lensum* lensum) {
-    int nbin=lensum->nbin;
-    int nexpect = 3+5*nbin;
+int lensum_read_into(Lensum* self, FILE* stream) {
+    int nbin=self->nbin;
+    int nexpect = 6+5*nbin;
     int nread=0;
     int i=0;
 
-    nread+=fscanf(stream,"%ld", &lensum->index);
-    nread+=fscanf(stream,"%lf", &lensum->weight);
-    nread+=fscanf(stream,"%ld", &lensum->totpairs);
+    nread+=fscanf(stream,"%ld", &self->index);
+    nread+=fscanf(stream,"%lf", &self->weight);
+    nread+=fscanf(stream,"%ld", &self->totpairs);
+
+    nread+=fscanf(stream,"%lf", &self->xxsum);
+    nread+=fscanf(stream,"%lf", &self->xysum);
+    nread+=fscanf(stream,"%lf", &self->yysum);
 
     for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%ld", &lensum->npair[i]);
+        nread+=fscanf(stream,"%ld", &self->npair[i]);
 
     for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &lensum->rsum[i]);
+        nread+=fscanf(stream,"%lf", &self->rsum[i]);
     for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &lensum->wsum[i]);
+        nread+=fscanf(stream,"%lf", &self->wsum[i]);
     for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &lensum->dsum[i]);
+        nread+=fscanf(stream,"%lf", &self->dsum[i]);
     for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &lensum->osum[i]);
+        nread+=fscanf(stream,"%lf", &self->osum[i]);
 
-    if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+    if (self->shear_style==SHEAR_STYLE_LENSFIT) {
         for (i=0; i<nbin; i++) 
-            nread+=fscanf(stream,"%lf", &lensum->dsensum[i]);
+            nread+=fscanf(stream,"%lf", &self->dsensum[i]);
         for (i=0; i<nbin; i++) 
-            nread+=fscanf(stream,"%lf", &lensum->osensum[i]);
+            nread+=fscanf(stream,"%lf", &self->osensum[i]);
         nexpect += 2*nbin;
     }
 
     return (nread == nexpect);
 }
 
-void lensum_write(Lensum* lensum, FILE* stream) {
-    int nbin = lensum->nbin;
+void lensum_write(Lensum* self, FILE* stream) {
+    int nbin = self->nbin;
     int i=0;
 
-    fprintf(stream,"%ld %.16g %ld", 
-            lensum->index, lensum->weight, lensum->totpairs);
+    fprintf(stream,"%ld %.16g %ld %.16g %.16g %.16g", 
+            self->index, self->weight, self->totpairs,
+            self->xxsum, self->xysum, self->yysum);
 
     for (i=0; i<nbin; i++) 
-        fprintf(stream," %ld", lensum->npair[i]);
+        fprintf(stream," %ld", self->npair[i]);
 
     for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", lensum->rsum[i]);
+        fprintf(stream," %.16g", self->rsum[i]);
     for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", lensum->wsum[i]);
+        fprintf(stream," %.16g", self->wsum[i]);
     for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", lensum->dsum[i]);
+        fprintf(stream," %.16g", self->dsum[i]);
     for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", lensum->osum[i]);
+        fprintf(stream," %.16g", self->osum[i]);
 
-    if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+    if (self->shear_style==SHEAR_STYLE_LENSFIT) {
         for (i=0; i<nbin; i++) 
-            fprintf(stream," %.16g", lensum->dsensum[i]);
+            fprintf(stream," %.16g", self->dsensum[i]);
         for (i=0; i<nbin; i++) 
-            fprintf(stream," %.16g", lensum->osensum[i]);
+            fprintf(stream," %.16g", self->osensum[i]);
     }
 
     fprintf(stream,"\n");
@@ -263,29 +280,41 @@ void lensum_write(Lensum* lensum, FILE* stream) {
 }
 
 // these write the stdout
-void lensum_print(Lensum* lensum) {
-    wlog("  index:    %ld\n", lensum->index);
-    wlog("  weight:   %lf\n", lensum->weight);
-    wlog("  totpairs: %ld\n", lensum->totpairs);
-    wlog("  nbin:     %ld\n", lensum->nbin);
+void lensum_print(Lensum* self) {
+
+    double se1=-9999,se2=-9999;
+    double T = self->xxsum + self->yysum;
+    if (T  > 0) {
+        se1 = (self->xxsum - self->yysum)/T;
+        se2 = 2.0*self->xysum/T;
+    }
+
+    wlog("  index:    %ld\n", self->index);
+    wlog("  weight:   %g\n",  self->weight);
+    wlog("  totpairs: %ld\n", self->totpairs);
+    wlog("  nbin:     %ld\n", self->nbin);
+    wlog("  xxsum:    %g\n",  self->xxsum);
+    wlog("  xysum:    %g\n",  self->xysum);
+    wlog("  yysum:    %g\n",  self->yysum);
+    wlog("  se1:      %g\n",  se1);
+    wlog("  se2:      %g\n",  se2);
     wlog("  bin       npair            wsum           meanr            dsum            osum");
-    if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
+    if (self->shear_style==SHEAR_STYLE_LENSFIT) {
         wlog("         dsensum         osensum");
     }
     wlog("\n");
 
-    for (size_t i=0; i<lensum->nbin; i++) {
+    for (size_t i=0; i<self->nbin; i++) {
         //wlog("  %3lu %11ld %15.6lf %15.6lf %15.6lf %15.6lf", 
         wlog("  %3lu %11ld %15.6g %15.6g %15.6g %15.6g", 
              i,
-             lensum->npair[i],
-             lensum->wsum[i],
-             lensum->rsum[i]/lensum->wsum[i],
-             lensum->dsum[i],
-             lensum->osum[i] );
-        if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
-            //wlog(" %15.6lf %15.6lf", lensum->dsensum[i], lensum->osensum[i]);
-            wlog(" %15.6g %15.6g", lensum->dsensum[i], lensum->osensum[i]);
+             self->npair[i],
+             self->wsum[i],
+             self->rsum[i]/self->wsum[i],
+             self->dsum[i],
+             self->osum[i] );
+        if (self->shear_style==SHEAR_STYLE_LENSFIT) {
+            wlog(" %15.6g %15.6g", self->dsensum[i], self->osensum[i]);
         }
         wlog("\n");
     }
@@ -298,6 +327,10 @@ Lensum* lensum_copy(Lensum* lensum) {
     copy->index = lensum->index;
     copy->weight = lensum->weight;
     copy->totpairs = lensum->totpairs;
+
+    copy->xxsum = lensum->xxsum;
+    copy->xysum = lensum->xysum;
+    copy->yysum = lensum->yysum;
 
     copy->nbin = lensum->nbin;
 
@@ -319,39 +352,43 @@ Lensum* lensum_copy(Lensum* lensum) {
 
 
 
-void lensum_clear(Lensum* lensum) {
+void lensum_clear(Lensum* self) {
 
-    lensum->index=-1;
-    lensum->weight=0;
-    lensum->totpairs=0;
+    self->index=-1;
+    self->weight=0;
+    self->totpairs=0;
 
-    for (size_t i=0; i<lensum->nbin; i++) {
-        lensum->npair[i] = 0;
-        lensum->wsum[i] = 0;
-        lensum->dsum[i] = 0;
-        lensum->osum[i] = 0;
-        lensum->rsum[i] = 0;
+    self->xxsum = 0;
+    self->xysum = 0;
+    self->yysum = 0;
 
-        if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
-            lensum->dsensum[i] = 0;
-            lensum->osensum[i] = 0;
+    for (size_t i=0; i<self->nbin; i++) {
+        self->npair[i] = 0;
+        self->wsum[i] = 0;
+        self->dsum[i] = 0;
+        self->osum[i] = 0;
+        self->rsum[i] = 0;
+
+        if (self->shear_style==SHEAR_STYLE_LENSFIT) {
+            self->dsensum[i] = 0;
+            self->osensum[i] = 0;
         }
     }
 }
 
-Lensum* lensum_free(Lensum* lensum) {
-    if (lensum != NULL) {
-        free(lensum->npair);
-        free(lensum->rsum);
-        free(lensum->wsum);
-        free(lensum->dsum);
-        free(lensum->osum);
+Lensum* lensum_free(Lensum* self) {
+    if (self != NULL) {
+        free(self->npair);
+        free(self->rsum);
+        free(self->wsum);
+        free(self->dsum);
+        free(self->osum);
 
-        if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
-            free(lensum->dsensum);
-            free(lensum->osensum);
+        if (self->shear_style==SHEAR_STYLE_LENSFIT) {
+            free(self->dsensum);
+            free(self->osensum);
         }
     }
-    free(lensum);
+    free(self);
     return NULL;
 }

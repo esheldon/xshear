@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 
     Lensum* lensum = lensum_new(config->nbin, config->shear_style);
     Lensum* lensum_tot = lensum_new(config->nbin, config->shear_style);
-    while (lensum_read(stdin, lensum)) {
+    while (lensum_read_into(lensum, stdin)) {
         counter++;
         if (counter == 1) {
             wlog("first lensum: %ld %.8g %ld\n", 
