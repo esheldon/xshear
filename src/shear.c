@@ -302,9 +302,11 @@ void shear_procpair(Shear* self,
         lensum->osensum[rbin] += weight*gsens;
     }
 
-    // can ignore 
-    double xrel = r*cos(posangle_radians);
-    double yrel = r*sin(posangle_radians);
+    // working in 2*theta space. So if we choose
+    // quadrants from the mask info this is still
+    // a valid thing to check
+    double xrel = r*cos2pa;
+    double yrel = r*sin2pa;
 
     lensum->xxsum += weight*xrel*xrel;
     lensum->xysum += weight*xrel*yrel;
