@@ -7,7 +7,7 @@ known as cross-correlation shear, hence the name xshear
 Runs of the code can easily be parallelized across sources as well as lenses.  
 
 Parallelizing across sources makes sense for cross-correlation shear, because
-the source catalog is generally much larger than the lense catalog. The source
+the source catalog is generally much larger than the lens catalog. The source
 catalog can be split into as many small chunks as needed, and each can be
 processed on a different cpu across many machines.
 
@@ -22,15 +22,17 @@ cat source_file | xshear config_file lens_file > output_file
 
 # you can parallelize by splitting up the sources.
 cat sources1 | xshear config_file lens_file > output_file1
-cat sources2 | xshear config_file lens_file > output_file1
+cat sources2 | xshear config_file lens_file > output_file2
 
 # combine the lens sums from the different source catalogs using
 # the redshear program (red for reduce: this is a map-reduce!).
 cat output_file1 output_file2 | redshear config_file > output_file
 
-# first apply a filter to a set of source files.  This could be an awk
-# command, etc.
+# first apply a filter to a set of source files.
 cat source_file | src_filter | xshear config_file lens_file > output_file
+
+# The src_filter could be an awk command, etc.
+cat source_file | awk '($6 > 0.2)' | xshear config_file lens_file > output_file
 ```
 
 Example Config Files
