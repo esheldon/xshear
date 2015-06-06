@@ -61,9 +61,11 @@ LensCatalog* lcat_read(const char* lens_url) {
     wlog("OK\n");
 
     wlog("    reading data...");
-    Lens* lens = &lcat->data[0];
     double ra_rad,dec_rad;
     for (size_t i=0; i<nlens; i++) {
+
+        Lens* lens = &lcat->data[i];
+
         nread=fscanf(stream,"%ld %lf %lf %lf %ld",
                 &lens->index,&lens->ra,&lens->dec,&lens->z,&lens->maskflags);
         if (5 != nread) {
@@ -84,7 +86,7 @@ LensCatalog* lcat_read(const char* lens_url) {
                        &lens->sinlam, &lens->coslam,
                        &lens->sineta, &lens->coseta);
 
-        lens++;
+
     }
     fclose(stream);
     wlog("OK\n");
@@ -119,9 +121,10 @@ LensCatalog* hdfs_lcat_read(const char* lens_url) {
     wlog("OK\n");
 
     wlog("    reading data...");
-    Lens* lens = &lcat->data[0];
     double ra_rad,dec_rad;
     for (size_t i=0; i<nlens; i++) {
+
+        Lens* lens = &lcat->data[i];
 
         hdfs_getline(hf, &lbuf, &lbsz);
 
@@ -146,7 +149,6 @@ LensCatalog* hdfs_lcat_read(const char* lens_url) {
                        &lens->sinlam, &lens->coslam,
                        &lens->sineta, &lens->coseta);
 
-        lens++;
 
     }
 
@@ -162,20 +164,18 @@ LensCatalog* hdfs_lcat_read(const char* lens_url) {
 #endif
 
 void lcat_add_da(LensCatalog* lcat, Cosmo* cosmo) {
-    Lens* lens = &lcat->data[0];
     for (size_t i=0; i<lcat->size; i++) {
+        Lens* lens = &lcat->data[i];
         lens->da = Da(cosmo, 0.0, lens->z);
-        lens++;
     }
 }
 
 void lcat_add_search_angle(LensCatalog* lcat, double rmax) {
-    Lens* lens = &lcat->data[0];
     for (size_t i=0; i<lcat->size; i++) {
+        Lens* lens = &lcat->data[i];
 
         double search_angle = rmax/lens->da;
         lens->cos_search_angle = cos(search_angle);
-        lens++;
     }
 }
 
@@ -183,9 +183,11 @@ void lcat_add_search_angle(LensCatalog* lcat, double rmax) {
 
 void lcat_disc_intersect(LensCatalog* lcat, HealPix* hpix, double rmax) {
 
-    Lens* lens = &lcat->data[0];
 
     for (size_t i=0; i<lcat->size; i++) {
+
+        Lens* lens = &lcat->data[i];
+
         lens->hpix = lvector_new();
 
         double search_angle = rmax/lens->da;
@@ -199,23 +201,22 @@ void lcat_disc_intersect(LensCatalog* lcat, HealPix* hpix, double rmax) {
         // since we can ask if within min/max pixel values
         lvector_sort(lens->hpix);
 
-        lens++;
     }
 }
 
 void lcat_build_hpix_tree(HealPix* hpix, LensCatalog* lcat) {
     int64* ptr=NULL;
 
-    Lens* lens = &lcat->data[0];
     for (size_t i=0; i<lcat->size; i++) {
+
+        Lens* lens = &lcat->data[i];
+
         // add to the tree
-        ptr = &lens->hpix->data[0];
         for (size_t j=0; j<lens->hpix->size; j++) {
+            ptr = &lens->hpix->data[j];
             tree_insert(&lcat->hpix_tree, (*ptr)-hpix->half_npix, i);
-            ptr++;
         }
 
-        lens++;
     }
 
 }
