@@ -229,6 +229,7 @@ void shear_procpair(Shear* self,
     double cos2pa = cos(2*posangle_radians);
     double sin2pa = sin(2*posangle_radians);
 
+
     // note we already checked if lens z was in our interpolation range
     double scinv;
     if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
@@ -300,6 +301,16 @@ void shear_procpair(Shear* self,
         lensum->dsensum[rbin] += weight*gsens;
         lensum->osensum[rbin] += weight*gsens;
     }
+
+    // working in 2*theta space. So if we choose
+    // quadrants from the mask info this is still
+    // a valid thing to check
+    double xrel = r*cos2pa;
+    double yrel = r*sin2pa;
+
+    lensum->xxsum += weight*xrel*xrel;
+    lensum->xysum += weight*xrel*yrel;
+    lensum->yysum += weight*yrel*yrel;
 
 
 _procpair_bail:
