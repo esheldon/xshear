@@ -13,11 +13,6 @@ typedef struct {
     int64 nbin;
     int64* npair;
 
-    // for calculating the ellipticity of sources
-    double xxsum;
-    double xysum;
-    double yysum;
-
     double* rsum;
     double* wsum;
     double* dsum;

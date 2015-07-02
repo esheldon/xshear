@@ -81,28 +81,6 @@ Lensum* lensums_sum(Lensums* self) {
         Lensum* lensum = &self->data[i];
 
         lensum_add(tsum, lensum);
-        /*
-        tsum->weight   += lensum->weight;
-        tsum->totpairs += lensum->totpairs;
-
-        tsum->xxsum += lensum->xxsum;
-        tsum->xysum += lensum->xysum;
-        tsum->yysum += lensum->yysum;
-
-        for (size_t j=0; j<lensum->nbin; j++) {
-            tsum->npair[j] += lensum->npair[j];
-            tsum->rsum[j] += lensum->rsum[j];
-            tsum->wsum[j] += lensum->wsum[j];
-            tsum->dsum[j] += lensum->dsum[j];
-            tsum->osum[j] += lensum->osum[j];
-
-            if (tsum->shear_style==SHEAR_STYLE_LENSFIT) {
-                tsum->dsensum[j] += lensum->dsensum[j];
-                tsum->osensum[j] += lensum->osensum[j];
-            }
-
-        }
-        */
     }
     return tsum;
 }
@@ -193,10 +171,6 @@ void lensum_add(Lensum* self, Lensum* src) {
     self->weight   += src->weight;
     self->totpairs += src->totpairs;
 
-    self->xxsum += src->xxsum;
-    self->xysum += src->xysum;
-    self->yysum += src->yysum;
-
     for (size_t i=0; i<src->nbin; i++) {
         self->npair[i] += src->npair[i];
         self->rsum[i] += src->rsum[i];
@@ -213,17 +187,13 @@ void lensum_add(Lensum* self, Lensum* src) {
 
 int lensum_read_into(Lensum* self, FILE* stream) {
     int nbin=self->nbin;
-    int nexpect = 6+5*nbin;
+    int nexpect = 3+5*nbin;
     int nread=0;
     int i=0;
 
     nread+=fscanf(stream,"%ld", &self->index);
     nread+=fscanf(stream,"%lf", &self->weight);
     nread+=fscanf(stream,"%ld", &self->totpairs);
-
-    nread+=fscanf(stream,"%lf", &self->xxsum);
-    nread+=fscanf(stream,"%lf", &self->xysum);
-    nread+=fscanf(stream,"%lf", &self->yysum);
 
     for (i=0; i<nbin; i++) 
         nread+=fscanf(stream,"%ld", &self->npair[i]);
@@ -252,9 +222,8 @@ void lensum_write(Lensum* self, FILE* stream) {
     int nbin = self->nbin;
     int i=0;
 
-    fprintf(stream,"%ld %.16g %ld %.16g %.16g %.16g", 
-            self->index, self->weight, self->totpairs,
-            self->xxsum, self->xysum, self->yysum);
+    fprintf(stream,"%ld %.16g %ld",
+            self->index, self->weight, self->totpairs);
 
     for (i=0; i<nbin; i++) 
         fprintf(stream," %ld", self->npair[i]);
@@ -282,22 +251,10 @@ void lensum_write(Lensum* self, FILE* stream) {
 // these write the stdout
 void lensum_print(Lensum* self) {
 
-    double se1=-9999,se2=-9999;
-    double T = self->xxsum + self->yysum;
-    if (T  > 0) {
-        se1 = (self->xxsum - self->yysum)/T;
-        se2 = 2.0*self->xysum/T;
-    }
-
     wlog("  index:    %ld\n", self->index);
     wlog("  weight:   %g\n",  self->weight);
     wlog("  totpairs: %ld\n", self->totpairs);
     wlog("  nbin:     %ld\n", self->nbin);
-    wlog("  xxsum:    %g\n",  self->xxsum);
-    wlog("  xysum:    %g\n",  self->xysum);
-    wlog("  yysum:    %g\n",  self->yysum);
-    wlog("  se1:      %g\n",  se1);
-    wlog("  se2:      %g\n",  se2);
     wlog("  bin       npair            wsum           meanr            dsum            osum");
     if (self->shear_style==SHEAR_STYLE_LENSFIT) {
         wlog("         dsensum         osensum");
@@ -328,10 +285,6 @@ Lensum* lensum_copy(Lensum* lensum) {
     copy->weight = lensum->weight;
     copy->totpairs = lensum->totpairs;
 
-    copy->xxsum = lensum->xxsum;
-    copy->xysum = lensum->xysum;
-    copy->yysum = lensum->yysum;
-
     copy->nbin = lensum->nbin;
 
     for (i=0; i<copy->nbin; i++) {
@@ -357,10 +310,6 @@ void lensum_clear(Lensum* self) {
     self->index=-1;
     self->weight=0;
     self->totpairs=0;
-
-    self->xxsum = 0;
-    self->xysum = 0;
-    self->yysum = 0;
 
     for (size_t i=0; i<self->nbin; i++) {
         self->npair[i] = 0;
