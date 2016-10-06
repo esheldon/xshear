@@ -17,6 +17,9 @@ typedef struct {
     int mask_style;
     int scstyle;
 
+    // if the distance to the lens is input
+    int Dlens_input;
+
     // will be zero unless scstyle==SIGMACRIT_STYLE_INTERP
     int64 nzl;
     // only fill in for scstyle==SIGMACRIT_STYLE_INTERP
@@ -51,11 +54,5 @@ ShearConfig* sconfig_read(const char* url);
 
 ShearConfig* sconfig_free(ShearConfig* config);
 void sconfig_print(ShearConfig* config);
-
-int get_mask_style(struct cfg *cfg);
-int get_shear_style(struct cfg *cfg);
-int get_scstyle(struct cfg *cfg);
-int get_r_units(struct cfg *cfg);
-int get_shear_units(struct cfg *cfg);
 
 #endif

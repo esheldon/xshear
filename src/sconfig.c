@@ -8,6 +8,166 @@
 #include "defs.h"
 #include "config.h"
 
+static int do_strncmp(char *s1, char *s2)
+{
+    int l1=strlen(s1);
+    int l2=strlen(s2);
+    int ncmp=min(l1,l2);
+
+    return strncmp(s1, s2, ncmp);
+}
+
+
+static int get_mask_style(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int mask_style=0;
+
+    char *mstr = cfg_get_string(cfg,"mask_style", &status);
+    if (status) {
+        fprintf(stderr,
+                "Config Error for key mask_style %s\n",
+                cfg_status_string(status));
+        exit(1);
+    }
+
+    if (0 == do_strncmp(mstr,MASK_STYLE_NONE_STR)) {
+        mask_style=MASK_STYLE_NONE;
+    } else if (0 == do_strncmp(mstr,MASK_STYLE_SDSS_STR)) {
+        mask_style=MASK_STYLE_SDSS;
+    } else if (0 == do_strncmp(mstr,MASK_STYLE_EQ_STR)) {
+        mask_style=MASK_STYLE_EQ;
+    } else {
+        fprintf(stderr, "Config Error: bad mask_style '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return mask_style;
+}
+
+static int get_shear_style(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int shear_style=0;
+
+    char *mstr = cfg_get_string(cfg,"shear_style", &status);
+    if (status) {
+        fprintf(stderr,
+                "Config Error for key shear_style %s\n",
+                cfg_status_string(status));
+        exit(1);
+    }
+
+    if (0 == do_strncmp(mstr,SHEAR_STYLE_REDUCED_STR)) {
+        shear_style=SHEAR_STYLE_REDUCED;
+    } else if (0 == do_strncmp(mstr,SHEAR_STYLE_LENSFIT_STR)) {
+        shear_style=SHEAR_STYLE_LENSFIT;
+    } else {
+        fprintf(stderr, "Config Error: bad shear_style '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return shear_style;
+}
+
+static int get_scstyle(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int scstyle=0;
+
+    char *mstr = cfg_get_string(cfg,"sigmacrit_style", &status);
+    if (status) {
+        fprintf(stderr,
+                "Config Error for key sigmacrit_style %s\n",
+                cfg_status_string(status));
+        exit(1);
+    }
+
+    if (0 == do_strncmp(mstr,SIGMACRIT_STYLE_POINT_STR)) {
+        scstyle=SIGMACRIT_STYLE_POINT;
+    } else if (0 == do_strncmp(mstr,SIGMACRIT_STYLE_INTERP_STR)) {
+        scstyle=SIGMACRIT_STYLE_INTERP;
+    } else {
+        fprintf(stderr, "Config Error: bad sigmacrit_style '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return scstyle;
+}
+
+// defaults to Mpc
+static int get_r_units(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int r_units=0;
+
+    char *mstr = cfg_get_string(cfg,"r_units", &status);
+    if (status) {
+        wlog("    radius units not sent, defaulting to Mpc\n");
+        // not sent, default to Mpc
+        return UNITS_MPC;
+    }
+
+    if (0 == do_strncmp(mstr,UNITS_MPC_STR)) {
+        r_units=UNITS_MPC;
+    } else if (0 == do_strncmp(mstr,UNITS_ARCMIN_STR)) {
+        r_units=UNITS_ARCMIN;
+    } else {
+        fprintf(stderr, "Config Error: bad r_units: '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return r_units;
+}
+
+// defaults to delta sigma
+static int get_shear_units(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int shear_units=0;
+
+    char *mstr = cfg_get_string(cfg,"shear_units", &status);
+    if (status) {
+        wlog("    shear units not sent, defaulting to deltasig\n");
+        // not sent, default to Mpc
+        return UNITS_DELTASIG;
+    }
+
+    if (0 == do_strncmp(mstr,UNITS_DELTASIG_STR)) {
+        shear_units=UNITS_DELTASIG;
+    } else if (0 == do_strncmp(mstr,UNITS_SHEAR_STR)) {
+        shear_units=UNITS_SHEAR;
+    } else {
+        fprintf(stderr, "Config Error: bad shear_units: '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return shear_units;
+}
+
+
+// defaults to false 0
+static int get_Dlens_input(struct cfg *cfg) {
+    enum cfg_status status=0;
+    long Dlens_input=0;
+
+    Dlens_input = cfg_get_long(cfg,"Dlens_input", &status);
+    if (status) {
+        wlog("    Dlens_input not sent, defaulting to false\n");
+        // not sent, default to Mpc
+        Dlens_input = 0;
+    }
+
+    return Dlens_input;
+}
+
+
+
 ShearConfig* sconfig_read(const char* url) {
 
     wlog("Reading config from %s\n", url);
@@ -50,6 +210,8 @@ ShearConfig* sconfig_read(const char* url) {
     c->shear_style = get_shear_style(cfg);
 
     c->scstyle = get_scstyle(cfg);
+
+    c->Dlens_input = get_Dlens_input(cfg);
 
     c->r_units = get_r_units(cfg);
 
@@ -112,6 +274,7 @@ void sconfig_print(ShearConfig* c) {
     wlog("    shear style:   %d\n",  c->shear_style);
     wlog("    mask style:    %d\n",  c->mask_style);
     wlog("    scrit style:   %d\n",  c->scstyle);
+    wlog("    Dlens_input:   %d\n",  c->Dlens_input);
     wlog("    zdiff_min:     %lf\n", c->zdiff_min);
     wlog("    nbin:          %ld\n", c->nbin);
     wlog("    rmin:          %lf\n", c->rmin);
@@ -134,144 +297,4 @@ void sconfig_print(ShearConfig* c) {
     }
 }
 
-static int do_strncmp(char *s1, char *s2)
-{
-    int l1=strlen(s1);
-    int l2=strlen(s2);
-    int ncmp=min(l1,l2);
-
-    return strncmp(s1, s2, ncmp);
-}
-
-int get_mask_style(struct cfg *cfg) {
-    enum cfg_status status=0;
-    int mask_style=0;
-
-    char *mstr = cfg_get_string(cfg,"mask_style", &status);
-    if (status) {
-        fprintf(stderr,
-                "Config Error for key mask_style %s\n",
-                cfg_status_string(status));
-        exit(1);
-    }
-
-    if (0 == do_strncmp(mstr,MASK_STYLE_NONE_STR)) {
-        mask_style=MASK_STYLE_NONE;
-    } else if (0 == do_strncmp(mstr,MASK_STYLE_SDSS_STR)) {
-        mask_style=MASK_STYLE_SDSS;
-    } else if (0 == do_strncmp(mstr,MASK_STYLE_EQ_STR)) {
-        mask_style=MASK_STYLE_EQ;
-    } else {
-        fprintf(stderr, "Config Error: bad mask_style '%s'\n", mstr);
-        exit(1);
-    }
-
-    free(mstr);
-
-    return mask_style;
-}
-
-int get_shear_style(struct cfg *cfg) {
-    enum cfg_status status=0;
-    int shear_style=0;
-
-    char *mstr = cfg_get_string(cfg,"shear_style", &status);
-    if (status) {
-        fprintf(stderr,
-                "Config Error for key shear_style %s\n",
-                cfg_status_string(status));
-        exit(1);
-    }
-
-    if (0 == do_strncmp(mstr,SHEAR_STYLE_REDUCED_STR)) {
-        shear_style=SHEAR_STYLE_REDUCED;
-    } else if (0 == do_strncmp(mstr,SHEAR_STYLE_LENSFIT_STR)) {
-        shear_style=SHEAR_STYLE_LENSFIT;
-    } else {
-        fprintf(stderr, "Config Error: bad shear_style '%s'\n", mstr);
-        exit(1);
-    }
-
-    free(mstr);
-
-    return shear_style;
-}
-
-int get_scstyle(struct cfg *cfg) {
-    enum cfg_status status=0;
-    int scstyle=0;
-
-    char *mstr = cfg_get_string(cfg,"sigmacrit_style", &status);
-    if (status) {
-        fprintf(stderr,
-                "Config Error for key sigmacrit_style %s\n",
-                cfg_status_string(status));
-        exit(1);
-    }
-
-    if (0 == do_strncmp(mstr,SIGMACRIT_STYLE_POINT_STR)) {
-        scstyle=SIGMACRIT_STYLE_POINT;
-    } else if (0 == do_strncmp(mstr,SIGMACRIT_STYLE_INTERP_STR)) {
-        scstyle=SIGMACRIT_STYLE_INTERP;
-    } else {
-        fprintf(stderr, "Config Error: bad sigmacrit_style '%s'\n", mstr);
-        exit(1);
-    }
-
-    free(mstr);
-
-    return scstyle;
-}
-
-// defaults to Mpc
-int get_r_units(struct cfg *cfg) {
-    enum cfg_status status=0;
-    int r_units=0;
-
-    char *mstr = cfg_get_string(cfg,"r_units", &status);
-    if (status) {
-        wlog("    radius units not sent, defaulting to Mpc\n");
-        // not sent, default to Mpc
-        return UNITS_MPC;
-    }
-
-    if (0 == do_strncmp(mstr,UNITS_MPC_STR)) {
-        r_units=UNITS_MPC;
-    } else if (0 == do_strncmp(mstr,UNITS_ARCMIN_STR)) {
-        r_units=UNITS_ARCMIN;
-    } else {
-        fprintf(stderr, "Config Error: bad r_units: '%s'\n", mstr);
-        exit(1);
-    }
-
-    free(mstr);
-
-    return r_units;
-}
-
-// defaults to delta sigma
-int get_shear_units(struct cfg *cfg) {
-    enum cfg_status status=0;
-    int shear_units=0;
-
-    char *mstr = cfg_get_string(cfg,"shear_units", &status);
-    if (status) {
-        wlog("    shear units not sent, defaulting to deltasig\n");
-        // not sent, default to Mpc
-        return UNITS_DELTASIG;
-    }
-
-    if (0 == do_strncmp(mstr,UNITS_DELTASIG_STR)) {
-        shear_units=UNITS_DELTASIG;
-    } else if (0 == do_strncmp(mstr,UNITS_SHEAR_STR)) {
-        shear_units=UNITS_SHEAR;
-    } else {
-        fprintf(stderr, "Config Error: bad shear_units: '%s'\n", mstr);
-        exit(1);
-    }
-
-    free(mstr);
-
-    return shear_units;
-}
 
