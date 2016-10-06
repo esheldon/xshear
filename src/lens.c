@@ -10,6 +10,8 @@
 #include "urls.h"
 #include "sdss-survey.h"
 
+#include "sconfig.h"
+
 #ifdef HDFS
 #include "hdfs_lines.h"
 #endif
@@ -43,9 +45,14 @@ LensCatalog* lcat_new(size_t n_lens) {
 }
 
 
-LensCatalog* lcat_read(const char* lens_url) {
+LensCatalog* lcat_read(const ShearConfig* config, const char* lens_url) {
 
-    int nread=0;
+    int nread=0, expected=0;
+    if (config->Dlens_input) {
+        expected=6;
+    } else {
+        expected=5;
+    }
 
     wlog("Reading lenses from %s\n", lens_url);
     FILE* stream=open_url(lens_url, "r");
@@ -66,9 +73,14 @@ LensCatalog* lcat_read(const char* lens_url) {
 
         Lens* lens = &lcat->data[i];
 
-        nread=fscanf(stream,"%ld %lf %lf %lf %ld",
-                &lens->index,&lens->ra,&lens->dec,&lens->z,&lens->maskflags);
-        if (5 != nread) {
+        if (config->Dlens_input) {
+            nread=fscanf(stream,"%ld %lf %lf %lf %lf %ld",
+                    &lens->index,&lens->ra,&lens->dec,&lens->z,&lens->da,&lens->maskflags);
+        } else {
+            nread=fscanf(stream,"%ld %lf %lf %lf %ld",
+                    &lens->index,&lens->ra,&lens->dec,&lens->z,&lens->maskflags);
+        }
+        if (nread != expected) {
             wlog("Failed to read row %lu from %s\n", i, lens_url);
             exit(EXIT_FAILURE);
         }

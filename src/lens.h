@@ -5,6 +5,7 @@
 #include "tree.h"
 #include "defs.h"
 #include "healpix.h"
+#include "sconfig.h"
 
 typedef struct {
 
@@ -48,7 +49,7 @@ typedef struct {
 } LensCatalog;
 
 LensCatalog* lcat_new(size_t n_lens);
-LensCatalog* lcat_read(const char* lens_url); 
+LensCatalog* lcat_read(const ShearConfig* config, const char* lens_url); 
 
 #ifdef HDFS
 #include "hdfs_lines.h"

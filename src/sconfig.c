@@ -217,6 +217,12 @@ ShearConfig* sconfig_read(const char* url) {
 
     c->shear_units = get_shear_units(cfg);
 
+    if (c->Dlens_input && c->scstyle != SIGMACRIT_STYLE_INTERP) {
+        fprintf(stderr,"Error: If the lens distance in input \n");
+        fprintf(stderr,"       (Dlens_input set in config) the \n");
+        fprintf(stderr,"       sigma crit style must be interpolated\n");
+        exit(1);
+    }
     if (c->scstyle == SIGMACRIT_STYLE_INTERP) {
         c->zl = dvector_new();
 
