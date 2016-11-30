@@ -12,6 +12,7 @@ typedef struct {
 
     int64 nbin;
     int64* npair;
+
     double* rsum;
     double* wsum;
     double* dsum;
@@ -31,7 +32,7 @@ typedef struct {
 Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style);
 
 // this one we write all the data out in binary format
-void lensums_write(Lensums* lensums, FILE* stream);
+void lensums_write(Lensums* self, FILE* stream);
 
 // these write the stdout
 Lensum* lensums_sum(Lensums* lensums);
@@ -44,14 +45,14 @@ Lensums* lensums_free(Lensums* lensum);
 
 
 Lensum* lensum_new(size_t nbin, int shear_style);
-int lensum_read(FILE* stream, Lensum* lensum);
+int lensum_read_into(Lensum* self, FILE* stream);
 Lensum* lensum_copy(Lensum* lensum);
-void lensum_add(Lensum* dest, Lensum* src);
+void lensum_add(Lensum* self, Lensum* src);
 
-void lensum_write(Lensum* lensum, FILE* stream);
-void lensum_print(Lensum* lensum);
-void lensum_clear(Lensum* lensum);
-Lensum* lensum_free(Lensum* lensum);
+void lensum_write(Lensum* self, FILE* stream);
+void lensum_print(Lensum* self);
+void lensum_clear(Lensum* self);
+Lensum* lensum_free(Lensum* self);
 
 
 

@@ -236,6 +236,7 @@ void shear_procpair(Shear* self,
     double cos2pa = cos(2*posangle_radians);
     double sin2pa = sin(2*posangle_radians);
 
+
     // note we already checked if lens z was in our interpolation range
     double scinv;
     if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
@@ -307,7 +308,6 @@ void shear_procpair(Shear* self,
         lensum->dsensum[rbin] += weight*gsens;
         lensum->osensum[rbin] += weight*gsens;
     }
-
 
 _procpair_bail:
 
