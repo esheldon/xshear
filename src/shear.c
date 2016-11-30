@@ -48,15 +48,22 @@ Shear* shear_init(const char* config_url, const char* lens_url) {
     wlog("Initalizing healpix at nside: %ld\n", config->healpix_nside);
     shear->hpix = hpix_new(config->healpix_nside);
 
-    shear->lcat = lcat_read(lens_url);
+    shear->lcat = lcat_read(config, lens_url);
 
     // order is important here
-    wlog("Adding Da to lenses\n");
-    lcat_add_da(shear->lcat, shear->cosmo);
+    if (!config->Dlens_input) {
+        wlog("Adding Da to lenses\n");
+        lcat_add_da(shear->lcat, shear->cosmo);
+    } else {
+
+    }
+
     wlog("Adding cos(search_angle) to lenses\n");
     lcat_add_search_angle(shear->lcat, config->rmax);
+
     wlog("Intersecting all lenses with healpix at rmax: %lf\n", config->rmax);
     lcat_disc_intersect(shear->lcat, shear->hpix, config->rmax);
+
     wlog("Building hpix tree for lenses\n");
     lcat_build_hpix_tree(shear->hpix, shear->lcat);
 
