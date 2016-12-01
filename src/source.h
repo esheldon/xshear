@@ -6,11 +6,13 @@
 #include "sconfig.h"
 
 /* 
-  We can work in two modes:
+  We can work in three modes:
     - we have an inverse critical density; in this case the 
       header of the file must contain the associated zlens values
     - We have a specific z value for this object; we will generate
       the associated dc (comoving distance) value for speed
+    - We have a z for weighting (e.g. mean z) and a sample from the
+      p(z) for estimating DeltaSigma from shear
 
   Note we actually want the sin and cos of ra/dec rather than ra
   dec for our calculations.
@@ -20,6 +22,10 @@ typedef struct {
     int shear_style;
     int mask_style;
     int scstyle;
+    int sourceid_style;
+    
+    // source ID
+    int64 index;
 
     double ra;
     double dec;
@@ -52,6 +58,9 @@ typedef struct {
     // only used when sigmacrit style == SIGMACRIT_STYLE_POINT
     double z;
     double dc;
+    // only used when sigmacrit style == SIGMACRIT_STYLE_SAMPLE
+    double zs;
+    double dcs; // comoving distance at sampled z
 
     // calculate these for speed
     double sinra; 

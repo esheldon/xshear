@@ -33,6 +33,10 @@ cat source_file | src_filter | xshear config_file lens_file > output_file
 
 # The src_filter could be an awk command, etc.
 cat source_file | awk '($6 > 0.2)' | xshear config_file lens_file > output_file
+
+# xshear will output a list of source-lens pair IDs and weights if you pass an additional
+# filename to write this list to as a command line argument; use 
+cat source_cat | xshear config_file lens_file pair_logfile > output_file
 ```
 
 Example Config Files
@@ -52,21 +56,34 @@ mask_style = "equatorial"
 
 # shear style
 #  "reduced": normal reduced shear shapes, source catalog rows are like
-#      ra dec g1 g2 weight ...
+#      (id) ra dec g1 g2 weight ...
 #  "lensfit": for lensfit with sensitivities
-#      ra dec g1 g2 g1sens g2sens weight ...
+#      (id) ra dec g1 g2 g1sens g2sens weight ...
 
 shear_style = "reduced"
 
 # sigma crit style
-#  "point": point z for sources. Implies the last column in source cat is z
+#   "point": point z for sources. Implies the last column in source cat is z
 #  "interp": Interpolate 1/sigma_crit calculated from full P(z)).
-#      Implies last N columns in source cat are 1/sigma_crit(zlens)_i
+#            Implies last N columns in source cat are 1/sigma_crit(zlens)_i
+#  "sample": random sample of p(z). Implies the second-to-last column in
+#            source cat is a mean-z estimate to be used for weighting and
+#            last column in source cat contains a random sample from the p(z). 
 
 sigmacrit_style = "point"
 
+# source id style
+#    "none": no source id in first column
+#   "index": integer source id in first column
+
+sourceid_style = "index"
+
 # number of logarithmically spaced radial bins to use
 nbin = 21
+
+# index of outermost radius bin for which xshear should print pairs to logfile 
+# (0 for no printing)
+rbin_print_max = 0
 
 # min and max radius (units default to Mpc, see below)
 rmin = 0.02
@@ -110,6 +127,10 @@ r_units     = "arcmin"
 shear_units = "deltasig"
 ```
 
+In sigmacrit_style="sample", the output is always in shear units. The weighted inverse
+value of sigma_crit in each radial bin is written in an additional column and can be used 
+to convert the mean shears to \Delta\Sigma.
+
 Format of Lens Catalogs
 -----------------------
 
@@ -143,14 +164,18 @@ Format of Source Catalogs
 The format is white-space delimited ascii. The columns contained 
 depend on the configuration.
 
+You can pass catalogs with an integer source ID in the first column (with 
+sourceid_style="index") or no ID (with sourceid_style="none", in which case the first 
+column is expected to contain ra).
+
 When using point photozs (sigmacrit_style="point") the format is the following
 
 ```
 For shear_style="reduced" (using simple reduced shear style)
-        ra dec g1 g2 source_weight z
+        (id) ra dec g1 g2 source_weight z
 
 For shear_style="lensfit" (lensfit style)
-        ra dec g1 g2 g1sens g2sens source_weight z
+        (id) ra dec g1 g2 g1sens g2sens source_weight z
 ```
 
 The format for sigmacrit_style="interp" includes the mean 1/sigma_crit in bins
@@ -158,15 +183,27 @@ of lens redshift.
 
 ```
 For shear_style="reduced" (using simple reduced shear style)
-        ra dec g1 g2 source_weight sc_1 sc_2 sc_3 sc_4 ...
+        (id) ra dec g1 g2 source_weight sc_1 sc_2 sc_3 sc_4 ...
 
 For shear_style="lensfit" (lensfit style)
-        ra dec g1 g2 g1sens g2sens source_weight sc_1 sc_2 sc_3 sc_4 ...
+        (id) ra dec g1 g2 g1sens g2sens source_weight sc_1 sc_2 sc_3 sc_4 ...
+```
+
+When using sigmacrit_style="sample", the source catalog needs to contain a mean-z 
+estimate to be used for weighting and a random sample from the p(z).
+
+```
+For shear_style="reduced" (using simple reduced shear style)
+        (id) ra dec g1 g2 source_weight z_mean z_sample
+
+For shear_style="lensfit" (lensfit style)
+        (id) ra dec g1 g2 g1sens g2sens source_weight z_mean z_sample
 ```
 
 Meaning of columns:
 
 ```
+id:            integer source id
 ra:            RA in degrees
 dec:           DEC in degrees
 g1:            shape component 1
@@ -175,6 +212,8 @@ source_weight: a weight for the source
 z:             a point estimator (when sigmacrit_style="point")
 sc_i:          1/sigma_crit in bins of lens redshift.  The redshift bins
                are defined in "zlvals" config parameter
+z_mean:        expectation value of source redshift
+z_sample:      random sample from source p(z)
 ```
 
 Format of Output Catalog

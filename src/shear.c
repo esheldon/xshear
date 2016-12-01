@@ -72,7 +72,8 @@ Shear* shear_init(const char* config_url, const char* lens_url) {
     // this holds the sums for each lens
     shear->lensums = lensums_new(shear->lcat->size,
                                  config->nbin,
-                                 config->shear_style);
+                                 config->shear_style,
+                                 config->scstyle);
 
     for (size_t i=0; i<shear->lensums->size; i++) {
         shear->lensums->data[i].index = shear->lcat->data[i].index;
@@ -239,7 +240,9 @@ void shear_procpair(Shear* self,
 
     // note we already checked if lens z was in our interpolation range
     double scinv;
-    if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
+    // scinv is used for weighting and gamma->DeltaSigma except for 
+    // SIGMACRIT_STYLE_SAMPLE, where it is only used for weighting
+    if (config->scstyle == SIGMACRIT_STYLE_INTERP) {
         scinv = interplin(src->zlens, src->scinv, lens->z);
     } else {
         if ( (src->z - lens->z) < config->zdiff_min) {
@@ -250,6 +253,8 @@ void shear_procpair(Shear* self,
     }
 
     if (scinv <= 0) {
+        fprintf(stderr, "%ld %ld is a source-lens pair with non-positive inverse sigma_crit\n", lens->index, src->index);
+        fprintf(stderr, "check that your zdiff_min is set to something > 0 in the config file\n");
         goto _procpair_bail;
     }
 
@@ -292,7 +297,7 @@ void shear_procpair(Shear* self,
 
     lensum->wsum[rbin] += weight;
 
-    if (config->shear_units == UNITS_DELTASIG) {
+    if (config->shear_units == UNITS_DELTASIG || config->scstyle == SIGMACRIT_STYLE_SAMPLE) {
         lensum->dsum[rbin] += weight*gt*scrit;
         lensum->osum[rbin] += weight*gx*scrit;
     } else {
@@ -307,6 +312,20 @@ void shear_procpair(Shear* self,
         double gsens = 0.5*(src->g1sens + src->g2sens);
         lensum->dsensum[rbin] += weight*gsens;
         lensum->osensum[rbin] += weight*gsens;
+    }
+
+    if(config->scstyle == SIGMACRIT_STYLE_SAMPLE) {
+        double dcl    = lens->da*(1.+lens->z);
+        double sscinv = scinv_pre(lens->z, dcl, src->dcs);
+        // weight*scrit=eweight/scrit is the weight of the source in the signal where g is its amplitude
+        // weight=eweight/scrit^2 is the effective weight of the source in the signal where DeltaSigma is its amplitude
+        lensum->scinvsum[rbin] += weight*scrit*scinv; 
+        // this is what you want to divide the stacked signal by to get a DeltaSigma; 
+        // it is a little different from swum 
+    }
+
+    if(rbin<config->rbin_print_max) {
+      fprintf(config->pair_fd, "%ld %ld %d %le\n", lens->index, src->index, rbin, weight);
     }
 
 _procpair_bail:

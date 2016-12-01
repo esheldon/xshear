@@ -5,7 +5,7 @@
 #include "log.h"
 #include "sconfig.h"
 
-Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
+Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style, int scstyle) {
 
     wlog("Creating lensums:\n");
     wlog("    nlens: %lu  nbin: %lu\n", nlens, nbin);
@@ -29,6 +29,7 @@ Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
         Lensum* lensum = &self->data[i];
 
         lensum->shear_style=shear_style;
+        lensum->scstyle=scstyle;
 
         lensum->index = -1;
         lensum->nbin  = nbin;
@@ -41,6 +42,10 @@ Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style) {
         if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
             lensum->dsensum  = calloc(nbin, sizeof(double));
             lensum->osensum  = calloc(nbin, sizeof(double));
+        }
+
+        if (lensum->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+            lensum->scinvsum = calloc(nbin, sizeof(double));
         }
 
         if (lensum->npair==NULL
@@ -73,7 +78,8 @@ void lensums_write(Lensums* self, FILE* stream) {
 
 Lensum* lensums_sum(Lensums* self) {
     Lensum* tsum=lensum_new(self->data[0].nbin,
-                            self->data[0].shear_style);
+                            self->data[0].shear_style, 
+                            self->data[0].scstyle);
 
 
     for (size_t i=0; i<self->size; i++) {
@@ -122,6 +128,10 @@ Lensums* lensums_free(Lensums* self) {
                     free(lensum->osensum);
                 }
 
+                if (lensum->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+                    free(lensum->scinvsum);
+                }
+
             }
             free(self->data);
         }
@@ -130,7 +140,7 @@ Lensums* lensums_free(Lensums* self) {
     return NULL;
 }
 
-Lensum* lensum_new(size_t nbin, int shear_style) {
+Lensum* lensum_new(size_t nbin, int shear_style, int scstyle) {
     Lensum* lensum=calloc(1,sizeof(Lensum));
     if (lensum == NULL) {
         wlog("failed to allocate lensum\n");
@@ -138,6 +148,7 @@ Lensum* lensum_new(size_t nbin, int shear_style) {
     }
 
     lensum->shear_style=shear_style;
+    lensum->scstyle=scstyle;
 
     lensum->nbin = nbin;
 
@@ -150,6 +161,9 @@ Lensum* lensum_new(size_t nbin, int shear_style) {
     if (lensum->shear_style==SHEAR_STYLE_LENSFIT) {
         lensum->dsensum  = calloc(nbin, sizeof(double));
         lensum->osensum  = calloc(nbin, sizeof(double));
+    }
+    if (lensum->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+        lensum->scinvsum  = calloc(nbin, sizeof(double));
     }
 
     if (lensum->npair==NULL
@@ -180,6 +194,9 @@ void lensum_add(Lensum* self, Lensum* src) {
         if (src->shear_style==SHEAR_STYLE_LENSFIT) {
             self->dsensum[i] += src->dsensum[i];
             self->osensum[i] += src->osensum[i];
+        }
+        if (src->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+            self->scinvsum[i] += src->scinvsum[i];
         }
     }
 
@@ -214,6 +231,11 @@ int lensum_read_into(Lensum* self, FILE* stream) {
             nread+=fscanf(stream,"%lf", &self->osensum[i]);
         nexpect += 2*nbin;
     }
+    if (self->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &self->scinvsum[i]);
+        nexpect += nbin;
+    }
 
     return (nread == nexpect);
 }
@@ -244,6 +266,11 @@ void lensum_write(Lensum* self, FILE* stream) {
             fprintf(stream," %.16g", self->osensum[i]);
     }
 
+    if (self->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+        for (i=0; i<nbin; i++)
+            fprintf(stream," %.16g", self->scinvsum[i]);
+    }
+
     fprintf(stream,"\n");
 
 }
@@ -259,6 +286,9 @@ void lensum_print(Lensum* self) {
     if (self->shear_style==SHEAR_STYLE_LENSFIT) {
         wlog("         dsensum         osensum");
     }
+    if (self->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+        wlog("         scinvsum");
+    }
     wlog("\n");
 
     for (size_t i=0; i<self->nbin; i++) {
@@ -273,6 +303,10 @@ void lensum_print(Lensum* self) {
         if (self->shear_style==SHEAR_STYLE_LENSFIT) {
             wlog(" %15.6g %15.6g", self->dsensum[i], self->osensum[i]);
         }
+        if (self->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+            wlog(" %15.6g", self->scinvsum[i]);
+        }
+
         wlog("\n");
     }
 }
@@ -280,7 +314,7 @@ void lensum_print(Lensum* self) {
 Lensum* lensum_copy(Lensum* lensum) {
     int i=0;
 
-    Lensum* copy=lensum_new(lensum->nbin, lensum->shear_style);
+    Lensum* copy=lensum_new(lensum->nbin, lensum->shear_style, lensum->scstyle);
     copy->index = lensum->index;
     copy->weight = lensum->weight;
     copy->totpairs = lensum->totpairs;
@@ -322,6 +356,9 @@ void lensum_clear(Lensum* self) {
             self->dsensum[i] = 0;
             self->osensum[i] = 0;
         }
+        if (self->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+            self->scinvsum[i] = 0;
+        }
     }
 }
 
@@ -336,6 +373,9 @@ Lensum* lensum_free(Lensum* self) {
         if (self->shear_style==SHEAR_STYLE_LENSFIT) {
             free(self->dsensum);
             free(self->osensum);
+        }
+        if (self->scstyle==SIGMACRIT_STYLE_SAMPLE) {
+            free(self->scinvsum);
         }
     }
     free(self);

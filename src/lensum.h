@@ -5,6 +5,7 @@
 
 typedef struct {
     int shear_style;
+    int scstyle;
 
     int64 index;   // index in the lens list
     double weight;
@@ -17,6 +18,7 @@ typedef struct {
     double* wsum;
     double* dsum;
     double* osum;
+    double* scinvsum; // for SIGMACRIT_STYLE_SAMPLE
 
     // only used for lensfit style
     double* dsensum;
@@ -29,7 +31,7 @@ typedef struct {
 } Lensums;
 
 
-Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style);
+Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style, int scstyle);
 
 // this one we write all the data out in binary format
 void lensums_write(Lensums* self, FILE* stream);
@@ -44,7 +46,7 @@ Lensums* lensums_free(Lensums* lensum);
 
 
 
-Lensum* lensum_new(size_t nbin, int shear_style);
+Lensum* lensum_new(size_t nbin, int shear_style, int scstyle);
 int lensum_read_into(Lensum* self, FILE* stream);
 Lensum* lensum_copy(Lensum* lensum);
 void lensum_add(Lensum* self, Lensum* src);

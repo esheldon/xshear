@@ -19,6 +19,7 @@ Source* source_new(const ShearConfig* config) {
     src->shear_style = config->shear_style;
     src->mask_style = config->mask_style;
     src->scstyle = config->scstyle;
+    src->sourceid_style = config->sourceid_style;
 
     if (src->scstyle == SIGMACRIT_STYLE_INTERP) {
         src->scinv = dvector_zeros(config->nzl);
@@ -56,10 +57,19 @@ int source_read(FILE* stream, Source* src) {
     int nread=0;
     int nexpect=0;
 
-    nread += fscanf(stream, "%lf %lf %lf %lf", 
+    if(src->sourceid_style==SOURCEID_STYLE_INDEX) {
+    	nread += fscanf(stream, "%ld %lf %lf %lf %lf", 
+                    &src->index,
                     &src->ra, &src->dec,
                     &src->g1, &src->g2);
-    nexpect += 4;
+    	nexpect += 5;
+    } else {
+    	nread += fscanf(stream, "%lf %lf %lf %lf",
+                    &src->ra, &src->dec,
+                    &src->g1, &src->g2);
+    	src->index=0;
+    	nexpect += 4;    
+    }
 
     if (src->shear_style==SHEAR_STYLE_LENSFIT) {
         nread += fscanf(stream, "%lf %lf", &src->g1sens, &src->g2sens);
@@ -77,6 +87,11 @@ int source_read(FILE* stream, Source* src) {
         }
     } else {
         nread += fscanf(stream,"%lf", &src->z);
+        nexpect += 1;
+    }
+
+    if (src->scstyle == SIGMACRIT_STYLE_SAMPLE) {
+        nread += fscanf(stream,"%lf", &src->zs);
         nexpect += 1;
     }
 
@@ -98,6 +113,7 @@ int source_read(FILE* stream, Source* src) {
 }
 
 void source_print(Source* src) {
+    wlog("    index:  %ld\n", src->index);
     wlog("    ra:     %lf\n", src->ra);
     wlog("    dec:    %lf\n", src->dec);
     wlog("    g1:     %lf\n", src->g1);
@@ -119,6 +135,11 @@ void source_print(Source* src) {
     if (src->scstyle == SIGMACRIT_STYLE_POINT) {
         wlog("    z:      %lf\n", src->z);
         wlog("    dc:     %lf\n", src->dc);
+    } else if (src->scstyle == SIGMACRIT_STYLE_SAMPLE) {
+        wlog("    z:      %lf\n", src->z);
+        wlog("    dc:     %lf\n", src->dc);
+        wlog("    zs:      %lf\n", src->zs);
+        wlog("    dcs:     %lf\n", src->dcs);
     } else {
         size_t nzl = src->zlens->size;
         wlog("    zlens[0]: %lf  szinv[0]: %e\n", 

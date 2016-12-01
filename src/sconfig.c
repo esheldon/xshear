@@ -88,6 +88,8 @@ static int get_scstyle(struct cfg *cfg) {
         scstyle=SIGMACRIT_STYLE_POINT;
     } else if (0 == do_strncmp(mstr,SIGMACRIT_STYLE_INTERP_STR)) {
         scstyle=SIGMACRIT_STYLE_INTERP;
+    } else if (0 == do_strncmp(mstr,SIGMACRIT_STYLE_SAMPLE_STR)) {
+        scstyle=SIGMACRIT_STYLE_SAMPLE;
     } else {
         fprintf(stderr, "Config Error: bad sigmacrit_style '%s'\n", mstr);
         exit(1);
@@ -96,6 +98,31 @@ static int get_scstyle(struct cfg *cfg) {
     free(mstr);
 
     return scstyle;
+}
+
+static int get_sourceid_style(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int sourceid_style=0;
+
+    char *mstr = cfg_get_string(cfg,"sourceid_style", &status);
+    if (status) {
+        // tacitly assume the user wants SOURCEID_STYLE_NONE for compatibility
+        sourceid_style=SOURCEID_STYLE_NONE;
+        return sourceid_style;
+    }
+
+    if (0 == do_strncmp(mstr,SOURCEID_STYLE_NONE_STR)) {
+        sourceid_style=SOURCEID_STYLE_NONE;
+    } else if (0 == do_strncmp(mstr,SOURCEID_STYLE_INDEX_STR)) {
+        sourceid_style=SOURCEID_STYLE_INDEX;
+    } else {
+        fprintf(stderr, "Config Error: bad sourceid_style '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return sourceid_style;
 }
 
 // defaults to Mpc
@@ -203,6 +230,9 @@ ShearConfig* sconfig_read(const char* url) {
 
     c->rmax = cfg_get_double(cfg,strcpy(key,"rmax"),&status);
     if (status) goto _sconfig_read_bail;
+    
+    c->rbin_print_max = cfg_get_double(cfg,strcpy(key,"rbin_print_max"),&status);
+    if (status) goto _sconfig_read_bail;
 
     // strings.  Error checking interior to functions
     c->mask_style = get_mask_style(cfg);
@@ -212,6 +242,8 @@ ShearConfig* sconfig_read(const char* url) {
     c->scstyle = get_scstyle(cfg);
 
     c->Dlens_input = get_Dlens_input(cfg);
+
+    c->sourceid_style = get_sourceid_style(cfg);
 
     c->r_units = get_r_units(cfg);
 
@@ -280,6 +312,7 @@ void sconfig_print(ShearConfig* c) {
     wlog("    shear style:   %d\n",  c->shear_style);
     wlog("    mask style:    %d\n",  c->mask_style);
     wlog("    scrit style:   %d\n",  c->scstyle);
+    wlog(" sourceid style:   %d\n",  c->sourceid_style);
     wlog("    Dlens_input:   %d\n",  c->Dlens_input);
     wlog("    zdiff_min:     %lf\n", c->zdiff_min);
     wlog("    nbin:          %ld\n", c->nbin);
@@ -300,6 +333,14 @@ void sconfig_print(ShearConfig* c) {
             wlog("%lf ", c->zl->data[i]);
         }
         wlog("\n");
+    }
+}
+
+void sconfig_open_pair_url(ShearConfig* c, const char* url) {
+    c->pair_fd = fopen(url, "w");
+    if(!c->pair_fd) {
+        fprintf(stderr,"Could not open pair log file %s\n", url);
+        exit(1);
     }
 }
 
