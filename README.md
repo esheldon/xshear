@@ -229,7 +229,10 @@ For shear style="lensfit", lensfit style
     index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
 ```
 
-Where _i means radial bin i, so there will be Nbins columns for each.
+For sigmacrit_style="sample", there will be an additional column scinvsum_i.
+
+Where _i means radial bin i, so there will be Nbins columns for each, ordered by 
+radial bin.
 
 Explanation for each of the output columns
 ```
@@ -243,13 +246,18 @@ dsum_i:     sum of \Delta\Sigma_+ * weights in radial bin i.
 osum_i:     sum of \Delta\Sigma_x * weights in  radial bin i.
 dsensum_i:  sum of weights times sensitivities
 osensum_i:  sum of weights times sensitivities
+scinvsum_i: sum of weights times sigma_crit^-1 from p(z) samples
 ```
 
 
-In the above, the weights of each source are used as follows.  Let the weight
-of a source be *weight_source* and the weight for a lens-source pair *w* be the
-source weight times 1/\Sigma_{crit}^2 for that pair.  Then dsum_i is the sum
-over sources j in radial bin i
+In the above, and for shear_units="deltasig" or sigmacrit_stype="sample", the 
+weights of each source are used as follows.  Let the weight of a source be 
+*weight_source* and the weight for a lens-source pair *w* be the source weight 
+times 1/\Sigma_{crit}^2 for that pair.  Then dsum_i is the sum over sources j 
+in radial bin i
+
+For shear_units="shear", the weights are equal to weight_source.
+
 
 ```
 w_j    = weight_source_j/\Sigma_{crit}^2
