@@ -127,7 +127,7 @@ For example:
 ```
 
 The meaning of each column is
-```
+```yaml
 index:     a user-defined index
 ra:        RA in degrees
 dec:       DEC in degrees
