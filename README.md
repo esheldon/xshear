@@ -38,7 +38,7 @@ cat source_file | awk '($6 > 0.2)' | xshear config_file lens_file > output_file
 Example Config Files
 ---------------------
 
-### Config File Using photoz as Truth
+### Config File Using a Point Redshift for Each Source
 ```python
 # cosmology parameters
 H0      = 100.0
@@ -100,12 +100,12 @@ Mpc.  You can set the units of radius with "r_units" and the units for shear
 with "shear_units"
 
 To measure tangential shear vs radius in arcminutes
-```
+```python
 r_units     = "arcmin"
 shear_units = "shear"
 ```
 You can even measure \Delta\Sigma vs radius in arcminutes
-```
+```python
 r_units     = "arcmin"
 shear_units = "deltasig"
 ```
@@ -166,7 +166,7 @@ For shear_style="lensfit" (lensfit style)
 
 Meaning of columns:
 
-```
+```yaml
 ra:            RA in degrees
 dec:           DEC in degrees
 g1:            shape component 1
@@ -193,7 +193,7 @@ For shear style="lensfit", lensfit style
 Where _i means radial bin i, so there will be Nbins columns for each.
 
 Explanation for each of the output columns
-```
+```yaml
 index:      index from lens catalog
 weight_tot: sum of all weights for all source pairs in all radial bins
 totpairs:   total pairs used
