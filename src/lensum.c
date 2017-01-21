@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <float.h>
 #include "lensum.h"
 #include "defs.h"
 #include "log.h"
@@ -280,24 +281,25 @@ void lensum_print(Lensum* self) {
     wlog("  weight:   %g\n",  self->weight);
     wlog("  totpairs: %lld\n", self->totpairs);
     wlog("  nbin:     %lld\n", self->nbin);                            
-    wlog("  bin       npair            wsum           ssum             meanr            dsum            osum");
-    wlog("        dsensum_w       osensum_w      dsensum_s         osensum_s");
+    wlog("  bin       npair          wsum          ssum       meanr          dsum          osum");
+    wlog("     dsensum_w     osensum_w     dsensum_s     osensum_s  DeltaSigma");
     wlog("\n");
 
     for (size_t i=0; i<self->nbin; i++) {
         //wlog("  %3lu %11ld %15.6lf %15.6lf %15.6lf %15.6lf", 
-        wlog("  %3lu %11lld %15.6g %15.6g %15.6g %15.6g %15.6g %15.6g %15.6g %15.6g %15.6g", 
+        wlog("  %3lu %11lld %13.6g %13.6g %11.6g %13.6g %13.6g %13.6g %13.6g %13.6g %13.6g %11.6g", 
              i,
              self->npair[i],
              self->wsum[i],
              self->ssum[i],
-             self->rsum[i]/self->wsum[i],
+             self->rsum[i]/max(self->wsum[i],DBL_MIN),
              self->dsum[i],
              self->osum[i],
              self->dsensum_w[i],
              self->osensum_w[i],
              self->dsensum_s[i],
-             self->osensum_s[i]
+             self->osensum_s[i],
+             self->dsum[i]/max(self->dsensum_s[i],DBL_MIN)
               );
         wlog("\n");
     }

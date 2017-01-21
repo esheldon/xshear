@@ -82,6 +82,7 @@ LensCatalog* lcat_read(const ShearConfig* config, const char* lens_url) {
         }
         if (nread != expected) {
             wlog("Failed to read row %lu from %s\n", i, lens_url);
+            wlog("nread=%d index=%d ra=%lf dec=%lf z=%lf maskflags=%d\n", nread, lens->index, lens->ra, lens->dec, lens->z, lens->maskflags);
             exit(EXIT_FAILURE);
         }
 

@@ -213,6 +213,7 @@ ShearConfig* sconfig_read(const char* url) {
     c->healpix_nside=HEALPIX_NSIDE_DEFAULT;
 
     c->min_zlens_interp=0;
+    c->rbin_print_max=0;
 
     // this strcpy business is so we can print error messages
     // below
@@ -229,9 +230,6 @@ ShearConfig* sconfig_read(const char* url) {
     if (status) goto _sconfig_read_bail;
 
     c->rmax = cfg_get_double(cfg,strcpy(key,"rmax"),&status);
-    if (status) goto _sconfig_read_bail;
-    
-    c->rbin_print_max = cfg_get_double(cfg,strcpy(key,"rbin_print_max"),&status);
     if (status) goto _sconfig_read_bail;
 
     // strings.  Error checking interior to functions
@@ -276,9 +274,14 @@ ShearConfig* sconfig_read(const char* url) {
         c->zdiff_min=dz;
     }
 
-    int nside = (int64) cfg_get_long(cfg,strcpy(key,"healpix_nside"),&status);
+    int nside = (int64) cfg_get_long(cfg,strcpy(key,"healpix_nside"),&ostatus);
     if (!ostatus) {
         c->healpix_nside = nside;
+    }
+    
+    int rbin_print_max = (int64) cfg_get_long(cfg,strcpy(key,"rbin_print_max"),&ostatus);
+    if (!ostatus) {
+        c->rbin_print_max = rbin_print_max; 
     }
 
 
