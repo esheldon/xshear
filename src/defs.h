@@ -62,17 +62,25 @@ enum SIGMACRIT_STYLE {
     SIGMACRIT_STYLE_SAMPLE=3
 };
 
+#define SIGMACRIT_STYLE_POINT_STR "point"
+#define SIGMACRIT_STYLE_INTERP_STR "interp"
+#define SIGMACRIT_STYLE_SAMPLE_STR "sample"
+
 enum SOURCEID_STYLE {
     SOURCEID_STYLE_NONE=1,
     SOURCEID_STYLE_INDEX=2
 };
 
-#define SIGMACRIT_STYLE_POINT_STR "point"
-#define SIGMACRIT_STYLE_INTERP_STR "interp"
-#define SIGMACRIT_STYLE_SAMPLE_STR "sample"
-
 #define SOURCEID_STYLE_NONE_STR "none"
 #define SOURCEID_STYLE_INDEX_STR "index"
+
+enum WEIGHT_STYLE {
+    WEIGHT_STYLE_OPTIMAL=1,
+    WEIGHT_STYLE_UNIFORM=2
+};
+
+#define WEIGHT_STYLE_OPTIMAL_STR "optimal"
+#define WEIGHT_STYLE_UNIFORM_STR "uniform"
 
 #define LENSPERDOT 1000
 #define LENSPERCHUNK 100000
@@ -94,14 +102,6 @@ enum R_UNITS {
 
 #define UNITS_MPC_STR "Mpc"
 #define UNITS_ARCMIN_STR "arcmin"
-
-enum SHEAR_UNITS {
-    UNITS_DELTASIG=1,
-    UNITS_SHEAR=2
-};
-
-#define UNITS_SHEAR_STR "shear"
-#define UNITS_DELTASIG_STR "deltasig"
 
 
 #endif

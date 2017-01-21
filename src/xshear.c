@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     wlog("\nlast source:\n");
     source_print(src);
 
-    wlog("processed %ld sources\n", nsource);
+    wlog("processed %lld sources\n", nsource);
 
     // print some summary info
     shear_print_sum(shear);

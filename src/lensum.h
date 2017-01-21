@@ -14,15 +14,16 @@ typedef struct {
     int64 nbin;
     int64* npair;
 
-    double* rsum;
-    double* wsum;
-    double* dsum;
-    double* osum;
-    double* scinvsum; // for SIGMACRIT_STYLE_SAMPLE
-
-    // only used for lensfit style
-    double* dsensum;
-    double* osensum;
+    double* rsum; // sum of weight*radius
+    double* wsum; // sum of weight
+    double* ssum; // sum of weight*scinv
+    double* dsum; // sum of weight*gt
+    double* osum; // sum of weight*gx
+    
+    double* dsensum_w; // sum of weight*sens_t
+    double* osensum_w; // sum of weight*sens_x
+    double* dsensum_s; // sum of weight*scinv*sens_t; need this because sens and scinv might correlate
+    double* osensum_s; // sum of weight*scinv*sens_t
 } Lensum;
 
 typedef struct {
