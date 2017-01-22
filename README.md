@@ -46,7 +46,7 @@ Example Config Files
 ```python
 # cosmology parameters
 H0      = 100.0
-omega_m = 0.25
+omega_m = 0.30
 
 # optional, nside for healpix, default 64
 healpix_nside = 64
@@ -72,6 +72,16 @@ shear_style = "reduced"
 
 sigmacrit_style = "point"
 
+# weight style
+# "uniform": calculate mean shear and mean sigma_crit^-1, weighting sources by the 
+#            weight column in the input catalog only
+# "optimal": weight sources by the product of weight colum in the input catalog and 
+#            expectation value of sigma_crit^-1 for a minimum variance estimate (default)
+#
+# The output allows you to calculate (weighted) mean shear and DeltaSigma in both styles. 
+
+weight_style = "optimal"
+
 # source id style
 #    "none": no source id in first column
 #   "index": integer source id in first column
@@ -82,21 +92,18 @@ sourceid_style = "index"
 nbin = 21
 
 # index of outermost radius bin for which xshear should print pairs to logfile 
-# (0 for no printing)
+# (optional, default is 0 which means no printing)
 rbin_print_max = 0
 
 # min and max radius (units default to Mpc, see below)
 rmin = 0.02
 rmax = 35.15
 
-# units of radius (Mpc or arcmin). If not set defaults to Mpc
+# units of radius (Mpc or arcmin). If not set defaults to Mpc; alternative is "arcmin"
 r_units = "Mpc"
 
-# units of shear, "shear" or "deltasig".  Defaults to deltasig.
-shear_units = "deltasig"
-
 # demand zs > zl + zdiff_min
-# optional, only used for point z
+# optional, used for sigmacrit_style "point" and "sample" (on z_mean for the latter)
 zdiff_min       = 0.2
 ```
 
@@ -110,31 +117,11 @@ zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 
 
 ```
 
-### Alternative Units in Config Files
-
-By default the code works in units of \Delta\Sigma (Msolar/pc^2) vs radius in
-Mpc.  You can set the units of radius with "r_units" and the units for shear
-with "shear_units"
-
-To measure tangential shear vs radius in arcminutes
-```
-r_units     = "arcmin"
-shear_units = "shear"
-```
-You can even measure \Delta\Sigma vs radius in arcminutes
-```
-r_units     = "arcmin"
-shear_units = "deltasig"
-```
-
-In sigmacrit_style="sample", the output is always in shear units. The weighted inverse
-value of sigma_crit in each radial bin is written in an additional column and can be used 
-to convert the mean shears to \Delta\Sigma.
 
 Format of Lens Catalogs
 -----------------------
 
-The format is white-space delimited ascii.  The columns are
+The format is white-space delimited ascii with no newline at the end.  The columns are
 
 ```
 index ra dec z maskflags
@@ -212,83 +199,57 @@ source_weight: a weight for the source
 z:             a point estimator (when sigmacrit_style="point")
 sc_i:          1/sigma_crit in bins of lens redshift.  The redshift bins
                are defined in "zlvals" config parameter
-z_mean:        expectation value of source redshift
-z_sample:      random sample from source p(z)
+z_mean:        expectation value of source redshift, used for selecting/weighting the source
+z_sample:      random sample from source p(z), used for calculating sigma_crit^-1
 ```
 
 Format of Output Catalog
 ------------------------
-The output catalog has a row for each lens.  For shear_style="reduced",
-ordinary reduced shear style, each row looks like
+The output catalog has a row for each lens.  It contains the same columns regardless of
+input format or styles selected above.
+
 ```
-    index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i
+    index weight_tot totpairs npair_i rsum_i wsum_i ssum_i dsum_o osum_i dsensum_w_i osensum_w_i dsensum_s_i osensum_s_i 
 ```
 
-For shear style="lensfit", lensfit style
-```
-    index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
-```
+where
 
-For sigmacrit_style="sample", there will be an additional column scinvsum_i.
-
-Where _i means radial bin i, so there will be Nbins columns for each, ordered by 
-radial bin.
-
-Explanation for each of the output columns
-```
 index:      index from lens catalog
 weight_tot: sum of all weights for all source pairs in all radial bins
 totpairs:   total pairs used
 npair_i:    number of pairs in radial bin i.  N columns.
-rsum_i:     sum of radius in radial bin i
-wsum_i:     sum of weights in radial bin i
-dsum_i:     sum of \Delta\Sigma_+ * weights in radial bin i.
-osum_i:     sum of \Delta\Sigma_x * weights in  radial bin i.
-dsensum_i:  sum of weights times sensitivities
-osensum_i:  sum of weights times sensitivities
-scinvsum_i: sum of weights times sigma_crit^-1 from p(z) samples
-```
+rsum_i=Sum(w_i*r_i), with w_i the weight defined by weight_style
+wsum_i=Sum(w_i)
+ssum_i=Sum(w_i*(Sigma_crit^-1)_i)
+dsum_i=Sum(w_i*(g_t)_i)
+osum_i=Sum(w_i*(g_x)_i)
+dsensum_w_i=Sum(w_i*(gsens_t)_i), where gsens_t is the sensitivity of the tangential component
+osensum_w_i=Sum(w_i*(gsens_x)_i), where gsens_t is the sensitivity of the cross component
+dsensum_s_i=Sum(w_i*(Sigma_crit^-1)_i*(gsens_t)_i)
+osensum_s_i=Sum(w_i*(Sigma_crit^-1)_i*(gsens_x)_i)
 
+In each case, _i means radial bin i, so there will be Nbins columns for each, ordered by 
+radial bin.
 
-In the above, and for shear_units="deltasig" or sigmacrit_stype="sample", the 
-weights of each source are used as follows.  Let the weight of a source be 
-*weight_source* and the weight for a lens-source pair *w* be the source weight 
-times 1/\Sigma_{crit}^2 for that pair.  Then dsum_i is the sum over sources j 
-in radial bin i
-
-For shear_units="shear", the weights are equal to weight_source.
-
-
-```
-w_j    = weight_source_j/\Sigma_{crit}^2
-wsum_i = sum( w_j )
-dsum_i = sum( w_j * \Delta\Sigma_+ )
-\Delta\Sigma_+ = g+ * \Sigma_{crit}
-```
-For lensfit style, the sensitivities are also weighted
-```
-dsensum_i = sum( w_j * gsens )
-```
 
 ### Averaging the \Delta\Sigma and Other Quantities
 
-Just divide the columns.  For shear_style="reduced" (ordinary reduced shear)
-```
-    r = rsum_i/wsum_i
-    \Delta\Sigma_+^i = dsum_i/wsum_i
-    \Delta\Sigma_x^i = osum_i/wsum_i
-```
-For shear_style="lensfit", lensfit style
-```
-    \Delta\Sigma_+^i = dsum_i/dsensum_i
-    \Delta\Sigma_x^i = osum_i/osensum_i
-```
+Just divide the columns.
 
-To average some other quantity associated with the lenses, use
-the weights.  For example the mean redshift would be
-```
-sum( weight*z )/sum( weight )
-```
+For example, you can calculate the following w-weighted quantities:
+
+<r>_i                = rsum_i/wsum_i
+<\Sigma_{crit}^-1>_i = ssum_i/wsum_i
+<e_t>_i              = dsum_i/wsum_i
+<e_x>_i              = osum_i/wsum_i
+<g_t>_i              = dsum_i/dsensum_w_i
+<g_x>_i              = dsum_i/osensum_w_i
+<\Delta\Sigma>_i     = dsum_i/dsensum_s_i
+<\Delta\Sigma_x>_i   = osum_i/osensum_s_i
+
+Note that in shear_style = "reduced", the *sens* columns use gsens_i=1, so you can always
+calculate mean shears <g_t> and DeltaSigma as defined above.
+
 
 compilation
 -----------
