@@ -42,7 +42,7 @@ cat source_cat | xshear config_file lens_file pair_logfile > output_file
 Example Config Files
 ---------------------
 
-### Config File Using photoz as Truth
+### Config File Using a Point Redshift for Each Source
 ```python
 # cosmology parameters
 H0      = 100.0
@@ -117,7 +117,6 @@ zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 
 
 ```
 
-
 Format of Lens Catalogs
 -----------------------
 
@@ -135,7 +134,7 @@ For example:
 ```
 
 The meaning of each column is
-```
+```yaml
 index:     a user-defined index
 ra:        RA in degrees
 dec:       DEC in degrees
@@ -189,7 +188,7 @@ For shear_style="lensfit" (lensfit style)
 
 Meaning of columns:
 
-```
+```yaml
 id:            integer source id
 ra:            RA in degrees
 dec:           DEC in degrees
@@ -214,6 +213,7 @@ input format or styles selected above.
 
 where
 
+```yaml
 index:      index from lens catalog
 weight_tot: sum of all weights for all source pairs in all radial bins
 totpairs:   total pairs used
