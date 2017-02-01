@@ -6,7 +6,7 @@
 #include "log.h"
 #include "sconfig.h"
 
-Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style, int scstyle) {
+Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style, int scstyle, int shear_units) {
 
     wlog("Creating lensums:\n");
     wlog("    nlens: %lu  nbin: %lu\n", nlens, nbin);
@@ -31,6 +31,7 @@ Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style, int scstyle) {
 
         lensum->shear_style=shear_style;
         lensum->scstyle=scstyle;
+        lensum->shear_units=shear_units;
 
         lensum->index = -1;
         lensum->nbin  = nbin;
@@ -83,7 +84,8 @@ void lensums_write(Lensums* self, FILE* stream) {
 Lensum* lensums_sum(Lensums* self) {
     Lensum* tsum=lensum_new(self->data[0].nbin,
                             self->data[0].shear_style, 
-                            self->data[0].scstyle);
+                            self->data[0].scstyle,
+                            self->data[0].shear_units);
 
 
     for (size_t i=0; i<self->size; i++) {
@@ -139,7 +141,7 @@ Lensums* lensums_free(Lensums* self) {
     return NULL;
 }
 
-Lensum* lensum_new(size_t nbin, int shear_style, int scstyle) {
+Lensum* lensum_new(size_t nbin, int shear_style, int scstyle, int shear_units) {
     Lensum* lensum=calloc(1,sizeof(Lensum));
     if (lensum == NULL) {
         wlog("failed to allocate lensum\n");
@@ -148,6 +150,7 @@ Lensum* lensum_new(size_t nbin, int shear_style, int scstyle) {
 
     lensum->shear_style=shear_style;
     lensum->scstyle=scstyle;
+    lensum->shear_units=shear_units;
 
     lensum->nbin = nbin;
 
@@ -219,24 +222,35 @@ int lensum_read_into(Lensum* self, FILE* stream) {
 
     for (i=0; i<nbin; i++) 
         nread+=fscanf(stream,"%lf", &self->rsum[i]);
+        
+        
     for (i=0; i<nbin; i++) 
         nread+=fscanf(stream,"%lf", &self->wsum[i]);
-    for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &self->ssum[i]);
+
+    if(self->shear_units==UNITS_BOTH) {
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &self->ssum[i]);
+    }
+    
     for (i=0; i<nbin; i++) 
         nread+=fscanf(stream,"%lf", &self->dsum[i]);
     for (i=0; i<nbin; i++) 
         nread+=fscanf(stream,"%lf", &self->osum[i]);
 
-    for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &self->dsensum_w[i]);
-    for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &self->osensum_w[i]);
-    for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &self->dsensum_s[i]);
-    for (i=0; i<nbin; i++) 
-        nread+=fscanf(stream,"%lf", &self->osensum_s[i]);
-
+    if(self->shear_units==UNITS_BOTH || self->shear_style==SHEAR_STYLE_LENSFIT) {
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &self->dsensum_w[i]);
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &self->osensum_w[i]);
+    }
+    
+    if(self->shear_units==UNITS_BOTH) {
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &self->dsensum_s[i]);
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &self->osensum_s[i]);
+    }
+    
     return (nread == nexpect);
 }
 
@@ -254,21 +268,30 @@ void lensum_write(Lensum* self, FILE* stream) {
         fprintf(stream," %.16g", self->rsum[i]);
     for (i=0; i<nbin; i++) 
         fprintf(stream," %.16g", self->wsum[i]);
-    for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", self->ssum[i]);
+
+    if(self->shear_units==UNITS_BOTH) {
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", self->ssum[i]);
+    }
+
     for (i=0; i<nbin; i++) 
         fprintf(stream," %.16g", self->dsum[i]);
     for (i=0; i<nbin; i++) 
         fprintf(stream," %.16g", self->osum[i]);
 
-    for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", self->dsensum_w[i]);
-    for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", self->osensum_w[i]);
-    for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", self->dsensum_s[i]);
-    for (i=0; i<nbin; i++) 
-        fprintf(stream," %.16g", self->osensum_s[i]);
+    if(self->shear_units==UNITS_BOTH || self->shear_style==SHEAR_STYLE_LENSFIT) {
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", self->dsensum_w[i]);
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", self->osensum_w[i]);
+    }
+    
+    if(self->shear_units==UNITS_BOTH) {
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", self->dsensum_s[i]);
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", self->osensum_s[i]);
+    }
 
     fprintf(stream,"\n");
 

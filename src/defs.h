@@ -103,5 +103,14 @@ enum R_UNITS {
 #define UNITS_MPC_STR "Mpc"
 #define UNITS_ARCMIN_STR "arcmin"
 
+enum SHEAR_UNITS {
+    UNITS_DELTASIG=1,
+    UNITS_SHEAR=2,
+    UNITS_BOTH=3
+};
+
+#define UNITS_SHEAR_STR "shear"
+#define UNITS_DELTASIG_STR "deltasig"
+#define UNITS_BOTH_STR "both"
 
 #endif
