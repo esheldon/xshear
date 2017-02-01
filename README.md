@@ -156,7 +156,7 @@ mean shear responses, always from the same output column format (see below).
 Format of Lens Catalogs
 -----------------------
 
-The format is white-space delimited ascii with no newline at the end.  The columns are
+The format is white-space delimited ascii.  The columns are
 
 ```
 index ra dec z maskflags
