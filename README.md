@@ -105,7 +105,7 @@ nbin = 21
 
 # index of outermost radius bin for which xshear should print pairs to logfile 
 # (optional, default is 0 which means no printing)
-rbin_print_max = 0
+pairlog_rmax = 0
 
 # min and max radius (units default to Mpc, see below)
 rmin = 0.02

@@ -376,7 +376,7 @@ void shear_procpair(Shear* self,
     lensum->dsensum_s[rbin] += s*gsens_t;
     lensum->osensum_s[rbin] += s*gsens_x;
 
-    if(rbin<config->rbin_print_max) {
+    if(rbin<config->pairlog_rmax) {
       fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
     }
 

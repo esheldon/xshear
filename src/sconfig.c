@@ -242,7 +242,7 @@ ShearConfig* sconfig_read(const char* url) {
     c->healpix_nside=HEALPIX_NSIDE_DEFAULT;
 
     c->min_zlens_interp=0;
-    c->rbin_print_max=0;
+    c->pairlog_rmax=0;
 
     // this strcpy business is so we can print error messages
     // below
@@ -310,9 +310,9 @@ ShearConfig* sconfig_read(const char* url) {
         c->healpix_nside = nside;
     }
     
-    int rbin_print_max = (int64) cfg_get_long(cfg,strcpy(key,"rbin_print_max"),&ostatus);
+    int pairlog_rmax = (int64) cfg_get_long(cfg,strcpy(key,"pairlog_rmax"),&ostatus);
     if (!ostatus) {
-        c->rbin_print_max = rbin_print_max; 
+        c->pairlog_rmax = pairlog_rmax; 
     }
 
 
