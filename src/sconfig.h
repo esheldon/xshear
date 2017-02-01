@@ -30,6 +30,7 @@ typedef struct {
     int64 nbin;
 
     int r_units; // units for radius
+    int shear_units; // DELTASIG, SHEAR or BOTH
     
     int64 rbin_print_max; // r bin number out to which pairs are printed to file; 0 for no printing
     FILE *pair_fd; // file descriptor of pair log file

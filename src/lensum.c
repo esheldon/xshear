@@ -322,7 +322,7 @@ void lensum_print(Lensum* self) {
              self->osensum_w[i],
              self->dsensum_s[i],
              self->osensum_s[i],
-             self->dsum[i]/max(self->dsensum_s[i],DBL_MIN)
+             self->dsum[i]/max(self->dsensum_w[i],DBL_MIN)
               );
         wlog("\n");
     }
@@ -331,7 +331,7 @@ void lensum_print(Lensum* self) {
 Lensum* lensum_copy(Lensum* lensum) {
     int i=0;
 
-    Lensum* copy=lensum_new(lensum->nbin, lensum->shear_style, lensum->scstyle);
+    Lensum* copy=lensum_new(lensum->nbin, lensum->shear_style, lensum->scstyle, lensum->shear_units);
     copy->index = lensum->index;
     copy->weight = lensum->weight;
     copy->totpairs = lensum->totpairs;

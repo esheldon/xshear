@@ -73,7 +73,8 @@ Shear* shear_init(const char* config_url, const char* lens_url) {
     shear->lensums = lensums_new(shear->lcat->size,
                                  config->nbin,
                                  config->shear_style,
-                                 config->scstyle);
+                                 config->scstyle,
+                                 config->shear_units);
 
     for (size_t i=0; i<shear->lensums->size; i++) {
         shear->lensums->data[i].index = shear->lcat->data[i].index;

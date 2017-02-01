@@ -151,6 +151,35 @@ static int get_r_units(struct cfg *cfg) {
     return r_units;
 }
 
+// defaults to delta sigma
+static int get_shear_units(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int shear_units=0;
+
+    char *mstr = cfg_get_string(cfg,"shear_units", &status);
+    if (status) {
+        wlog("    shear units not sent, defaulting to deltasig\n");
+        // not sent, default to Mpc
+        return UNITS_DELTASIG;
+    }
+
+    if (0 == do_strncmp(mstr,UNITS_DELTASIG_STR)) {
+        shear_units=UNITS_DELTASIG;
+    } else if (0 == do_strncmp(mstr,UNITS_SHEAR_STR)) {
+        shear_units=UNITS_SHEAR;
+    } else if (0 == do_strncmp(mstr,UNITS_BOTH_STR)) {
+        shear_units=UNITS_BOTH;
+    } else {
+        fprintf(stderr, "Config Error: bad shear_units: '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return shear_units;
+}
+
+
 // defaults to optimal
 static int get_weight_style(struct cfg *cfg) {
     enum cfg_status status=0;
@@ -244,6 +273,8 @@ ShearConfig* sconfig_read(const char* url) {
     c->sourceid_style = get_sourceid_style(cfg);
 
     c->r_units = get_r_units(cfg);
+    
+    c->shear_units = get_shear_units(cfg);
 
     c->weight_style = get_weight_style(cfg);
 
