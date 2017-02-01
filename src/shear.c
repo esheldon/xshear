@@ -238,69 +238,77 @@ void shear_procpair(Shear* self,
     double sin2pa = sin(2*posangle_radians);
 
 
-    // philosophy:
-    // any entry in our data vector should be a weighted mean of tangential shear,
-    // potentially normalized to be in DeltaSigma units
+    // Philosophy:
+    // Internal bookkeeping is the same, regardless of the input and intended output format.
     //
-    // i.e., 
-    // G=\sum_i(w_i*g_i)
-    // g=G/W where W=\sum_i(w_i) is a unitless mean shear
-    // DeltaSigma=G/S where S=\sum_i(w_i*sigma_crit^-1_i) is an estimate of DeltaSigma in physical units (Msol/Mpc^2)
+    // D=\sum_i(w_i*scinv_i^2*DeltaSigma_i)=\sum_i(w_i*scinv_i*g_i)
+    // DeltaSigma=D/W where W=\sum_i(w_i*scinv_i^2) is a surface mass overdensity in physical units (Msol/Mpc^2)
+    // g=D/S where S=\sum_i(w_i*scinv_i) is a unitless mean shear, weighted by (w_i*scinv_i)
     //
-    // so we always output three columns: G, W=\sum_i(w_i) and S=\sum_i(w_i*sigma_crit_i^-1_i)
+    // So we always output three columns: D, W=\sum_i(w_i*scinv_i^2) and S=\sum_i(w_i*scinv_i)
     //
-    // we allow two different weighting style: config->weightstyle=uniform and config->weightstyle=optimal
-    // 'uniform' will use the weights as written in the input catalog (shape noise weights)
-    // 'optimal' will use these times sigma_crit_i^-1 as the weight, which maximizes the S/N
-	// 
-	// the config->shear_units parameter is obsolete because we always output both W and S
-	
-	
-	// (1) set sigma_crit^-1
-	double scinv; // the sigma_crit^-1 that goes into S
-	switch(config->scstyle) {
-		case SIGMACRIT_STYLE_INTERP:
-			scinv = interplin(src->zlens, src->scinv, lens->z);
-			break;
-		case SIGMACRIT_STYLE_POINT:
-        	if ( (src->z - lens->z) < config->zdiff_min) {
-            	goto _procpair_bail;
-       		}
-        	double dcl = lens->da*(1.+lens->z);
-        	scinv = scinv_pre(lens->z, dcl, src->dc);
-        	break;
+    // We allow two different weighting style: config->weight_style=uniform and config->weight_style=optimal
+    // 'optimal' will do what's written above, which maximizes the S/N
+    // 'uniform' will use the weights w'_i = w_i/scinv_i; in that case, g is a unitless mean shear weighted by w_i 
+    //           and DeltaSigma is still a (non-minimum variance) surface mass overdensity in physical units (Msol/Mpc^2)
+    //
+    // In the code below, we use the variable s for the weight on shear (i.e., D=\sum_i(s_i*g_i)).
+    // In weight_style=optimal, s=w_i*scinv_i; in weight_style=uniform, s=w_i
+    // 
+    // The config->shear_units parameter controls the output format. "deltasig" and "shear" 
+    // produce the backward-compatible output of D and W or, respectively, S
+    // Output format "both" outputs both and also s_i and s_i*scinv_i-weighted sensitivities
+
+
+    // (1) set sigma_crit^-1
+    double scinv; // the sigma_crit^-1 that goes into S
+    double zs;
+    switch(config->scstyle) {
+        case SIGMACRIT_STYLE_INTERP:
+            scinv = interplin(src->zlens, src->scinv, lens->z);
+            zs=-1.;
+            break;
+        case SIGMACRIT_STYLE_POINT:
+            if ( (src->z - lens->z) < config->zdiff_min) {
+                goto _procpair_bail;
+            }
+            double dcl = lens->da*(1.+lens->z);
+            scinv = scinv_pre(lens->z, dcl, src->dc);
+            zs=src->z;
+            break;
         case SIGMACRIT_STYLE_SAMPLE:
-        	if(src->zs <= lens->z) {
-        		scinv=0.;
-        	} else {
-        	    double dcl = lens->da*(1.+lens->z);
-        	    scinv = scinv_pre(lens->z, dcl, src->dcs);
-        	}
-        	break;
+            if(src->zs <= lens->z) {
+                scinv=0.;
+            } else {
+                double dcl = lens->da*(1.+lens->z);
+                scinv = scinv_pre(lens->z, dcl, src->dcs); // at sampled z of the source
+            }
+            zs=src->zs;
+            break;
         default:
-        	fprintf(stderr, "unknown sigmacrit style %d\n", config->scstyle);
-	}
-	
-	
-	// (2) set weight
-	double w=src->weight;
-	if(config->weight_style== WEIGHT_STYLE_OPTIMAL) {
-		switch(config->scstyle) {
-			case SIGMACRIT_STYLE_INTERP:
-			case SIGMACRIT_STYLE_POINT:
-				w *= scinv;
-				break;
-			case SIGMACRIT_STYLE_SAMPLE:
-				if ( (src->z - lens->z) < config->zdiff_min) {
-            		goto _procpair_bail;
-        		}
-        		double dcl = lens->da*(1.+lens->z);
-        		w *= scinv_pre(lens->z, dcl, src->dc); // src->dc is dc at the <z>, not the sampled z of the source
-        		break;
-        	default:
-        		fprintf(stderr, "unknown sigmacrit style %ld\n", config->scstyle);
-		}
-	}
+            fprintf(stderr, "unknown sigmacrit style %d\n", config->scstyle);
+    }
+    
+    
+    // (2) set shear weight s
+    double s=src->weight;
+    if(config->weight_style==WEIGHT_STYLE_OPTIMAL) {
+        switch(config->scstyle) {
+            case SIGMACRIT_STYLE_INTERP:
+            case SIGMACRIT_STYLE_POINT:
+                s *= scinv;
+                break;
+            case SIGMACRIT_STYLE_SAMPLE:
+                if ( (src->z - lens->z) < config->zdiff_min) {
+                    goto _procpair_bail;
+                }
+                double dcl = lens->da*(1.+lens->z);
+                s *= scinv_pre(lens->z, dcl, src->dc); // src->dc is dc at the <z>, not the sampled z of the source
+                break;
+            default:
+                fprintf(stderr, "unknown sigmacrit style %ld\n", config->scstyle);
+        }
+    }
 
 
     // (3) determine radius
@@ -329,27 +337,27 @@ void shear_procpair(Shear* self,
     double gt = -(src->g1*cos2pa - src->g2*sin2pa);
     double gx =  (src->g1*sin2pa + src->g2*cos2pa);
 
-    lensum->weight += w;
+    lensum->weight += s*scinv;
     lensum->totpairs += 1;
     
     lensum->npair[rbin] += 1;
-    lensum->wsum[rbin] += w;
-    lensum->ssum[rbin] += w*scinv;
+    lensum->wsum[rbin] += s*scinv;
+    lensum->ssum[rbin] += s;
     
-    lensum->dsum[rbin] += w*gt;
-    lensum->osum[rbin] += w*gx;
+    lensum->dsum[rbin] += s*gt;
+    lensum->osum[rbin] += s*gx;
 
-    lensum->rsum[rbin] += w*r;
+    lensum->rsum[rbin] += s*scinv*r;
 
     // sensitivity of gt/gx to shear in that direction
-	double gsens_t=1.;
-	double gsens_x=1.;
+    double gsens_t=1.;
+    double gsens_x=1.;
 
     if (config->shear_style==SHEAR_STYLE_LENSFIT) {
-    	// sensitivity of gt is
-    	// dgt/dgammat=-dg1/dgammat*cos2pa-dg2/dgammat*sin2pa
-    	//            =-dg1/dgamma1*dgamma1/dgammat*cos2pa-dg2/dgamma2*dgamma2/dgammat*sin2pa
-    	//            =g1sens*cos2pa^2+g2sens*sin2pa^2
+        // sensitivity of gt is
+        // dgt/dgammat=-dg1/dgammat*cos2pa-dg2/dgammat*sin2pa
+        //            =-dg1/dgamma1*dgamma1/dgammat*cos2pa-dg2/dgamma2*dgamma2/dgammat*sin2pa
+        //            =g1sens*cos2pa^2+g2sens*sin2pa^2
     
         // the alternative is to just average them
         // double gsens = 0.5*(src->g1sens + src->g2sens); 
@@ -362,13 +370,13 @@ void shear_procpair(Shear* self,
     
     // will have to implement something more complex here for metacal, maybe
         
-    lensum->dsensum_w[rbin] += w*gsens_t;
-    lensum->osensum_w[rbin] += w*gsens_x;
-    lensum->dsensum_s[rbin] += w*scinv*gsens_t;
-    lensum->osensum_s[rbin] += w*scinv*gsens_x;
+    lensum->dsensum_w[rbin] += s*scinv*gsens_t;
+    lensum->osensum_w[rbin] += s*scinv*gsens_x;
+    lensum->dsensum_s[rbin] += s*gsens_t;
+    lensum->osensum_s[rbin] += s*gsens_x;
 
     if(rbin<config->rbin_print_max) {
-      fprintf(config->pair_fd, "%ld %ld %d %le %le %le\n", lens->index, src->index, rbin, w, scinv, gsens_t);
+      fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
     }
 
 _procpair_bail:

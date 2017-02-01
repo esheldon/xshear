@@ -106,7 +106,7 @@ static int get_sourceid_style(struct cfg *cfg) {
 
     char *mstr = cfg_get_string(cfg,"sourceid_style", &status);
     if (status) {
-        // tacitly assume the user wants SOURCEID_STYLE_NONE for compatibility
+        // tacitly assume the user wants the default SOURCEID_STYLE_NONE
         sourceid_style=SOURCEID_STYLE_NONE;
         return sourceid_style;
     }

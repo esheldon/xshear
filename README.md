@@ -13,6 +13,7 @@ processed on a different cpu across many machines.
 
 Lenses can also be split up and the result simply concatenated.
 
+
 Example Usage
 -------------
 
@@ -34,10 +35,13 @@ cat source_file | src_filter | xshear config_file lens_file > output_file
 # The src_filter could be an awk command, etc.
 cat source_file | awk '($6 > 0.2)' | xshear config_file lens_file > output_file
 
-# xshear will output a list of source-lens pair IDs and weights if you pass an additional
+# xshear will output a list of source-lens pairs if you pass an additional
 # filename to write this list to as a command line argument; use 
 cat source_cat | xshear config_file lens_file pair_logfile > output_file
+# output will contain lens ID, source ID, radial bin ID, weight in mean shear,
+# sigma_crit^-1 (sample), shear sensitivity in tangential direction, source redshift (sample)
 ```
+
 
 Example Config Files
 ---------------------
@@ -56,11 +60,17 @@ mask_style = "equatorial"
 
 # shear style
 #  "reduced": normal reduced shear shapes, source catalog rows are like
-#      (id) ra dec g1 g2 weight ...
+#      ra dec g1 g2 weight ...
 #  "lensfit": for lensfit with sensitivities
-#      (id) ra dec g1 g2 g1sens g2sens weight ...
+#      ra dec g1 g2 g1sens g2sens weight ...
 
 shear_style = "reduced"
+
+# source id style
+#    "none": no source id in first column (default)
+#   "index": integer source id in first column
+
+sourceid_style = "index"
 
 # sigma crit style
 #   "point": point z for sources. Implies the last column in source cat is z
@@ -72,7 +82,14 @@ shear_style = "reduced"
 
 sigmacrit_style = "point"
 
-# weight style
+# units of shear, "shear", "deltasig" or "both".  Defaults to "deltasig". For pipeline
+# mode with variable shear styles, "both" is recommended (in which case output format is
+# fixed and allows calculating all necessary quantities, see below).
+shear_units = "deltasig"
+
+# weight style 
+# only used in shear_units = "both"
+#
 # "uniform": calculate mean shear and mean sigma_crit^-1, weighting sources by the 
 #            weight column in the input catalog only
 # "optimal": weight sources by the product of weight colum in the input catalog and 
@@ -82,11 +99,6 @@ sigmacrit_style = "point"
 
 weight_style = "optimal"
 
-# source id style
-#    "none": no source id in first column
-#   "index": integer source id in first column
-
-sourceid_style = "index"
 
 # number of logarithmically spaced radial bins to use
 nbin = 21
@@ -114,8 +126,32 @@ sigmacrit_style = "interp"
 # zlens values for the 1/sigma_crit(zlens) values tabulated for each source
 # note the elements of arrays can be separated by either spaces or commas
 zlvals = [0.02 0.035 0.05 0.065 0.08 0.095 0.11 0.125 0.14 0.155 0.17 0.185 0.2 0.215 0.23 0.245 0.26 0.275 0.29 0.305 0.32 0.335 0.35 0.365 0.38 0.395 0.41]
-
 ```
+
+### Alternative Units in Config Files
+
+By default the code works in units of \Delta\Sigma (Msolar/pc^2) vs radius in
+Mpc.  You can set the units of radius with "r_units" and the units for shear
+with "shear_units"
+
+To measure tangential shear vs radius in arcminutes
+```python
+r_units     = "arcmin"
+shear_units = "shear"
+```
+You can even measure \Delta\Sigma vs radius in arcminutes
+```python
+r_units     = "arcmin"
+shear_units = "deltasig"
+```
+
+The most flexible output is generated in mode
+```python
+shear_units = "both"
+```
+in which you can calculate mean shears, mean \Delta\Sigma, mean \Sigma_{crit}^{-1}, and
+mean shear responses, always from the same output column format (see below).
+
 
 Format of Lens Catalogs
 -----------------------
@@ -145,23 +181,20 @@ maskflags: flags for quadrant checking
 The maskflags are only used if you set a mask style that is not "none" (no mask
 flags)
 
+
 Format of Source Catalogs
 -----------------------
 The format is white-space delimited ascii. The columns contained 
 depend on the configuration.
 
-You can pass catalogs with an integer source ID in the first column (with 
-sourceid_style="index") or no ID (with sourceid_style="none", in which case the first 
-column is expected to contain ra).
-
 When using point photozs (sigmacrit_style="point") the format is the following
 
 ```
 For shear_style="reduced" (using simple reduced shear style)
-        (id) ra dec g1 g2 source_weight z
+        ra dec g1 g2 source_weight z
 
 For shear_style="lensfit" (lensfit style)
-        (id) ra dec g1 g2 g1sens g2sens source_weight z
+        ra dec g1 g2 g1sens g2sens source_weight z
 ```
 
 The format for sigmacrit_style="interp" includes the mean 1/sigma_crit in bins
@@ -169,10 +202,10 @@ of lens redshift.
 
 ```
 For shear_style="reduced" (using simple reduced shear style)
-        (id) ra dec g1 g2 source_weight sc_1 sc_2 sc_3 sc_4 ...
+        ra dec g1 g2 source_weight sc_1 sc_2 sc_3 sc_4 ...
 
 For shear_style="lensfit" (lensfit style)
-        (id) ra dec g1 g2 g1sens g2sens source_weight sc_1 sc_2 sc_3 sc_4 ...
+        ra dec g1 g2 g1sens g2sens source_weight sc_1 sc_2 sc_3 sc_4 ...
 ```
 
 When using sigmacrit_style="sample", the source catalog needs to contain a mean-z 
@@ -180,10 +213,19 @@ estimate to be used for weighting and a random sample from the p(z).
 
 ```
 For shear_style="reduced" (using simple reduced shear style)
-        (id) ra dec g1 g2 source_weight z_mean z_sample
+        ra dec g1 g2 source_weight z_mean z_sample
 
 For shear_style="lensfit" (lensfit style)
-        (id) ra dec g1 g2 g1sens g2sens source_weight z_mean z_sample
+        ra dec g1 g2 g1sens g2sens source_weight z_mean z_sample
+```
+
+You can pass catalogs with an integer source ID in the first column (with 
+sourceid_style="index") or no ID (with sourceid_style="none", in which case the first 
+column is expected to contain ra).
+
+```
+In sourceid_style = "index", add a first column such that source catalogs now look like
+        id ra dec g1 g2 ... 
 ```
 
 Meaning of columns:
@@ -202,13 +244,18 @@ z_mean:        expectation value of source redshift, used for selecting/weightin
 z_sample:      random sample from source p(z), used for calculating sigma_crit^-1
 ```
 
+
 Format of Output Catalog
 ------------------------
-The output catalog has a row for each lens.  It contains the same columns regardless of
-input format or styles selected above.
-
+The output catalog has a row for each lens. For shear_style="reduced", 
+ordinary reduced shear style, and shear_units="deltasig" or "shear", each row looks like
 ```
-    index weight_tot totpairs npair_i rsum_i wsum_i ssum_i dsum_o osum_i dsensum_w_i osensum_w_i dsensum_s_i osensum_s_i 
+    index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i
+```
+
+For shear style="lensfit", lensfit style, and shear_units="deltasig" or "shear",
+```
+    index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
 ```
 
 where
@@ -218,15 +265,36 @@ index:      index from lens catalog
 weight_tot: sum of all weights for all source pairs in all radial bins
 totpairs:   total pairs used
 npair_i:    number of pairs in radial bin i.  N columns.
-rsum_i=Sum(w_i*r_i), with w_i the weight defined by weight_style
-wsum_i=Sum(w_i)
-ssum_i=Sum(w_i*(Sigma_crit^-1)_i)
-dsum_i=Sum(w_i*(g_t)_i)
-osum_i=Sum(w_i*(g_x)_i)
-dsensum_w_i=Sum(w_i*(gsens_t)_i), where gsens_t is the sensitivity of the tangential component
-osensum_w_i=Sum(w_i*(gsens_x)_i), where gsens_t is the sensitivity of the cross component
-dsensum_s_i=Sum(w_i*(Sigma_crit^-1)_i*(gsens_t)_i)
-osensum_s_i=Sum(w_i*(Sigma_crit^-1)_i*(gsens_x)_i)
+rsum_i:     sum of radius in radial bin i
+wsum_i:     sum of weights in radial bin i
+dsum_i:     sum of \Delta\Sigma_+ * weights in radial bin i.
+osum_i:     sum of \Delta\Sigma_x * weights in  radial bin i.
+dsensum_i:  sum of weights times sensitivities
+osensum_i:  sum of weights times sensitivities
+```
+
+In shear_units="both", the output contains the same columns regardless of input format:
+
+```
+    index weight_tot totpairs npair_i rsum_i wsum_i ssum_i dsum_o osum_i dsensum_w_i osensum_w_i dsensum_s_i osensum_s_i 
+```
+
+where, in addition to the above,
+
+```yaml
+rsum_i     =Sum(w_i*(sigma_crit^-1)_i*r_i)
+            with w_i the weight defined by weight_style 
+            in weight_style="optimal", this column and wsum, dsum, osum, dsensum, osensum are the same as above
+wsum_i     =Sum(w_i*(sigma_crit^-1)_i)
+ssum_i     =Sum(w_i)
+            to normalize to mean shear rather than mean \Delta\Sigma
+dsum_i     =Sum(w_i*(g_t)_i)
+osum_i     =Sum(w_i*(g_x)_i)
+dsensum_i  =Sum(w_i*(sigma_crit^-1)_i*(gsens_t)_i), where gsens_t is the sensitivity of the tangential component
+osensum_i  =Sum(w_i*(sigma_crit^-1)_i*(gsens_x)_i), where gsens_x is the sensitivity of the cross component
+dsensum_s_i=Sum(w_i*(gsens_t)_i)
+osensum_s_i=Sum(w_i*(gsens_x)_i)
+```
 
 In each case, _i means radial bin i, so there will be Nbins columns for each, ordered by 
 radial bin.
@@ -234,20 +302,32 @@ radial bin.
 
 ### Averaging the \Delta\Sigma and Other Quantities
 
-Just divide the columns.
+Just divide the columns.  For shear_units="deltasig" and shear_style="reduced",
+```
+    r = rsum_i/wsum_i
+    \Delta\Sigma_+^i = dsum_i/wsum_i
+    \Delta\Sigma_x^i = osum_i/wsum_i
+```
 
-For example, you can calculate the following w-weighted quantities:
+For shear_units="deltasig" and shear_style="lensfit", lensfit style
+```
+    \Delta\Sigma_+^i = dsum_i/dsensum_i
+    \Delta\Sigma_x^i = osum_i/osensum_i
+```
+
+
+In shear_units="both", you can calculate the following w-weighted quantities:
 
 <r>_i                = rsum_i/wsum_i
-<\Sigma_{crit}^-1>_i = ssum_i/wsum_i
-<e_t>_i              = dsum_i/wsum_i
-<e_x>_i              = osum_i/wsum_i
-<g_t>_i              = dsum_i/dsensum_w_i
-<g_x>_i              = dsum_i/osensum_w_i
-<\Delta\Sigma>_i     = dsum_i/dsensum_s_i
-<\Delta\Sigma_x>_i   = osum_i/osensum_s_i
+<\Sigma_{crit}^-1>_i = wsum_i/ssum_i
+<e_t>_i              = dsum_i/ssum_i
+<e_x>_i              = osum_i/ssum_i
+<g_t>_i              = dsum_i/dsensum_s_i
+<g_x>_i              = dsum_i/osensum_s_i
+<\Delta\Sigma>_i     = dsum_i/dsensum_i
+<\Delta\Sigma_x>_i   = osum_i/osensum_i
 
-Note that in shear_style = "reduced", the *sens* columns use gsens_i=1, so you can always
+Note that in shear_style = "reduced", these *sens* columns use gsens_i=1, so you can always
 calculate mean shears <g_t> and DeltaSigma as defined above.
 
 
