@@ -209,7 +209,7 @@ void lensum_add(Lensum* self, Lensum* src) {
 
 int lensum_read_into(Lensum* self, FILE* stream) {
     int nbin=self->nbin;
-    int nexpect = 3+10*nbin;
+    int nexpect = 3+5*nbin;
     int nread=0;
     int i=0;
 
@@ -228,6 +228,7 @@ int lensum_read_into(Lensum* self, FILE* stream) {
         nread+=fscanf(stream,"%lf", &self->wsum[i]);
 
     if(self->shear_units==UNITS_BOTH) {
+        nexpect += nbin;
         for (i=0; i<nbin; i++) 
             nread+=fscanf(stream,"%lf", &self->ssum[i]);
     }
@@ -238,6 +239,7 @@ int lensum_read_into(Lensum* self, FILE* stream) {
         nread+=fscanf(stream,"%lf", &self->osum[i]);
 
     if(self->shear_units==UNITS_BOTH || self->shear_style==SHEAR_STYLE_LENSFIT) {
+        nexpect += 2*nbin;
         for (i=0; i<nbin; i++) 
             nread+=fscanf(stream,"%lf", &self->dsensum_w[i]);
         for (i=0; i<nbin; i++) 
@@ -245,6 +247,7 @@ int lensum_read_into(Lensum* self, FILE* stream) {
     }
     
     if(self->shear_units==UNITS_BOTH) {
+        nexpect += 2*nbin;
         for (i=0; i<nbin; i++) 
             nread+=fscanf(stream,"%lf", &self->dsensum_s[i]);
         for (i=0; i<nbin; i++) 

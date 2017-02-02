@@ -231,7 +231,7 @@ In sourceid_style = "index", add a first column such that source catalogs now lo
 Meaning of columns:
 
 ```yaml
-id:            integer source id
+id:            integer source id (optional)
 ra:            RA in degrees
 dec:           DEC in degrees
 g1:            shape component 1
@@ -281,7 +281,7 @@ In shear_units="both", the output contains the same columns regardless of input 
 
 where, in addition to the above,
 
-```yaml
+```
 rsum_i     =Sum(w_i*(sigma_crit^-1)_i*r_i)
             with w_i the weight defined by weight_style 
             in weight_style="optimal", this column and wsum, dsum, osum, dsensum, osensum are the same as above
@@ -318,14 +318,16 @@ For shear_units="deltasig" and shear_style="lensfit", lensfit style
 
 In shear_units="both", you can calculate the following w-weighted quantities:
 
-<r>_i                = rsum_i/wsum_i
-<\Sigma_{crit}^-1>_i = wsum_i/ssum_i
-<e_t>_i              = dsum_i/ssum_i
-<e_x>_i              = osum_i/ssum_i
-<g_t>_i              = dsum_i/dsensum_s_i
-<g_x>_i              = dsum_i/osensum_s_i
-<\Delta\Sigma>_i     = dsum_i/dsensum_i
-<\Delta\Sigma_x>_i   = osum_i/osensum_i
+```
+    <r>_i                = rsum_i/wsum_i
+    <\Sigma_{crit}^-1>_i = wsum_i/ssum_i
+    <e_t>_i              = dsum_i/ssum_i
+    <e_x>_i              = osum_i/ssum_i
+    <g_t>_i              = dsum_i/dsensum_s_i
+    <g_x>_i              = dsum_i/osensum_s_i
+    <\Delta\Sigma>_i     = dsum_i/dsensum_i
+    <\Delta\Sigma_x>_i   = osum_i/osensum_i
+```
 
 Note that in shear_style = "reduced", these *sens* columns use gsens_i=1, so you can always
 calculate mean shears <g_t> and DeltaSigma as defined above.
