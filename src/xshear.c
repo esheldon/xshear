@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     const char* lens_url=argv[2];
     Shear* shear=shear_init(config_url, lens_url);
     
-    if(shear->config->pairlog_rmax>0) { // print pair ids to file
+    if(shear->config->pairlog_rmax>shear->config->pairlog_rmin) { // print pair ids to file
       if (argc < 4) {
 	wlog("no pair logfile given\n");
         usage_and_exit();
@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
     wlog("Writing results to stdout\n");
     lensums_write(shear->lensums, stdout);
 
-    if(shear->config->pairlog_rmax>0) {
+    if(shear->config->pairlog_rmax>shear->config->pairlog_rmin) {
      fclose(shear->config->pair_fd);
     }
     

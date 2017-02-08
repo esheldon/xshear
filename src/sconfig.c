@@ -243,6 +243,7 @@ ShearConfig* sconfig_read(const char* url) {
 
     c->min_zlens_interp=0;
     c->pairlog_rmax=0;
+    c->pairlog_rmin=0;
 
     // this strcpy business is so we can print error messages
     // below
@@ -313,6 +314,10 @@ ShearConfig* sconfig_read(const char* url) {
     int pairlog_rmax = (int64) cfg_get_long(cfg,strcpy(key,"pairlog_rmax"),&ostatus);
     if (!ostatus) {
         c->pairlog_rmax = pairlog_rmax; 
+    }
+    int pairlog_rmin = (int64) cfg_get_long(cfg,strcpy(key,"pairlog_rmin"),&ostatus);
+    if (!ostatus) {
+        c->pairlog_rmin = pairlog_rmin; 
     }
 
 

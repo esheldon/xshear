@@ -103,8 +103,9 @@ weight_style = "optimal"
 # number of logarithmically spaced radial bins to use
 nbin = 21
 
-# index of outermost radius bin for which xshear should print pairs to logfile 
-# (optional, default is 0 which means no printing)
+# index of innermost and outermost radius bin for which xshear should print pairs to logfile 
+# (optional, default is 0 for both which means no printing)
+pairlog_rmin = 0
 pairlog_rmax = 0
 
 # min and max radius (units default to Mpc, see below)
