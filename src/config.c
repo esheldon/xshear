@@ -448,14 +448,14 @@ static size_t find_white(const struct cfg_string *str, size_t current, enum cfg_
 }
 */
 /* find white space and cut off with a null char */
-static void rstrip_inplace(char *str)
+static void rstrip_inplace(char *str, size_t len)
 {
-    size_t i=0, len=0;
+    size_t i=0;
     
-    len=strlen(str);
     for (i=0;i<len;i++) {
         if (isspace(str[i])) {
             str[i] = '\0';
+	    break;
         }
     }
 }
@@ -551,9 +551,13 @@ static char *copy_next_identifier(const struct cfg_string *str,
     send=*end-1;
     size=(send-sbeg+1);
     name=calloc(size+1, sizeof(char));
+    if (!name) {
+        fprintf(stderr,"could not allocate for name\n");
+        exit(1);
+    }
     strncpy(name, &str->data[sbeg], size);
 
-    rstrip_inplace(name);
+    rstrip_inplace(name,size);
     return name;
 }
 // current should point to the first letter

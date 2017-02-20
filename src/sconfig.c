@@ -88,6 +88,8 @@ static int get_scstyle(struct cfg *cfg) {
         scstyle=SIGMACRIT_STYLE_POINT;
     } else if (0 == do_strncmp(mstr,SIGMACRIT_STYLE_INTERP_STR)) {
         scstyle=SIGMACRIT_STYLE_INTERP;
+    } else if (0 == do_strncmp(mstr,SIGMACRIT_STYLE_SAMPLE_STR)) {
+        scstyle=SIGMACRIT_STYLE_SAMPLE;
     } else {
         fprintf(stderr, "Config Error: bad sigmacrit_style '%s'\n", mstr);
         exit(1);
@@ -96,6 +98,31 @@ static int get_scstyle(struct cfg *cfg) {
     free(mstr);
 
     return scstyle;
+}
+
+static int get_sourceid_style(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int sourceid_style=0;
+
+    char *mstr = cfg_get_string(cfg,"sourceid_style", &status);
+    if (status) {
+        // tacitly assume the user wants the default SOURCEID_STYLE_NONE
+        sourceid_style=SOURCEID_STYLE_NONE;
+        return sourceid_style;
+    }
+
+    if (0 == do_strncmp(mstr,SOURCEID_STYLE_NONE_STR)) {
+        sourceid_style=SOURCEID_STYLE_NONE;
+    } else if (0 == do_strncmp(mstr,SOURCEID_STYLE_INDEX_STR)) {
+        sourceid_style=SOURCEID_STYLE_INDEX;
+    } else {
+        fprintf(stderr, "Config Error: bad sourceid_style '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return sourceid_style;
 }
 
 // defaults to Mpc
@@ -140,6 +167,8 @@ static int get_shear_units(struct cfg *cfg) {
         shear_units=UNITS_DELTASIG;
     } else if (0 == do_strncmp(mstr,UNITS_SHEAR_STR)) {
         shear_units=UNITS_SHEAR;
+    } else if (0 == do_strncmp(mstr,UNITS_BOTH_STR)) {
+        shear_units=UNITS_BOTH;
     } else {
         fprintf(stderr, "Config Error: bad shear_units: '%s'\n", mstr);
         exit(1);
@@ -148,6 +177,33 @@ static int get_shear_units(struct cfg *cfg) {
     free(mstr);
 
     return shear_units;
+}
+
+
+// defaults to optimal
+static int get_weight_style(struct cfg *cfg) {
+    enum cfg_status status=0;
+    int weight_style=0;
+
+    char *mstr = cfg_get_string(cfg,"weight_style", &status);
+    if (status) {
+        wlog("    weight style not sent, defaulting to optimal\n");
+        // not sent, default to Mpc
+        return WEIGHT_STYLE_OPTIMAL;
+    }
+
+    if (0 == do_strncmp(mstr,WEIGHT_STYLE_OPTIMAL_STR)) {
+        weight_style=WEIGHT_STYLE_OPTIMAL;
+    } else if (0 == do_strncmp(mstr,WEIGHT_STYLE_UNIFORM_STR)) {
+        weight_style=WEIGHT_STYLE_UNIFORM;
+    } else {
+        fprintf(stderr, "Config Error: bad weight_style: '%s'\n", mstr);
+        exit(1);
+    }
+
+    free(mstr);
+
+    return weight_style;
 }
 
 
@@ -186,6 +242,8 @@ ShearConfig* sconfig_read(const char* url) {
     c->healpix_nside=HEALPIX_NSIDE_DEFAULT;
 
     c->min_zlens_interp=0;
+    c->pairlog_rmax=0;
+    c->pairlog_rmin=0;
 
     // this strcpy business is so we can print error messages
     // below
@@ -213,9 +271,13 @@ ShearConfig* sconfig_read(const char* url) {
 
     c->Dlens_input = get_Dlens_input(cfg);
 
-    c->r_units = get_r_units(cfg);
+    c->sourceid_style = get_sourceid_style(cfg);
 
+    c->r_units = get_r_units(cfg);
+    
     c->shear_units = get_shear_units(cfg);
+
+    c->weight_style = get_weight_style(cfg);
 
     if (c->Dlens_input && c->scstyle != SIGMACRIT_STYLE_INTERP) {
         fprintf(stderr,"Error: If the lens distance in input \n");
@@ -244,9 +306,18 @@ ShearConfig* sconfig_read(const char* url) {
         c->zdiff_min=dz;
     }
 
-    int nside = (int64) cfg_get_long(cfg,strcpy(key,"healpix_nside"),&status);
+    int nside = (int64) cfg_get_long(cfg,strcpy(key,"healpix_nside"),&ostatus);
     if (!ostatus) {
         c->healpix_nside = nside;
+    }
+    
+    int pairlog_rmax = (int64) cfg_get_long(cfg,strcpy(key,"pairlog_rmax"),&ostatus);
+    if (!ostatus) {
+        c->pairlog_rmax = pairlog_rmax; 
+    }
+    int pairlog_rmin = (int64) cfg_get_long(cfg,strcpy(key,"pairlog_rmin"),&ostatus);
+    if (!ostatus) {
+        c->pairlog_rmin = pairlog_rmin; 
     }
 
 
@@ -274,22 +345,23 @@ ShearConfig* sconfig_free(ShearConfig* self) {
 }
 
 void sconfig_print(ShearConfig* c) {
-    wlog("    H0:            %lf\n", c->H0);
-    wlog("    omega_m:       %lf\n", c->omega_m);
-    wlog("    healpix_nside: %ld\n", c->healpix_nside);
-    wlog("    shear style:   %d\n",  c->shear_style);
-    wlog("    mask style:    %d\n",  c->mask_style);
-    wlog("    scrit style:   %d\n",  c->scstyle);
-    wlog("    Dlens_input:   %d\n",  c->Dlens_input);
-    wlog("    zdiff_min:     %lf\n", c->zdiff_min);
-    wlog("    nbin:          %ld\n", c->nbin);
-    wlog("    rmin:          %lf\n", c->rmin);
-    wlog("    rmax:          %lf\n", c->rmax);
-    wlog("    r_units:       %d\n",  c->r_units);
-    wlog("    shear_units:   %d\n",  c->shear_units);
-    wlog("    log(rmin):     %lf\n", c->log_rmin);
-    wlog("    log(rmax):     %lf\n", c->log_rmax);
-    wlog("    log(binsize):  %lf\n", c->log_binsize);
+    wlog("    H0:             %lf\n", c->H0);
+    wlog("    omega_m:        %lf\n", c->omega_m);
+    wlog("    healpix_nside:  %lld\n", c->healpix_nside);
+    wlog("    shear style:    %d\n",  c->shear_style);
+    wlog("    mask style:     %d\n",  c->mask_style);
+    wlog("    weight style:   %d\n",  c->weight_style);
+    wlog("    scrit style:    %d\n",  c->scstyle);
+    wlog("    sourceid style: %d\n",  c->sourceid_style);
+    wlog("    Dlens_input:    %d\n",  c->Dlens_input);
+    wlog("    zdiff_min:      %lf\n", c->zdiff_min);
+    wlog("    nbin:           %lld\n", c->nbin);
+    wlog("    rmin:           %lf\n", c->rmin);
+    wlog("    rmax:           %lf\n", c->rmax);
+    wlog("    r_units:        %d\n",  c->r_units);
+    wlog("    log(rmin):      %lf\n", c->log_rmin);
+    wlog("    log(rmax):      %lf\n", c->log_rmax);
+    wlog("    log(binsize):   %lf\n", c->log_binsize);
     if (c->zl != NULL) {
         size_t i;
         wlog("    zlvals[%lu]:", c->zl->size);
@@ -300,6 +372,14 @@ void sconfig_print(ShearConfig* c) {
             wlog("%lf ", c->zl->data[i]);
         }
         wlog("\n");
+    }
+}
+
+void sconfig_open_pair_url(ShearConfig* c, const char* url) {
+    c->pair_fd = fopen(url, "w");
+    if(!c->pair_fd) {
+        fprintf(stderr,"Could not open pair log file %s\n", url);
+        exit(1);
     }
 }
 
