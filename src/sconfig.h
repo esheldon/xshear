@@ -13,7 +13,7 @@ typedef struct {
 
     int64 healpix_nside;
 
-    int shear_style;    // REDUCED or LENSFIT
+    int shear_style;    // REDUCED, LENSFIT or METACAL
     int mask_style;     // NONE, SDSS or EQ
     int scstyle;        // POINT, INTERP or SAMPLE
     int sourceid_style; // NONE or INDEX

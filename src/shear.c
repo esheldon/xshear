@@ -354,7 +354,7 @@ void shear_procpair(Shear* self,
     double gsens_t=1.;
     double gsens_x=1.;
 
-    if (config->shear_style==SHEAR_STYLE_LENSFIT) {
+    if (config->shear_style==SHEAR_STYLE_LENSFIT || config->shear_style==SHEAR_STYLE_METACAL) {
         // sensitivity of gt is
         // dgt/dgammat=-dg1/dgammat*cos2pa-dg2/dgammat*sin2pa
         //            =-dg1/dgamma1*dgamma1/dgammat*cos2pa-dg2/dgamma2*dgamma2/dgammat*sin2pa
@@ -364,9 +364,11 @@ void shear_procpair(Shear* self,
         // double gsens = 0.5*(src->g1sens + src->g2sens); 
         // the only reason to not do that are strong-ish shears, where gsens is significantly
         // different along the tangential direction because tangential shears aren't small
-        
-        gsens_t=src->g1sens*cos2pa*cos2pa+src->g2sens*sin2pa*sin2pa;
-        gsens_x=src->g1sens*sin2pa*sin2pa+src->g2sens*cos2pa*cos2pa;
+
+        // note for LENSFIT, g12sens=0, while for METACAL we have measured it        
+
+        gsens_t=src->g1sens*cos2pa*cos2pa+src->g2sens*sin2pa*sin2pa+2.*src->g12sens*sin2pa*cos2pa;
+        gsens_x=src->g1sens*sin2pa*sin2pa+src->g2sens*cos2pa*cos2pa+2.*src->g12sens*sin2pa*cos2pa;
     }
     
     // will have to implement something more complex here for metacal, maybe

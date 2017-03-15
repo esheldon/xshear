@@ -63,6 +63,8 @@ mask_style = "equatorial"
 #      ra dec g1 g2 weight ...
 #  "lensfit": for lensfit with sensitivities
 #      ra dec g1 g2 g1sens g2sens weight ...
+#  "metacal": for metacal with response tensor g1sens=R11, g2sens=R22, g12sens=(R12+R21)/2 
+#      ra dec g1 g2 g1sens g2sens g12sens weight ...
 
 shear_style = "reduced"
 
@@ -200,6 +202,9 @@ For shear_style="reduced" (using simple reduced shear style)
 
 For shear_style="lensfit" (lensfit style)
         ra dec g1 g2 g1sens g2sens source_weight z
+
+For shear_style="metacal" (metacal style)
+        ra dec g1 g2 g1sens=R11 g2sens=R22 g12sens=(R12+R21)/2 source_weight z
 ```
 
 The format for sigmacrit_style="interp" includes the mean 1/sigma_crit in bins
@@ -211,6 +216,9 @@ For shear_style="reduced" (using simple reduced shear style)
 
 For shear_style="lensfit" (lensfit style)
         ra dec g1 g2 g1sens g2sens source_weight sc_1 sc_2 sc_3 sc_4 ...
+
+For shear_style="metacal" (metacal style)
+        ra dec g1 g2 g1sens=R11 g2sens=R22 g12sens=(R12+R21)/2 source_weight sc_1 sc_2 sc_3 sc_4 ...
 ```
 
 When using sigmacrit_style="sample", the source catalog needs to contain a mean-z 
@@ -222,6 +230,9 @@ For shear_style="reduced" (using simple reduced shear style)
 
 For shear_style="lensfit" (lensfit style)
         ra dec g1 g2 g1sens g2sens source_weight z_mean z_sample
+
+For shear_style="metacal" (metacal style)
+        ra dec g1 g2 g1sens=R11 g2sens=R22 g12sens=(R12+R21)/2 source_weight z_mean z_sample
 ```
 
 You can pass catalogs with an integer source ID in the first column (with 
@@ -258,7 +269,7 @@ ordinary reduced shear style, and shear_units="deltasig" or "shear", each row lo
     index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i
 ```
 
-For shear style="lensfit", lensfit style, and shear_units="deltasig" or "shear",
+For shear style="lensfit" or "metacal", and shear_units="deltasig" or "shear",
 ```
     index weight_tot totpairs npair_i rsum_i wsum_i dsum_i osum_i dsensum_i osensum_i
 ```
@@ -314,7 +325,7 @@ Just divide the columns.  For shear_units="deltasig" and shear_style="reduced",
     \Delta\Sigma_x^i = osum_i/wsum_i
 ```
 
-For shear_units="deltasig" and shear_style="lensfit", lensfit style
+For shear_units="deltasig" and shear_style="lensfit" or "metacal"
 ```
     \Delta\Sigma_+^i = dsum_i/dsensum_i
     \Delta\Sigma_x^i = osum_i/osensum_i
