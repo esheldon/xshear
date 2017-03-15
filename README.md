@@ -107,6 +107,10 @@ nbin = 21
 # (optional, default is 0 for both which means no printing)
 pairlog_rmin = 0
 pairlog_rmax = 0
+# maximum number of pairs logged in each radial bin 
+# first pairs in that bin are printed - make sure to shuffle your shape catalog 
+# if you need a representative sample; 0 (default) to print all pairs
+pairlog_nmax = 0
 
 # min and max radius (units default to Mpc, see below)
 rmin = 0.02
