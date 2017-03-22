@@ -40,11 +40,12 @@ typedef int64_t int64;
 enum SHEAR_STYLE {
    SHEAR_STYLE_REDUCED=1,
    SHEAR_STYLE_LENSFIT=2,
-   SHEAR_STYLE_METACAL=2
+   SHEAR_STYLE_METACAL=3
 };
 
 #define SHEAR_STYLE_REDUCED_STR "reduced"
 #define SHEAR_STYLE_LENSFIT_STR "lensfit"
+#define SHEAR_STYLE_METACAL_STR "metacal"
 
 
 enum MASK_STYLE {

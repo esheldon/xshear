@@ -62,6 +62,8 @@ static int get_shear_style(struct cfg *cfg) {
         shear_style=SHEAR_STYLE_REDUCED;
     } else if (0 == do_strncmp(mstr,SHEAR_STYLE_LENSFIT_STR)) {
         shear_style=SHEAR_STYLE_LENSFIT;
+    } else if (0 == do_strncmp(mstr,SHEAR_STYLE_METACAL_STR)) {
+        shear_style=SHEAR_STYLE_METACAL;
     } else {
         fprintf(stderr, "Config Error: bad shear_style '%s'\n", mstr);
         exit(1);
