@@ -18,7 +18,6 @@
 #include "quad.h"
 #include "log.h"
 
-int64* npair_all=NULL;
 
 Shear* shear_init(const char* config_url, const char* lens_url) {
 
@@ -76,7 +75,8 @@ Shear* shear_init(const char* config_url, const char* lens_url) {
                                  config->shear_style,
                                  config->scstyle,
                                  config->shear_units);
-
+    shear->tpairs = 0;
+    shear->totpairs = calloc(config->nbin, sizeof(int64));
     for (size_t i=0; i<shear->lensums->size; i++) {
         shear->lensums->data[i].index = shear->lcat->data[i].index;
     }
@@ -94,9 +94,6 @@ Shear* shear_init(const char* config_url, const char* lens_url) {
 
     wlog("min_zlens: %lf  max_zlens: %lf\n", shear->min_zlens, shear->max_zlens);
 
-    if(npair_all==NULL) {
-        npair_all = calloc(config->nbin, sizeof(int64));
-    }
 
     return shear;
 
@@ -344,7 +341,7 @@ void shear_procpair(Shear* self,
 
     lensum->weight += s*scinv;
     lensum->totpairs += 1;
-    
+    self->totpairs[rbin] +=1;    
     lensum->npair[rbin] += 1;
     lensum->wsum[rbin] += s*scinv;
     lensum->ssum[rbin] += s;
@@ -381,11 +378,15 @@ void shear_procpair(Shear* self,
     lensum->osensum_w[rbin] += s*scinv*gsens_x;
     lensum->dsensum_s[rbin] += s*gsens_t;
     lensum->osensum_s[rbin] += s*gsens_x;
-
+    self->tpairs ++;
+    
+//    fprintf(stderr, "totpairs %ld \n", self->totpairs[rbin]);
     if(rbin<config->pairlog_rmax && rbin>=config->pairlog_rmin && 
-      (config->pairlog_nmax<=0 || npair_all[rbin]<=config->pairlog_nmax)) {
+      (config->pairlog_nmax<=0 || self->totpairs[rbin]<=config->pairlog_nmax)) {
+//           fprintf(stderr, " printing totpairs %ld \n", self->totpairs[rbin]);
       fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
     }
+
 
 _procpair_bail:
 

@@ -18,7 +18,9 @@ typedef struct {
 
     // this holds the info for a given lens
     Lensums* lensums;
-
+    
+    int64 tpairs;
+    int64* totpairs;
     // min/max z for lenses
     double min_zlens, max_zlens;
 
