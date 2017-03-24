@@ -18,7 +18,8 @@ void usage_and_exit(void) {
 
 int main(int argc, char** argv) {
     int64 nsource=0;
-
+    int64* npair_all=NULL;
+    
     if (argc < 3) {
         usage_and_exit();
     }
@@ -29,7 +30,7 @@ int main(int argc, char** argv) {
     
     if(shear->config->pairlog_rmax>shear->config->pairlog_rmin) { // print pair ids to file
       if (argc < 4) {
-	wlog("no pair logfile given\n");
+	    wlog("no pair logfile given\n");
         usage_and_exit();
       }
       sconfig_open_pair_url(shear->config,argv[3]);

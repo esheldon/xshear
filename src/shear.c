@@ -18,6 +18,7 @@
 #include "quad.h"
 #include "log.h"
 
+int64* npair_all=NULL;
 
 Shear* shear_init(const char* config_url, const char* lens_url) {
 
@@ -93,6 +94,9 @@ Shear* shear_init(const char* config_url, const char* lens_url) {
 
     wlog("min_zlens: %lf  max_zlens: %lf\n", shear->min_zlens, shear->max_zlens);
 
+    if(npair_all==NULL) {
+        npair_all = calloc(config->nbin, sizeof(int64));
+    }
 
     return shear;
 
@@ -379,7 +383,7 @@ void shear_procpair(Shear* self,
     lensum->osensum_s[rbin] += s*gsens_x;
 
     if(rbin<config->pairlog_rmax && rbin>=config->pairlog_rmin && 
-      (config->pairlog_nmax<=0 || lensum->npair[rbin]<=config->pairlog_nmax)) {
+      (config->pairlog_nmax<=0 || npair_all[rbin]<=config->pairlog_nmax)) {
       fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
     }
 
