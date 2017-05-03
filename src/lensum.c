@@ -41,6 +41,8 @@ Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style, int scstyle, in
         lensum->ssum  = calloc(nbin, sizeof(double));
         lensum->dsum  = calloc(nbin, sizeof(double));
         lensum->osum  = calloc(nbin, sizeof(double));
+        lensum->e1sum  = calloc(nbin, sizeof(double));
+        lensum->e2sum  = calloc(nbin, sizeof(double));
 
         lensum->dsensum_w  = calloc(nbin, sizeof(double));
         lensum->osensum_w  = calloc(nbin, sizeof(double));
@@ -52,6 +54,8 @@ Lensums* lensums_new(size_t nlens, size_t nbin, int shear_style, int scstyle, in
                 || lensum->ssum==NULL
                 || lensum->dsum==NULL
                 || lensum->osum==NULL
+                || lensum->e1sum==NULL
+                || lensum->e2sum==NULL
                 || lensum->rsum==NULL
                 || lensum->dsensum_w==NULL
                 || lensum->osensum_w==NULL
@@ -129,6 +133,8 @@ Lensums* lensums_free(Lensums* self) {
                 free(lensum->ssum);
                 free(lensum->dsum);
                 free(lensum->osum);
+                free(lensum->e1sum);
+                free(lensum->e2sum);
                 free(lensum->dsensum_w);
                 free(lensum->osensum_w);
                 free(lensum->dsensum_s);
@@ -160,6 +166,8 @@ Lensum* lensum_new(size_t nbin, int shear_style, int scstyle, int shear_units) {
     lensum->ssum  = calloc(nbin, sizeof(double));
     lensum->dsum  = calloc(nbin, sizeof(double));
     lensum->osum  = calloc(nbin, sizeof(double));
+    lensum->e1sum  = calloc(nbin, sizeof(double));
+    lensum->e2sum  = calloc(nbin, sizeof(double));
 
     lensum->dsensum_w  = calloc(nbin, sizeof(double));
     lensum->osensum_w  = calloc(nbin, sizeof(double));
@@ -172,6 +180,8 @@ Lensum* lensum_new(size_t nbin, int shear_style, int scstyle, int shear_units) {
             || lensum->ssum==NULL
             || lensum->dsum==NULL
             || lensum->osum==NULL
+            || lensum->e1sum==NULL
+            || lensum->e2sum==NULL
             || lensum->rsum==NULL
             || lensum->dsensum_w==NULL
             || lensum->osensum_w==NULL
@@ -199,6 +209,8 @@ void lensum_add(Lensum* self, Lensum* src) {
         self->ssum[i] += src->ssum[i];
         self->dsum[i] += src->dsum[i];
         self->osum[i] += src->osum[i];
+        self->e1sum[i] += src->e1sum[i];
+        self->e2sum[i] += src->e2sum[i];
         self->dsensum_w[i] += src->dsensum_w[i];
         self->osensum_w[i] += src->osensum_w[i];
         self->dsensum_s[i] += src->dsensum_s[i];
@@ -247,11 +259,15 @@ int lensum_read_into(Lensum* self, FILE* stream) {
     }
     
     if(self->shear_units==UNITS_BOTH) {
-        nexpect += 2*nbin;
+        nexpect += 4*nbin;
         for (i=0; i<nbin; i++) 
             nread+=fscanf(stream,"%lf", &self->dsensum_s[i]);
         for (i=0; i<nbin; i++) 
             nread+=fscanf(stream,"%lf", &self->osensum_s[i]);
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &self->e1sum[i]);
+        for (i=0; i<nbin; i++) 
+            nread+=fscanf(stream,"%lf", &self->e2sum[i]);
     }
     
     return (nread == nexpect);
@@ -294,6 +310,10 @@ void lensum_write(Lensum* self, FILE* stream) {
             fprintf(stream," %.16g", self->dsensum_s[i]);
         for (i=0; i<nbin; i++) 
             fprintf(stream," %.16g", self->osensum_s[i]);
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", self->e1sum[i]);
+        for (i=0; i<nbin; i++) 
+            fprintf(stream," %.16g", self->e2sum[i]);
     }
 
     fprintf(stream,"\n");
@@ -308,12 +328,12 @@ void lensum_print(Lensum* self) {
     wlog("  totpairs: %lld\n", self->totpairs);
     wlog("  nbin:     %lld\n", self->nbin);                            
     wlog("  bin       npair          wsum          ssum       meanr          dsum          osum");
-    wlog("     dsensum_w     osensum_w     dsensum_s     osensum_s  DeltaSigma");
+    wlog("     dsensum_w     osensum_w     dsensum_s     osensum_s     e1sum         e2sum         DeltaSigma");
     wlog("\n");
 
     for (size_t i=0; i<self->nbin; i++) {
         //wlog("  %3lu %11ld %15.6lf %15.6lf %15.6lf %15.6lf", 
-        wlog("  %3lu %11lld %13.6g %13.6g %11.6g %13.6g %13.6g %13.6g %13.6g %13.6g %13.6g %11.6g", 
+        wlog("  %3lu %11lld %13.6g %13.6g %11.6g %13.6g %13.6g %13.6g %13.6g %13.6g %13.6g %13.6g %13.6g %11.6g", 
              i,
              self->npair[i],
              self->wsum[i],
@@ -325,6 +345,8 @@ void lensum_print(Lensum* self) {
              self->osensum_w[i],
              self->dsensum_s[i],
              self->osensum_s[i],
+             self->e1sum[i],
+             self->e2sum[i],
              self->dsum[i]/max(self->dsensum_w[i],DBL_MIN)
               );
         wlog("\n");
@@ -348,6 +370,8 @@ Lensum* lensum_copy(Lensum* lensum) {
         copy->ssum[i] = lensum->ssum[i];
         copy->dsum[i] = lensum->dsum[i];
         copy->osum[i] = lensum->osum[i];
+        copy->e1sum[i] = lensum->e1sum[i];
+        copy->e2sum[i] = lensum->e2sum[i];
         copy->dsensum_s[i] = lensum->dsensum_s[i];
         copy->osensum_s[i] = lensum->osensum_s[i];
         copy->dsensum_w[i] = lensum->dsensum_w[i];
@@ -372,6 +396,8 @@ void lensum_clear(Lensum* self) {
         self->ssum[i] = 0;
         self->dsum[i] = 0;
         self->osum[i] = 0;
+        self->e1sum[i] = 0;
+        self->e2sum[i] = 0;
         self->rsum[i] = 0;
         self->dsensum_s[i] = 0;
         self->osensum_s[i] = 0;
@@ -388,6 +414,8 @@ Lensum* lensum_free(Lensum* self) {
         free(self->ssum);
         free(self->dsum);
         free(self->osum);
+        free(self->e1sum);
+        free(self->e2sum);
         free(self->dsensum_w);
         free(self->osensum_w);
         free(self->dsensum_s);

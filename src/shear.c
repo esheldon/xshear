@@ -346,9 +346,12 @@ void shear_procpair(Shear* self,
     lensum->wsum[rbin] += s*scinv;
     lensum->ssum[rbin] += s;
     
+    lensum->e1sum[rbin] += s*src->g1;
+    lensum->e2sum[rbin] += s*src->g2;
+    
     lensum->dsum[rbin] += s*gt;
     lensum->osum[rbin] += s*gx;
-
+    
     lensum->rsum[rbin] += s*scinv*r;
 
     // sensitivity of gt/gx to shear in that direction
