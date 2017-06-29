@@ -340,7 +340,7 @@ In shear_units="both", you can calculate the following w-weighted quantities:
     <e_t>_i              = dsum_i/ssum_i
     <e_x>_i              = osum_i/ssum_i
     <g_t>_i              = dsum_i/dsensum_s_i
-    <g_x>_i              = dsum_i/osensum_s_i
+    <g_x>_i              = osum_i/osensum_s_i
     <\Delta\Sigma>_i     = dsum_i/dsensum_i
     <\Delta\Sigma_x>_i   = osum_i/osensum_i
 ```
