@@ -306,8 +306,8 @@ ssum_i     =Sum(w_i)
             to normalize to mean shear rather than mean \Delta\Sigma
 dsum_i     =Sum(w_i*(g_t)_i)
 osum_i     =Sum(w_i*(g_x)_i)
-dsensum_i  =Sum(w_i*(sigma_crit^-1)_i*(gsens_t)_i), where gsens_t is the sensitivity of the tangential component
-osensum_i  =Sum(w_i*(sigma_crit^-1)_i*(gsens_x)_i), where gsens_x is the sensitivity of the cross component
+dsensum_w_i  =Sum(w_i*(sigma_crit^-1)_i*(gsens_t)_i), where gsens_t is the sensitivity of the tangential component
+osensum_w_i  =Sum(w_i*(sigma_crit^-1)_i*(gsens_x)_i), where gsens_x is the sensitivity of the cross component
 dsensum_s_i=Sum(w_i*(gsens_t)_i)
 osensum_s_i=Sum(w_i*(gsens_x)_i)
 ```
@@ -341,8 +341,8 @@ In shear_units="both", you can calculate the following w-weighted quantities:
     <e_x>_i              = osum_i/ssum_i
     <g_t>_i              = dsum_i/dsensum_s_i
     <g_x>_i              = osum_i/osensum_s_i
-    <\Delta\Sigma>_i     = dsum_i/dsensum_i
-    <\Delta\Sigma_x>_i   = osum_i/osensum_i
+    <\Delta\Sigma>_i     = dsum_i/dsensum_w_i
+    <\Delta\Sigma_x>_i   = osum_i/osensum_w_i
 ```
 
 Note that in shear_style = "reduced", these *sens* columns use gsens_i=1, so you can always
