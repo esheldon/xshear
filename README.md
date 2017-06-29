@@ -292,7 +292,7 @@ osensum_i:  sum of weights times sensitivities
 In shear_units="both", the output contains the same columns regardless of input format:
 
 ```
-    index weight_tot totpairs npair_i rsum_i wsum_i ssum_i dsum_o osum_i dsensum_w_i osensum_w_i dsensum_s_i osensum_s_i 
+    index weight_tot totpairs npair_i rsum_i wsum_i ssum_i dsum_i osum_i dsensum_w_i osensum_w_i dsensum_s_i osensum_s_i e1sum_s_i e2sum_s_i 
 ```
 
 where, in addition to the above,
