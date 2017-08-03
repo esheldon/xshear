@@ -143,6 +143,8 @@ static int get_r_units(struct cfg *cfg) {
         r_units=UNITS_MPC;
     } else if (0 == do_strncmp(mstr,UNITS_ARCMIN_STR)) {
         r_units=UNITS_ARCMIN;
+    } else if (0 == do_strncmp(mstr,UNITS_MPC_COM_STR)) {
+        r_units=UNITS_MPC_COM;
     } else {
         fprintf(stderr, "Config Error: bad r_units: '%s'\n", mstr);
         exit(1);

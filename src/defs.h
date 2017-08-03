@@ -99,11 +99,13 @@ enum WEIGHT_STYLE {
 
 enum R_UNITS {
     UNITS_MPC=1,
-    UNITS_ARCMIN=2
+    UNITS_ARCMIN=2,
+    UNITS_MPC_COM=3
 };
 
 #define UNITS_MPC_STR "Mpc"
 #define UNITS_ARCMIN_STR "arcmin"
+#define UNITS_MPC_COM_STR "Mpc comoving"
 
 enum SHEAR_UNITS {
     UNITS_DELTASIG=1,

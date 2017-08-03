@@ -318,6 +318,10 @@ void shear_procpair(Shear* self,
     if (config->r_units==UNITS_MPC) {
         // Mpc
         r = r_radians*lens->da;
+    } else if (config->r_units==UNITS_MPC_COM){
+        // Mpc comoving
+        fprintf(stderr, "Mpc comoving");
+        r = r_radians*lens->da*(1.+lens->z);
     } else {
         // arcmin
         r = r_radians*R2D*60.;
