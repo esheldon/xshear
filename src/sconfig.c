@@ -138,18 +138,22 @@ static int get_r_units(struct cfg *cfg) {
         // not sent, default to Mpc
         return UNITS_MPC;
     }
-
+//    wlog("here");
+    fprintf(stderr, "look: %s\n", mstr);
     if (0 == do_strncmp(mstr,UNITS_MPC_STR)) {
         r_units=UNITS_MPC;
+        fprintf(stderr, "%d\n", r_units);
     } else if (0 == do_strncmp(mstr,UNITS_ARCMIN_STR)) {
         r_units=UNITS_ARCMIN;
+        fprintf(stderr, "%d\n", r_units);
     } else if (0 == do_strncmp(mstr,UNITS_MPC_COM_STR)) {
         r_units=UNITS_MPC_COM;
+        fprintf(stderr, "%d\n", r_units);
     } else {
         fprintf(stderr, "Config Error: bad r_units: '%s'\n", mstr);
         exit(1);
     }
-
+    fprintf(stderr, "\n\nr_units %d\n\n", r_units);
     free(mstr);
 
     return r_units;

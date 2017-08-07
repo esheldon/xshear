@@ -263,7 +263,7 @@ void shear_procpair(Shear* self,
 
 
     // (1) set sigma_crit^-1
-    double scinv; // the sigma_crit^-1 that goes into S
+    double scinv; // the sigm_crit^-1 that goes into S
     double zs;
     switch(config->scstyle) {
         case SIGMACRIT_STYLE_INTERP:
@@ -312,7 +312,7 @@ void shear_procpair(Shear* self,
         }
     }
 
-
+//    fprintf(stdout, "Mpc comoving %d", config->r_units);
     // (3) determine radius
     double r;
     if (config->r_units==UNITS_MPC) {
@@ -320,8 +320,10 @@ void shear_procpair(Shear* self,
         r = r_radians*lens->da;
     } else if (config->r_units==UNITS_MPC_COM){
         // Mpc comoving
-        fprintf(stderr, "Mpc comoving");
+//        fprintf(stderr, "Mpc comoving");
         r = r_radians*lens->da*(1.+lens->z);
+        s *= (1. + lens->z) * (1. + lens->z);
+        scinv *= (1. + lens->z) * (1. + lens->z);
     } else {
         // arcmin
         r = r_radians*R2D*60.;

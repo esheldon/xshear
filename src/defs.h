@@ -105,7 +105,7 @@ enum R_UNITS {
 
 #define UNITS_MPC_STR "Mpc"
 #define UNITS_ARCMIN_STR "arcmin"
-#define UNITS_MPC_COM_STR "Mpc comoving"
+#define UNITS_MPC_COM_STR "comoving_mpc"
 
 enum SHEAR_UNITS {
     UNITS_DELTASIG=1,
