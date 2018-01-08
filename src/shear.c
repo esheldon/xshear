@@ -263,7 +263,7 @@ void shear_procpair(Shear* self,
 
 
     // (1) set sigma_crit^-1
-    double scinv; // the sigm_crit^-1 that goes into S
+    double scinv; // the sigma_crit^-1 that goes into S
     double zs;
     switch(config->scstyle) {
         case SIGMACRIT_STYLE_INTERP:
@@ -347,7 +347,7 @@ void shear_procpair(Shear* self,
 
     lensum->weight += s*scinv;
     lensum->totpairs += 1;
-    self->totpairs[rbin] +=1;    
+    self->totpairs[rbin] += 1;    
     lensum->npair[rbin] += 1;
     lensum->wsum[rbin] += s*scinv;
     lensum->ssum[rbin] += s;
@@ -389,11 +389,9 @@ void shear_procpair(Shear* self,
     lensum->osensum_s[rbin] += s*gsens_x;
     self->tpairs ++;
     
-//    fprintf(stderr, "totpairs %ld \n", self->totpairs[rbin]);
     if(rbin<config->pairlog_rmax && rbin>=config->pairlog_rmin && 
       (config->pairlog_nmax<=0 || self->totpairs[rbin]<=config->pairlog_nmax)) {
-//           fprintf(stderr, " printing totpairs %ld \n", self->totpairs[rbin]);
-      fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
+        fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
     }
 
 
