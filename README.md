@@ -124,6 +124,8 @@ r_units = "Mpc"
 # demand zs > zl + zdiff_min
 # optional, used for sigmacrit_style "point" and "sample" (on z_mean for the latter)
 zdiff_min       = 0.2
+# note that if using weight_style "uniform" and sigma_crit_style "sample" the
+#zdiff_min is not enforced in selecting source galaxies
 ```
 
 ### Config File Using \Sigma_{crit}(zlens) Derived from Full P(zsource).   
