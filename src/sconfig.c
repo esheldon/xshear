@@ -62,6 +62,8 @@ static int get_shear_style(struct cfg *cfg) {
         shear_style=SHEAR_STYLE_REDUCED;
     } else if (0 == do_strncmp(mstr,SHEAR_STYLE_LENSFIT_STR)) {
         shear_style=SHEAR_STYLE_LENSFIT;
+    } else if (0 == do_strncmp(mstr,SHEAR_STYLE_METACAL_STR)) {
+        shear_style=SHEAR_STYLE_METACAL;
     } else {
         fprintf(stderr, "Config Error: bad shear_style '%s'\n", mstr);
         exit(1);
@@ -136,16 +138,22 @@ static int get_r_units(struct cfg *cfg) {
         // not sent, default to Mpc
         return UNITS_MPC;
     }
-
+//    wlog("here");
+    fprintf(stderr, "look: %s\n", mstr);
     if (0 == do_strncmp(mstr,UNITS_MPC_STR)) {
         r_units=UNITS_MPC;
+        fprintf(stderr, "%d\n", r_units);
     } else if (0 == do_strncmp(mstr,UNITS_ARCMIN_STR)) {
         r_units=UNITS_ARCMIN;
+        fprintf(stderr, "%d\n", r_units);
+    } else if (0 == do_strncmp(mstr,UNITS_MPC_COM_STR)) {
+        r_units=UNITS_MPC_COM;
+        fprintf(stderr, "%d\n", r_units);
     } else {
         fprintf(stderr, "Config Error: bad r_units: '%s'\n", mstr);
         exit(1);
     }
-
+    fprintf(stderr, "\n\nr_units %d\n\n", r_units);
     free(mstr);
 
     return r_units;
@@ -244,6 +252,7 @@ ShearConfig* sconfig_read(const char* url) {
     c->min_zlens_interp=0;
     c->pairlog_rmax=0;
     c->pairlog_rmin=0;
+    c->pairlog_nmax=0;
 
     // this strcpy business is so we can print error messages
     // below
@@ -318,6 +327,10 @@ ShearConfig* sconfig_read(const char* url) {
     int pairlog_rmin = (int64) cfg_get_long(cfg,strcpy(key,"pairlog_rmin"),&ostatus);
     if (!ostatus) {
         c->pairlog_rmin = pairlog_rmin; 
+    }
+    int pairlog_nmax = (int64) cfg_get_long(cfg,strcpy(key,"pairlog_nmax"),&ostatus);
+    if (!ostatus) {
+        c->pairlog_nmax = pairlog_nmax; 
     }
 
 

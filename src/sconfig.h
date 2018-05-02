@@ -13,7 +13,7 @@ typedef struct {
 
     int64 healpix_nside;
 
-    int shear_style;    // REDUCED or LENSFIT
+    int shear_style;    // REDUCED, LENSFIT or METACAL
     int mask_style;     // NONE, SDSS or EQ
     int scstyle;        // POINT, INTERP or SAMPLE
     int sourceid_style; // NONE or INDEX
@@ -34,6 +34,7 @@ typedef struct {
     
     int64 pairlog_rmax, pairlog_rmin; // r bin numbers between which pairs are printed to file; 
                                       // pairlog_rmax=0 for no printing
+    int64 pairlog_nmax; // maximum number of pairs printed in each radial bin; <=0 for no maximum
     FILE *pair_fd; // file descriptor of pair log file
     
     double rmin; // mpc/h

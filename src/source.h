@@ -33,9 +33,11 @@ typedef struct {
     double g1;
     double g2;
 
-    // only used for shear_style==LENSFIT
+    // only used for shear_style==LENSFIT or shear_style==METACAL
     double g1sens;
     double g2sens;
+    // only used for shear_style==METACAL
+    double g12sens; // (R12+R21)/2
 
     double weight;
 

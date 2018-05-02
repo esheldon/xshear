@@ -20,6 +20,8 @@ typedef struct {
     double* ssum; // sum of weight*scinv
     double* dsum; // sum of weight*scinv*gt=weight*scinv^2*DeltaSigma
     double* osum; // sum of weight*scinv*gx=weight*scinv^2*DeltaSigma_x
+    double* e1sum; // sum of weight*scinv*g1
+    double* e2sum; // sum of weight*scinv*g2
     
     double* dsensum_w; // sum of weight*scinv^2*sens_t
     double* osensum_w; // sum of weight*scinv^2*sens_x

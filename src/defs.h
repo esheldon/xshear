@@ -39,11 +39,13 @@ typedef int64_t int64;
 
 enum SHEAR_STYLE {
    SHEAR_STYLE_REDUCED=1,
-   SHEAR_STYLE_LENSFIT=2
+   SHEAR_STYLE_LENSFIT=2,
+   SHEAR_STYLE_METACAL=3
 };
 
 #define SHEAR_STYLE_REDUCED_STR "reduced"
 #define SHEAR_STYLE_LENSFIT_STR "lensfit"
+#define SHEAR_STYLE_METACAL_STR "metacal"
 
 
 enum MASK_STYLE {
@@ -97,11 +99,13 @@ enum WEIGHT_STYLE {
 
 enum R_UNITS {
     UNITS_MPC=1,
-    UNITS_ARCMIN=2
+    UNITS_ARCMIN=2,
+    UNITS_MPC_COM=3
 };
 
 #define UNITS_MPC_STR "Mpc"
 #define UNITS_ARCMIN_STR "arcmin"
+#define UNITS_MPC_COM_STR "comoving_mpc"
 
 enum SHEAR_UNITS {
     UNITS_DELTASIG=1,

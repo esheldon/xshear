@@ -29,6 +29,9 @@ Source* source_new(const ShearConfig* config) {
             exit(EXIT_FAILURE);
         }
     }
+    
+    src->g1sens=src->g2sens=1.;
+    src->g12sens=0.;
 
     return src;
 }
@@ -74,6 +77,9 @@ int source_read(FILE* stream, Source* src) {
     if (src->shear_style==SHEAR_STYLE_LENSFIT) {
         nread += fscanf(stream, "%lf %lf", &src->g1sens, &src->g2sens);
         nexpect += 2;
+    } else if (src->shear_style==SHEAR_STYLE_METACAL) {
+        nread += fscanf(stream, "%lf %lf %lf", &src->g1sens, &src->g2sens, &src->g12sens);
+        nexpect += 3;
     }
 
     nread += fscanf(stream, "%lf", &src->weight);
@@ -121,6 +127,10 @@ void source_print(Source* src) {
     if (src->shear_style==SHEAR_STYLE_LENSFIT) {
         wlog("    g1sens: %lf\n", src->g1sens);
         wlog("    g2sens: %lf\n", src->g2sens);
+    } else if (src->shear_style==SHEAR_STYLE_METACAL) {
+        wlog("    g1sens: %lf\n", src->g1sens);
+        wlog("    g2sens: %lf\n", src->g2sens);
+        wlog("   g12sens: %lf\n", src->g12sens);
     }
     wlog("    weight: %lf\n", src->weight);
     wlog("    hpixid: %ld\n", src->hpixid);

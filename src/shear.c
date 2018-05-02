@@ -75,7 +75,8 @@ Shear* shear_init(const char* config_url, const char* lens_url) {
                                  config->shear_style,
                                  config->scstyle,
                                  config->shear_units);
-
+    shear->tpairs = 0;
+    shear->totpairs = calloc(config->nbin, sizeof(int64));
     for (size_t i=0; i<shear->lensums->size; i++) {
         shear->lensums->data[i].index = shear->lcat->data[i].index;
     }
@@ -311,12 +312,18 @@ void shear_procpair(Shear* self,
         }
     }
 
-
+//    fprintf(stdout, "Mpc comoving %d", config->r_units);
     // (3) determine radius
     double r;
     if (config->r_units==UNITS_MPC) {
         // Mpc
         r = r_radians*lens->da;
+    } else if (config->r_units==UNITS_MPC_COM){
+        // Mpc comoving
+//        fprintf(stderr, "Mpc comoving");
+        r = r_radians*lens->da*(1.+lens->z);
+        s *= (1. + lens->z) * (1. + lens->z);
+        scinv *= (1. + lens->z) * (1. + lens->z);
     } else {
         // arcmin
         r = r_radians*R2D*60.;
@@ -340,21 +347,24 @@ void shear_procpair(Shear* self,
 
     lensum->weight += s*scinv;
     lensum->totpairs += 1;
-    
+    self->totpairs[rbin] += 1;    
     lensum->npair[rbin] += 1;
     lensum->wsum[rbin] += s*scinv;
     lensum->ssum[rbin] += s;
     
+    lensum->e1sum[rbin] += s*src->g1;
+    lensum->e2sum[rbin] += s*src->g2;
+    
     lensum->dsum[rbin] += s*gt;
     lensum->osum[rbin] += s*gx;
-
+    
     lensum->rsum[rbin] += s*scinv*r;
 
     // sensitivity of gt/gx to shear in that direction
     double gsens_t=1.;
     double gsens_x=1.;
 
-    if (config->shear_style==SHEAR_STYLE_LENSFIT) {
+    if (config->shear_style==SHEAR_STYLE_LENSFIT || config->shear_style==SHEAR_STYLE_METACAL) {
         // sensitivity of gt is
         // dgt/dgammat=-dg1/dgammat*cos2pa-dg2/dgammat*sin2pa
         //            =-dg1/dgamma1*dgamma1/dgammat*cos2pa-dg2/dgamma2*dgamma2/dgammat*sin2pa
@@ -364,9 +374,11 @@ void shear_procpair(Shear* self,
         // double gsens = 0.5*(src->g1sens + src->g2sens); 
         // the only reason to not do that are strong-ish shears, where gsens is significantly
         // different along the tangential direction because tangential shears aren't small
-        
-        gsens_t=src->g1sens*cos2pa*cos2pa+src->g2sens*sin2pa*sin2pa;
-        gsens_x=src->g1sens*sin2pa*sin2pa+src->g2sens*cos2pa*cos2pa;
+
+        // note for LENSFIT, g12sens=0, while for METACAL we have measured it        
+
+        gsens_t=src->g1sens*cos2pa*cos2pa+src->g2sens*sin2pa*sin2pa+2.*src->g12sens*sin2pa*cos2pa;
+        gsens_x=src->g1sens*sin2pa*sin2pa+src->g2sens*cos2pa*cos2pa+2.*src->g12sens*sin2pa*cos2pa;
     }
     
     // will have to implement something more complex here for metacal, maybe
@@ -375,10 +387,13 @@ void shear_procpair(Shear* self,
     lensum->osensum_w[rbin] += s*scinv*gsens_x;
     lensum->dsensum_s[rbin] += s*gsens_t;
     lensum->osensum_s[rbin] += s*gsens_x;
-
-    if(rbin<config->pairlog_rmax && rbin>=config->pairlog_rmin) {
-      fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
+    self->tpairs ++;
+    
+    if(rbin<config->pairlog_rmax && rbin>=config->pairlog_rmin && 
+      (config->pairlog_nmax<=0 || self->totpairs[rbin]<=config->pairlog_nmax)) {
+        fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
     }
+
 
 _procpair_bail:
 
