@@ -60,17 +60,26 @@ int source_read(FILE* stream, Source* src) {
     int nread=0;
     int nexpect=0;
 
-    if(src->sourceid_style==SOURCEID_STYLE_INDEX) {
-    	nread += fscanf(stream, "%ld %lf %lf %lf %lf", 
+    if(src->sourceid_style==SOURCEID_STYLE_SOMCELL) {
+    	nread += fscanf(stream, "%ld %ld %lf %lf %lf %lf",
+                    &src->index,
+                    &src->somcell,
+                    &src->ra, &src->dec,
+                    &src->g1, &src->g2);
+    	nexpect += 6;
+    } else if(src->sourceid_style==SOURCEID_STYLE_INDEX) {
+    	nread += fscanf(stream, "%ld %lf %lf %lf %lf",
                     &src->index,
                     &src->ra, &src->dec,
                     &src->g1, &src->g2);
     	nexpect += 5;
+    	src->somcell=0;
     } else {
     	nread += fscanf(stream, "%lf %lf %lf %lf",
                     &src->ra, &src->dec,
                     &src->g1, &src->g2);
     	src->index=0;
+    	src->somcell=0;
     	nexpect += 4;    
     }
 
@@ -120,6 +129,7 @@ int source_read(FILE* stream, Source* src) {
 
 void source_print(Source* src) {
     wlog("    index:  %ld\n", src->index);
+    wlog("    somcell:  %ld\n", src->somcell);
     wlog("    ra:     %lf\n", src->ra);
     wlog("    dec:    %lf\n", src->dec);
     wlog("    g1:     %lf\n", src->g1);

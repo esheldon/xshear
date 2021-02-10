@@ -112,11 +112,12 @@ static int get_sourceid_style(struct cfg *cfg) {
         sourceid_style=SOURCEID_STYLE_NONE;
         return sourceid_style;
     }
-
     if (0 == do_strncmp(mstr,SOURCEID_STYLE_NONE_STR)) {
         sourceid_style=SOURCEID_STYLE_NONE;
     } else if (0 == do_strncmp(mstr,SOURCEID_STYLE_INDEX_STR)) {
         sourceid_style=SOURCEID_STYLE_INDEX;
+    } else if (0 == do_strncmp(mstr,SOURCEID_STYLE_SOMCELL_STR)) {
+        sourceid_style=SOURCEID_STYLE_SOMCELL;
     } else {
         fprintf(stderr, "Config Error: bad sourceid_style '%s'\n", mstr);
         exit(1);

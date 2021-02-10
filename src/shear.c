@@ -388,11 +388,19 @@ void shear_procpair(Shear* self,
     lensum->dsensum_s[rbin] += s*gsens_t;
     lensum->osensum_s[rbin] += s*gsens_x;
     self->tpairs ++;
-    
-    if(rbin<config->pairlog_rmax && rbin>=config->pairlog_rmin && 
-      (config->pairlog_nmax<=0 || self->totpairs[rbin]<=config->pairlog_nmax)) {
-        fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
-    }
+
+    // This  change output format based on som cell indexing if necessary
+    if (src->sourceid_style == 2) {
+        if(rbin<config->pairlog_rmax && rbin>=config->pairlog_rmin &&
+          (config->pairlog_nmax<=0 || self->totpairs[rbin]<=config->pairlog_nmax)) {
+            fprintf(config->pair_fd, "%ld %ld %d %le %le %le %le\n", lens->index, src->index, rbin, s, scinv, gsens_t, zs);
+        }
+    } else if (src->sourceid_style == 3) {
+        if(rbin<config->pairlog_rmax && rbin>=config->pairlog_rmin &&
+          (config->pairlog_nmax<=0 || self->totpairs[rbin]<=config->pairlog_nmax)) {
+                fprintf(config->pair_fd, "%ld %ld %ld %d %le %le %le %le\n", lens->index, src->index, src->somcell, rbin, s, scinv, gsens_t, zs);
+        }
+    };
 
 
 _procpair_bail:

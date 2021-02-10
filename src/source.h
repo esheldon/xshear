@@ -26,6 +26,7 @@ typedef struct {
     
     // source ID
     int64 index;
+    int64 somcell;
 
     double ra;
     double dec;
